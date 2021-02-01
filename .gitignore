@@ -14,3 +14,7 @@ build/*
 tags
 tags.*
 **/*.swp
+compile_commands.json
+
+# VSCode
+./vscode/*

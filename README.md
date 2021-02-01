@@ -4,8 +4,15 @@ https://docs.google.com/document/d/1d8BcXjWF1bPuGfM2PeCxXdvw-QjfWAuVCvRD2_8Fwgk/
 
 # Installation
 ```console
-foo@bar:~$ git clone --recursive git@github.com:RileyJackson2000/fluffy-computing-machine.git
+$ git clone --recursive git@github.com:RileyJackson2000/fluffy-computing-machine.git
+$ mkdir build
+$ cd build
+$ cmake ..
+$ make
 ```
+
+# Workflow
+Currently master is protected so any changes must be made on local branches, pass all checks, and have atleast one review before being able to be merged.
 
 # Layout
 ```
