@@ -1,0 +1,9 @@
+name: gtest
+on: [push, pull_request]
+jobs:
+  gtest:
+    runs-on: ubuntu-20.04
+    steps:
+      - uses: actions/checkout@v2
+      - run: mkdir build && cd build && cmake ..
+      - run: tests/tests
