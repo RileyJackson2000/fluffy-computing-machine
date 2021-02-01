@@ -2,11 +2,9 @@
 
 #include <utils/utils.hpp>
 
-namespace fluff
-{
+namespace fluff {
 
-void helloWorld()
-{
+void helloWorld() {
   std::cout << "Hello World!\n";
 }
 

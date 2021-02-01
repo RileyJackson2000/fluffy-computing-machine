@@ -1,7 +1,6 @@
 #pragma once
 
-namespace fluff
-{
+namespace fluff {
 
 void helloWorld();
 

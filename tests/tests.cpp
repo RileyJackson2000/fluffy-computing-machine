@@ -1,6 +1,5 @@
 #include <gtest/gtest.h>
 
-TEST(FluffySuite, HelloWorldTest)
-{
+TEST(FluffySuite, HelloWorldTest) {
   EXPECT_EQ(1, 1);
 }

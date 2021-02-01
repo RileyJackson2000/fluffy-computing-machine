@@ -14,7 +14,7 @@ find_package(Doxygen)
 if(Doxygen_FOUND)
   add_subdirectory(docs)
 else()
-  message(STATUS "Doxygen not foun, not building docs")
+  message(STATUS "Doxygen not found, not building docs")
 endif()
 
 add_subdirectory(src)
