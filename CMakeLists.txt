@@ -27,4 +27,3 @@ add_subdirectory(extern/googletest)
 add_subdirectory(extern/glew-cmake)
 add_subdirectory(extern/glfw)
 
-
