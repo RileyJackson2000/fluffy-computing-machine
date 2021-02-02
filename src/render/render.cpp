@@ -13,12 +13,12 @@ static void error_callback(int error, const char *description)
 
 glfw::GLFWwindow_ptr init_renderer(void)
 {
-	// Initialise GLFW
-	if(!glfw::glfwInit())
-	{
+  // Initialise GLFW
+  if(!glfw::glfwInit())
+  {
     std::cout << "Failed to initialize GLFW" << std::endl;
-		return glfw::GLFWwindow_ptr{};
-	}
+    return glfw::GLFWwindow_ptr{};
+  }
 
 
   // anti aliasing
@@ -33,7 +33,7 @@ glfw::GLFWwindow_ptr init_renderer(void)
 
   glfw::glfwSetErrorCallback(error_callback);
 
-  // TODO don't hardcode constants
+  // TODO jyfliu: don't hardcode constants
   glfw::GLFWwindow_ptr window = glfw::GLFWwindow_ptr{glfw::glfwCreateWindow(1024, 768, "Title goes here", NULL, NULL)};
   if (window.get() == nullptr) {
     std::cout << "Failed to open GLFW window. See error logs for more info.\n";
@@ -46,15 +46,15 @@ glfw::GLFWwindow_ptr init_renderer(void)
   if (glew::glewInit() != GLEW_OK) {
     std::cout << "Failed to initialize GLEW\n";
     glfw::glfwTerminate();
-		return glfw::GLFWwindow_ptr{};
-	}
+    return glfw::GLFWwindow_ptr{};
+  }
 
   glew::glewExperimental=true;
 
-	// Ensure we can capture the escape key being pressed below
+  // Ensure we can capture the escape key being pressed below
   glfw::glfwSetInputMode(window.get(), GLFW_STICKY_KEYS, GL_TRUE);
 
-	// Dark blue background
+  // Dark blue background
   glew::glClearColor(0.0f, 0.0f, 0.3f, 0.0f);
 
   return window;
@@ -71,8 +71,7 @@ void render(Scene &scene, glfw::GLFWwindow *window) {
 }
 
 void destroy_renderer() {
-	// Close OpenGL window and terminate GLFW
   glfw::glfwTerminate();
 }
 
-}
+} // namespace fcm
