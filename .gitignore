@@ -15,6 +15,16 @@ tags
 tags.*
 **/*.swp
 compile_commands.json
+.vimrc
+
+# cmake
+**/*.cmake
+*.a
+**/Makefile
+*.tcl
+CMakeCache.txt
+**/CMakeFiles/
+app/fluff
 
 # VSCode
 ./vscode/*

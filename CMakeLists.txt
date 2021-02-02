@@ -17,8 +17,14 @@ else()
   message(STATUS "Doxygen not found, not building docs")
 endif()
 
+find_package(OpenGL REQUIRED)
+
 add_subdirectory(src)
 add_subdirectory(app)
 add_subdirectory(tests)
 
 add_subdirectory(extern/googletest)
+add_subdirectory(extern/glew-cmake)
+add_subdirectory(extern/glfw)
+
+

@@ -23,14 +23,14 @@ Currently master is protected so any changes must be made on local branches, pas
 +-- extern                         // for submodules
 |   +-- googletest
 +-- include                        // internal libraries
-|   +-- math
+|   +-- model
 |   +-- physics
 |   +-- render
 |   +-- utils
 +-- python                         // python bindings
 +-- scripts                        // bash scripts, etc.
 +-- src                            // internal library source files
-|   +-- math
+|   +-- model
 |   +-- physics
 |   +-- render
 |   +-- utils
