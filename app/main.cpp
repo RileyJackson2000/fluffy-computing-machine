@@ -21,7 +21,7 @@ int main(void) {
 
   fcm::Scene scene{"Scene 1"};
 
-  // temporarily do this here
+  // temporarily do this stuff here
   auto s1 = std::make_unique<fcm::Sphere>();
   s1->name = "s1";
   s1->radius = 1;
@@ -41,11 +41,12 @@ int main(void) {
   scene.insert(std::move(s2));
 
   // main loop
-  int i =0;
+  // very temporary, only run the simulation for 1 second
+  int i = 0;
   do {
     fcm::update(scene, 0.01); // TODO time steps
     fcm::render(scene, window.get());
-    i ++;
+    i++;
   } while (glfw::glfwGetKey(window.get(), GLFW_KEY_ESCAPE) != GLFW_PRESS and
       glfw::glfwWindowShouldClose(window.get()) == 0 and i < 100);
 
