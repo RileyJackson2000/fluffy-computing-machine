@@ -3,15 +3,14 @@
 #include <render/render2d.hpp>
 #include <render/shaders.hpp>
 
+#include <iostream>
 #include <utils/constants.hpp>
 #include <utils/glew.hpp>
-#include <iostream>
 
 namespace fcm {
 
-static void error_callback(int error, const char *description)
-{
-  (void) error;
+static void error_callback(int error, const char *description) {
+  (void)error;
   std::cout << "Error: " << description << "\n";
 }
 
@@ -19,15 +18,12 @@ static void error_callback(int error, const char *description)
 glew::GLuint VertexArrayID;
 glew::GLuint programID;
 
-glfw::GLFWwindow_ptr init_renderer(void)
-{
+glfw::GLFWwindow_ptr init_renderer(void) {
   // Initialise GLFW
-  if(!glfw::glfwInit())
-  {
+  if (!glfw::glfwInit()) {
     std::cout << "Failed to initialize GLFW" << std::endl;
     return glfw::GLFWwindow_ptr{};
   }
-
 
   // anti aliasing
   glfw::glfwWindowHint(GLFW_SAMPLES, 4);
@@ -41,9 +37,8 @@ glfw::GLFWwindow_ptr init_renderer(void)
 
   glfw::glfwSetErrorCallback(error_callback);
 
-  glfw::GLFWwindow_ptr window = glfw::GLFWwindow_ptr{
-    glfw::glfwCreateWindow(WINDOW_WIDTH, WINDOW_HEIGHT, "Title goes here", NULL, NULL)
-  };
+  glfw::GLFWwindow_ptr window = glfw::GLFWwindow_ptr{glfw::glfwCreateWindow(
+      WINDOW_WIDTH, WINDOW_HEIGHT, "Title goes here", NULL, NULL)};
   if (window.get() == nullptr) {
     std::cout << "Failed to open GLFW window. See error logs for more info.\n";
     glfw::glfwTerminate();
@@ -58,7 +53,7 @@ glfw::GLFWwindow_ptr init_renderer(void)
     return glfw::GLFWwindow_ptr{};
   }
 
-  glew::glewExperimental=true;
+  glew::glewExperimental = true;
 
   // Ensure we can capture the escape key being pressed below
   glfw::glfwSetInputMode(window.get(), GLFW_STICKY_KEYS, GL_TRUE);
@@ -79,10 +74,10 @@ void render(Scene &scene, glfw::GLFWwindow *window) {
   glew::glUseProgram(programID);
 
   for (auto &&obj : scene.objects()) {
-    auto *sphere = static_cast<Sphere*>(obj.get());
+    auto *sphere = static_cast<Sphere *>(obj.get());
     drawCircle(sphere->position.x, sphere->position.y, sphere->radius);
   }
-  
+
   glfw::glfwSwapBuffers(window);
   glfw::glfwPollEvents();
 }

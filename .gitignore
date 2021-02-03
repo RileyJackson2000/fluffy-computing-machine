@@ -16,6 +16,7 @@ tags.*
 **/*.swp
 compile_commands.json
 .vimrc
+.clangd/*
 
 # cmake
 **/*.cmake
