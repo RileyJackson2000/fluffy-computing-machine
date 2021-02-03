@@ -1,5 +1,9 @@
+#include <model/object.hpp>
 #include <render/render.hpp>
+#include <render/render2d.hpp>
+#include <render/shaders.hpp>
 
+#include <utils/constants.hpp>
 #include <utils/glew.hpp>
 #include <iostream>
 
@@ -10,6 +14,10 @@ static void error_callback(int error, const char *description)
   (void) error;
   std::cout << "Error: " << description << "\n";
 }
+
+// statics
+glew::GLuint VertexArrayID;
+glew::GLuint programID;
 
 glfw::GLFWwindow_ptr init_renderer(void)
 {
@@ -33,8 +41,9 @@ glfw::GLFWwindow_ptr init_renderer(void)
 
   glfw::glfwSetErrorCallback(error_callback);
 
-  // TODO jyfliu: don't hardcode constants
-  glfw::GLFWwindow_ptr window = glfw::GLFWwindow_ptr{glfw::glfwCreateWindow(1024, 768, "Title goes here", NULL, NULL)};
+  glfw::GLFWwindow_ptr window = glfw::GLFWwindow_ptr{
+    glfw::glfwCreateWindow(WINDOW_WIDTH, WINDOW_HEIGHT, "Title goes here", NULL, NULL)
+  };
   if (window.get() == nullptr) {
     std::cout << "Failed to open GLFW window. See error logs for more info.\n";
     glfw::glfwTerminate();
@@ -57,23 +66,29 @@ glfw::GLFWwindow_ptr init_renderer(void)
   // Dark blue background
   glew::glClearColor(0.0f, 0.0f, 0.3f, 0.0f);
 
+  glew::glGenVertexArrays(1, &VertexArrayID);
+  glew::glBindVertexArray(VertexArrayID);
+
+  programID = load_shaders();
+
   return window;
 }
 
 void render(Scene &scene, glfw::GLFWwindow *window) {
-  (void) scene;
   glew::glClear(GL_COLOR_BUFFER_BIT);
+  glew::glUseProgram(programID);
 
   for (auto &&obj : scene.objects()) {
-    std::cout << obj->name << " (" << obj->position.x << ", " << obj->position.y << ", "<< obj->position.z << "), ";
+    auto *sphere = static_cast<Sphere*>(obj.get());
+    drawCircle(sphere->position.x, sphere->position.y, sphere->radius);
   }
-  std::cout << "\n";
   
   glfw::glfwSwapBuffers(window);
   glfw::glfwPollEvents();
 }
 
 void destroy_renderer() {
+  glew::glDeleteVertexArrays(1, &VertexArrayID);
   glfw::glfwTerminate();
 }
 

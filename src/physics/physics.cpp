@@ -1,3 +1,4 @@
+#include <iostream>
 #include <physics/physics.hpp>
 #include <physics/collision.hpp>
 #include <model/material.hpp>
