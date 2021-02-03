@@ -1,0 +1,12 @@
+name: autoformat
+on: [push, pull_request]
+jobs:
+  format:
+    runs-on: ubuntu-20.04
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          submodules: 'recursive'
+          ref: ${{ github.head_ref }}
+      - run: sudo apt install clang-format && bash ./scripts/format.sh
+      - run: git config --global user.name 'Format Bot' && git config --global user.email 'fmtbot2020@gmail.com' && git remote set-url origin https://x-access-token:eaf853193528b8ff81672815c382a86e30b17c64@github.com/RileyJackson2000/fluffy-computing-machine.git && git commit -am "Automated changes" && git push
