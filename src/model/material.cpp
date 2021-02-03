@@ -11,7 +11,7 @@ void init_static_friction()
 double _spring_constant[num_mats]; // TODO replace with young's modulus - JL
 void init_spring_constant()
 {
-  _spring_constant[STEEL] = 30; // I made this up - JL
+  _spring_constant[STEEL] = 1000; // I made this up - JL
 }
 
 void init_materials()

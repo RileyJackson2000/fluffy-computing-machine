@@ -56,6 +56,10 @@ namespace fcm {
     const double r2 = obj_2.radius;
     if (d > r1 + r2) {
       // no collision
+      force_1 = {0, 0, 0};
+      force_2 = {0, 0, 0};
+      torque_1 = {0, 0, 0};
+      torque_2 = {0, 0, 0};
       return;
     }
     // amount the spheres are compressed by
