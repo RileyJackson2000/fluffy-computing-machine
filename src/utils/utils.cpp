@@ -4,8 +4,6 @@
 
 namespace fluff {
 
-void helloWorld() {
-  std::cout << "Hello World!\n";
-}
+void helloWorld() { std::cout << "Hello World!\n"; }
 
-}
+} // namespace fluff

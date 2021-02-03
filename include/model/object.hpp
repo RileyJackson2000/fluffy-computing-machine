@@ -27,4 +27,4 @@ struct Sphere : public Object {
   double radius;
 };
 
-}
+} // namespace fcm

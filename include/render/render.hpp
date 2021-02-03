@@ -1,7 +1,7 @@
 #pragma once
 
-#include <utils/glfw.hpp>
 #include <model/scene.hpp>
+#include <utils/glfw.hpp>
 
 namespace fcm {
 
@@ -11,4 +11,4 @@ void render(Scene &, glfw::GLFWwindow *);
 
 void destroy_renderer(void);
 
-}
+} // namespace fcm
