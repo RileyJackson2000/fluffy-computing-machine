@@ -3,6 +3,15 @@
 https://docs.google.com/document/d/1d8BcXjWF1bPuGfM2PeCxXdvw-QjfWAuVCvRD2_8Fwgk/
 
 # Installation
+
+Install dependencies:
+
+```console
+sudo apt-get install libglew-dev libglfw3-dev libglm-dev libx11-dev libxi-dev libgl1-mesa-dev libglu1-mesa-dev libxrandr-dev libxext-dev libxcursor-dev libxinerama-dev libxi-dev
+```
+
+Clone repo:
+
 ```console
 $ git clone --recursive git@github.com:RileyJackson2000/fluffy-computing-machine.git
 $ mkdir build
