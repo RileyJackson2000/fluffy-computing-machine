@@ -9,4 +9,9 @@ jobs:
           submodules: 'recursive'
           ref: ${{ github.head_ref }}
       - run: sudo apt install clang-format && bash ./scripts/format.sh
-      - run: git config --global user.name 'Format Bot' && git config --global user.email 'fmtbot2020@gmail.com' && git remote set-url origin https://x-access-token:eaf853193528b8ff81672815c382a86e30b17c64@github.com/RileyJackson2000/fluffy-computing-machine.git && git commit -am "Automated changes" && git push
+      - name: Check if anything changed
+        id: git-check
+        run: echo ::set-output name=modified::$(if git diff-index --quiet HEAD --; then echo "false"; else echo "true"; fi)
+      - name: Push changes
+        if: steps.git-check.outputs.modified == 'true'
+        run: git config --global user.name 'Format Bot' && git config --global user.email 'fmtbot2020@gmail.com' && git remote set-url origin https://x-access-token:eaf853193528b8ff81672815c382a86e30b17c64@github.com/RileyJackson2000/fluffy-computing-machine.git && git commit -am "Automated changes" && git push
