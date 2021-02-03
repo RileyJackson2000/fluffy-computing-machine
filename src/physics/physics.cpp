@@ -8,6 +8,31 @@ namespace fcm {
 
 void init_physics(void) { init_materials(); }
 
+template <typename T>
+void _collide_with(T *obj1, Object *obj2) {
+  const std::type_info &type = typeid(*obj2);
+  if (type == typeid(Sphere)) {
+    collide(*obj1, *static_cast<Sphere*>(obj2));
+  }
+}
+
+void _collide(Object *obj1, Object *obj2) {
+  const std::type_info &type = typeid(*obj1);
+  if (type == typeid(Sphere)) {
+    _collide_with(static_cast<Sphere*>(obj1), obj2);
+  }
+}
+
+void iterate_linear(Object *obj, double dt) {
+  obj->velocity += obj->force / obj->mass * dt;
+  obj->position += obj->velocity * dt;
+}
+
+void iterate_angular(Object *obj, double dt) {
+  obj->angular_velocity += obj->torque / obj->moment_of_inertia * dt;
+  obj->angular_position += obj->angular_velocity * dt;
+}
+
 void update(Scene &scene, double dt) {
   // to reduce typing
   const auto &objs = scene.objects();
@@ -19,27 +44,15 @@ void update(Scene &scene, double dt) {
 
   // collision check
   // no quad tree yet :p
-  glm::dvec3 force1, force2, torque1, torque2;
   for (size_t i = 0; i < objs.size(); ++i) {
     for (size_t j = i + 1; j < objs.size(); ++j) {
-      collide(
-          *static_cast<Sphere *>(objs[i].get()),
-          *static_cast<Sphere *>(
-              objs[j].get()), // TODO super bad! LOL! gotta replace with CRTP
-          force1, force2, torque1, torque2);
-      objs[i]->force += force1;
-      objs[j]->force += force2;
-      objs[i]->torque += torque1;
-      objs[j]->torque += torque2;
+      _collide(objs[i].get(), objs[j].get());
     }
   }
 
   for (auto &&obj_ptr : objs) {
-    obj_ptr->angular_velocity += obj_ptr->torque / obj_ptr->mass * dt;
-    obj_ptr->velocity += obj_ptr->force / obj_ptr->mass * dt;
-
-    obj_ptr->angular_position += obj_ptr->angular_velocity * dt;
-    obj_ptr->position += obj_ptr->velocity * dt;
+    iterate_linear(obj_ptr.get(), dt);
+    iterate_angular(obj_ptr.get(), dt);
   }
 }
 

@@ -10,7 +10,8 @@ enum Material { STEEL };
 
 void init_materials();
 
-double static_friction(Material, Material);
+double density(Material);
 double spring_constant(Material);
+double static_friction(Material, Material);
 
 } // namespace fcm

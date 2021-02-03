@@ -1,7 +1,5 @@
-#pragma once
+#include <model/object.hpp>
 
 namespace fcm {
-
-void helloWorld();
 
 } // namespace fcm
