@@ -64,7 +64,10 @@ void render(Scene &scene, glfw::GLFWwindow *window) {
   (void) scene;
   glew::glClear(GL_COLOR_BUFFER_BIT);
 
-  // do nothing
+  for (auto &&obj : scene.objects()) {
+    std::cout << obj->name << " (" << obj->position.x << ", " << obj->position.y << ", "<< obj->position.z << "), ";
+  }
+  std::cout << "\n";
   
   glfw::glfwSwapBuffers(window);
   glfw::glfwPollEvents();

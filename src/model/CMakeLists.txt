@@ -1,6 +1,7 @@
 add_library(
   model
-  scene.cpp)
+  scene.cpp
+  material.cpp)
 
 target_include_directories(model PUBLIC ../../include)
 
