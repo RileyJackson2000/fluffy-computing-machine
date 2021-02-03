@@ -39,9 +39,8 @@ void update(Scene &scene, double dt) {
     obj_ptr->angular_velocity += obj_ptr->torque / obj_ptr->mass * dt;
     obj_ptr->velocity += obj_ptr->force / obj_ptr->mass * dt;
 
-    obj_ptr->angular_position += obj_ptr->angular_position * dt;
+    obj_ptr->angular_position += obj_ptr->angular_velocity * dt;
     obj_ptr->position += obj_ptr->velocity * dt;
-    auto v = obj_ptr->velocity;
   }
 }
 
