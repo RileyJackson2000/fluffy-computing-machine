@@ -8,4 +8,4 @@ void init_physics(void);
 
 void update(Scene &, double dt);
 
-}
+} // namespace fcm

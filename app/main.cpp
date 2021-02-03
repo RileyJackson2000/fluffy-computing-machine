@@ -10,9 +10,8 @@
 #include <utils/glew.hpp>
 #include <utils/glfw.hpp>
 
-#include <model/scene.hpp>
 #include <model/object.hpp>
-
+#include <model/scene.hpp>
 
 int main(void) {
   std::cout << "Hello there\n";
@@ -57,10 +56,10 @@ int main(void) {
   s4->position = {4, -5, 0};
   s4->velocity = {0, 4, 0};
 
-  //scene.insert(std::move(s1));
-  //scene.insert(std::move(s2));
-  //scene.insert(std::move(s3));
-  //scene.insert(std::move(s4));
+  // scene.insert(std::move(s1));
+  // scene.insert(std::move(s2));
+  // scene.insert(std::move(s3));
+  // scene.insert(std::move(s4));
 
   for (int i = 0; i < 25; ++i) {
     auto s = std::make_unique<fcm::Sphere>();
@@ -68,8 +67,8 @@ int main(void) {
     s->radius = 1 + std::rand() % 3 / 3. * 0.2;
     s->mass = std::rand() % 2 + 1;
     s->mat = fcm::STEEL;
-    s->position = {(i % 5) * 2.5 - 5,(i / 5) * 2.5 - 5, 0};
-    s->velocity = {std::rand()%13-6, std::rand()%13-6, 0};
+    s->position = {(i % 5) * 2.5 - 5, (i / 5) * 2.5 - 5, 0};
+    s->velocity = {std::rand() % 13 - 6, std::rand() % 13 - 6, 0};
     scene.insert(std::move(s));
   }
 
@@ -79,7 +78,7 @@ int main(void) {
     fcm::render(scene, window.get());
     std::this_thread::sleep_for(std::chrono::milliseconds(30));
   } while (glfw::glfwGetKey(window.get(), GLFW_KEY_ESCAPE) != GLFW_PRESS and
-      glfw::glfwWindowShouldClose(window.get()) == 0);
+           glfw::glfwWindowShouldClose(window.get()) == 0);
 
   fcm::destroy_renderer();
 
