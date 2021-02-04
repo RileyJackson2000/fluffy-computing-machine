@@ -15,8 +15,7 @@ namespace fcm {
 
 // Computes the collision forces and torques
 // here, force_1 = the force applied to obj_1, etc.,
-template <typename S, typename T>
-void collide(S &obj_1, T &obj_2) {
+template <typename S, typename T> void collide(S &obj_1, T &obj_2) {
   (void)obj_1;
   (void)obj_2;
   std::cerr << "Override this!\n";
@@ -34,8 +33,7 @@ glm::dvec3 friction_dir(const glm::dvec3 &v, const glm::dvec3 &n) {
   return glm::normalize(glm::proj(v, n) - v);
 }
 
-template <>
-void collide(Sphere &obj_1, Sphere &obj_2) {
+template <> void collide(Sphere &obj_1, Sphere &obj_2) {
   const auto p1 = obj_1.position;
   const auto p2 = obj_2.position;
 
