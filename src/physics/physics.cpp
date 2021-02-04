@@ -8,18 +8,17 @@ namespace fcm {
 
 void init_physics(void) { init_materials(); }
 
-template <typename T>
-void _collide_with(T *obj1, Object *obj2) {
+template <typename T> void _collide_with(T *obj1, Object *obj2) {
   const std::type_info &type = typeid(*obj2);
   if (type == typeid(Sphere)) {
-    collide(*obj1, *static_cast<Sphere*>(obj2));
+    collide(*obj1, *static_cast<Sphere *>(obj2));
   }
 }
 
 void _collide(Object *obj1, Object *obj2) {
   const std::type_info &type = typeid(*obj1);
   if (type == typeid(Sphere)) {
-    _collide_with(static_cast<Sphere*>(obj1), obj2);
+    _collide_with(static_cast<Sphere *>(obj1), obj2);
   }
 }
 

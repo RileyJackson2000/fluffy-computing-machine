@@ -50,7 +50,8 @@ void drawCircle(double x, double y, double radius, int sides) {
   glew::glDeleteBuffers(1, &vertexbuffer);
 }
 
-void drawTriangle(double x1, double y1, double x2, double y2, double x3, double y3) {
+void drawTriangle(double x1, double y1, double x2, double y2, double x3,
+                  double y3) {
   glew::GLfloat *v_buffer = new glew::GLfloat[3 * 3];
   v_buffer[0] = x1;
   v_buffer[1] = y1;
@@ -65,25 +66,25 @@ void drawTriangle(double x1, double y1, double x2, double y2, double x3, double 
   glew::GLuint vertexbuffer;
   glew::glGenBuffers(1, &vertexbuffer);
   glew::glBindBuffer(GL_ARRAY_BUFFER, vertexbuffer);
-  glew::glBufferData(GL_ARRAY_BUFFER, 3 * 3 * sizeof(glew::GLfloat), v_buffer, GL_STATIC_DRAW);
+  glew::glBufferData(GL_ARRAY_BUFFER, 3 * 3 * sizeof(glew::GLfloat), v_buffer,
+                     GL_STATIC_DRAW);
 
   glew::glEnableVertexAttribArray(0);
   glew::glBindBuffer(GL_ARRAY_BUFFER, vertexbuffer);
 
-  glew::glVertexAttribPointer(
-    0,                  // attribute 0. No particular reason for 0, but must match the layout in the shader.
-    3,                  // size
-    GL_FLOAT,           // type
-    GL_FALSE,           // normalized?
-    0,                  // stride
-    (void*)0            // array buffer offset
+  glew::glVertexAttribPointer(0, // attribute 0. No particular reason for 0, but
+                                 // must match the layout in the shader.
+                              3, // size
+                              GL_FLOAT, // type
+                              GL_FALSE, // normalized?
+                              0,        // stride
+                              (void *)0 // array buffer offset
   );
   glew::glDrawArrays(GL_TRIANGLE_FAN, 0, 3);
 
   glew::glDisableVertexAttribArray(0);
   delete[] v_buffer;
   glew::glDeleteBuffers(1, &vertexbuffer);
-
 }
 
 } // namespace fcm
