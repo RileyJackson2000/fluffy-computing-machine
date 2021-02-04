@@ -9,22 +9,22 @@ namespace fcm {
 
 struct Object {
   std::string name;
-  glm::dvec3 position;
-  glm::dvec3 angular_position;
-  glm::dvec3 centroid;
+  glm::vec3 position;
+  glm::vec3 angular_position;
+  glm::vec3 centroid;
 
-  glm::dvec3 velocity;
-  glm::dvec3 angular_velocity;
+  glm::vec3 velocity;
+  glm::vec3 angular_velocity;
 
-  glm::dvec3 force;
-  glm::dvec3 torque;
+  glm::vec3 force;
+  glm::vec3 torque;
 
   Material mat;
-  double mass;
+  float mass;
 };
 
 struct Sphere : public Object {
-  double radius;
+  float radius;
 };
 
 }

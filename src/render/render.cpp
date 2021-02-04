@@ -7,89 +7,96 @@
 #include <utils/glew.hpp>
 #include <iostream>
 
+namespace {
+    static void error_callback(int error, const char *description)
+    {
+        (void) error;
+        std::cout << "Error: " << description << "\n";
+    }
+} // namespace
+
 namespace fcm {
-
-static void error_callback(int error, const char *description)
-{
-  (void) error;
-  std::cout << "Error: " << description << "\n";
-}
-
-// statics
-glew::GLuint VertexArrayID;
 glew::GLuint programID;
+glew::GLuint VertexArrayID;
 
-glfw::GLFWwindow_ptr init_renderer(void)
-{
-  // Initialise GLFW
-  if(!glfw::glfwInit())
-  {
-    std::cout << "Failed to initialize GLFW" << std::endl;
-    return glfw::GLFWwindow_ptr{};
-  }
+Window::Window(unsigned int width, unsigned int height) {
+    // Initialise GLFW
+    if(!glfw::glfwInit())
+    {
+    throw std::runtime_error("Failed to initialize GLFW.");
+    }
 
 
-  // anti aliasing
-  glfw::glfwWindowHint(GLFW_SAMPLES, 4);
-  // version
-  glfw::glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-  glfw::glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-  // some mac os stuff
-  glfw::glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
-  // no old opengl
-  glfw::glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+    // anti aliasing
+    glfw::glfwWindowHint(GLFW_SAMPLES, 4);
+    // version
+    glfw::glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+    glfw::glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+    // some mac os stuff
+    glfw::glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
+    // no old opengl
+    glfw::glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-  glfw::glfwSetErrorCallback(error_callback);
+    glfw::glfwSetErrorCallback(error_callback);
 
-  glfw::GLFWwindow_ptr window = glfw::GLFWwindow_ptr{
-    glfw::glfwCreateWindow(WINDOW_WIDTH, WINDOW_HEIGHT, "Title goes here", NULL, NULL)
-  };
-  if (window.get() == nullptr) {
-    std::cout << "Failed to open GLFW window. See error logs for more info.\n";
+    ptr = glfw::GLFWwindow_ptr{
+    glfw::glfwCreateWindow(width, height, "Title goes here", NULL, NULL)
+    };
+
+    if (ptr.get() == nullptr) {
     glfw::glfwTerminate();
-    return glfw::GLFWwindow_ptr{};
-  }
-  glfw::glfwMakeContextCurrent(window.get());
+    throw std::runtime_error("Failed to open GLFW window. See error logs for more info.");
+    }
 
-  // initialize glew
-  if (glew::glewInit() != GLEW_OK) {
-    std::cout << "Failed to initialize GLEW\n";
+    glfw::glfwMakeContextCurrent(ptr.get());
+
+    // initialize glew
+    if (glew::glewInit() != GLEW_OK) {
     glfw::glfwTerminate();
-    return glfw::GLFWwindow_ptr{};
-  }
+    throw std::runtime_error("Failed to initialize GLEW.");
+    }
 
-  glew::glewExperimental=true;
+    glew::glewExperimental=true; // ? is this needed
 
-  // Ensure we can capture the escape key being pressed below
-  glfw::glfwSetInputMode(window.get(), GLFW_STICKY_KEYS, GL_TRUE);
+    // Ensure we can capture the escape key being pressed below
+    glfw::glfwSetInputMode(ptr.get(), GLFW_STICKY_KEYS, GL_TRUE);
 
-  // Dark blue background
-  glew::glClearColor(0.0f, 0.0f, 0.3f, 0.0f);
+    // Dark blue background
+    glew::glClearColor(0.0f, 0.0f, 0.3f, 0.0f);
 
-  glew::glGenVertexArrays(1, &VertexArrayID);
-  glew::glBindVertexArray(VertexArrayID);
-
-  programID = load_shaders();
-
-  return window;
+    glew::glGenVertexArrays(1, &VertexArrayID);
+    glew::glBindVertexArray(VertexArrayID);
 }
 
-void render(Scene &scene, glfw::GLFWwindow *window) {
+Viewer::Viewer()
+:   window{WINDOW_WIDTH, WINDOW_HEIGHT},
+    pipeline{std::string{"old"}}
+{
+    // programID = load_shaders();
+}
+
+Viewer::~Viewer() {
+  glfw::glfwTerminate();
+}
+
+void Viewer::render(Scene &scene) {
   glew::glClear(GL_COLOR_BUFFER_BIT);
-  glew::glUseProgram(programID);
+  glew::glUseProgram(pipeline.shaderProgramId);
 
   for (auto &&obj : scene.objects()) {
     auto *sphere = static_cast<Sphere*>(obj.get());
     drawCircle(sphere->position.x, sphere->position.y, sphere->radius);
   }
   
-  glfw::glfwSwapBuffers(window);
+  glfw::glfwSwapBuffers(window.ptr.get());
   glfw::glfwPollEvents();
 }
 
-void destroy_renderer() {
-  glew::glDeleteVertexArrays(1, &VertexArrayID);
-  glfw::glfwTerminate();
+// todo - have a controller for pressed keys
+bool Viewer::closeWindow()
+{
+  return !(glfw::glfwGetKey(window.ptr.get(), GLFW_KEY_ESCAPE) != GLFW_PRESS and
+            glfw::glfwWindowShouldClose(window.ptr.get()) == 0);
 }
 
 } // namespace fcm

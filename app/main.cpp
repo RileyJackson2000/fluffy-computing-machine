@@ -5,6 +5,8 @@
 #include <chrono>
 #include <thread>
 
+#include <utils/constants.hpp>
+
 #include <physics/physics.hpp>
 #include <render/render.hpp>
 #include <utils/glew.hpp>
@@ -20,7 +22,7 @@ int main(void) {
   std::cout << "Initializing physics...\n";
   fcm::init_physics();
   std::cout << "Initializing renderer...\n";
-  auto window = fcm::init_renderer();
+  fcm::Viewer viewer{};
 
   fcm::Scene scene{"Scene 1"};
 
@@ -75,15 +77,11 @@ int main(void) {
 
   // main loop
   do {
-    fcm::update(scene, 0.01); // TODO time steps
-    fcm::render(scene, window.get());
+    fcm::update(scene, 0.01f); // TODO time steps
+    viewer.render(scene);
     std::this_thread::sleep_for(std::chrono::milliseconds(30));
-  } while (glfw::glfwGetKey(window.get(), GLFW_KEY_ESCAPE) != GLFW_PRESS and
-      glfw::glfwWindowShouldClose(window.get()) == 0);
-
-  fcm::destroy_renderer();
+  } while (!viewer.closeWindow());
 
   std::cout << "Goodbye\n";
-
   return 0;
 }

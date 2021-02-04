@@ -2,7 +2,8 @@ add_library(
   render
   render.cpp
   render2d.cpp
-  shaders.cpp)
+  shaders.cpp
+  GLPipeline.cpp)
 
 target_include_directories(render PUBLIC ../../include)
 

@@ -11,7 +11,7 @@ void init_physics(void)
   init_materials();
 }
 
-void update(Scene &scene, double dt) {
+void update(Scene &scene, float dt) {
   // to reduce typing
   const auto &objs = scene.objects();
 
@@ -22,7 +22,7 @@ void update(Scene &scene, double dt) {
 
   // collision check
   // no quad tree yet :p
-  glm::dvec3 force1, force2, torque1, torque2;
+  glm::vec3 force1, force2, torque1, torque2;
   for (size_t i = 0; i < objs.size(); ++i) {
     for (size_t j  = i + 1; j < objs.size(); ++j) {
       collide(
