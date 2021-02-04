@@ -7,6 +7,8 @@
 #include <utils/constants.hpp>
 #include <utils/glew.hpp>
 
+#include <cmath>
+
 namespace fcm {
 
 static void error_callback(int error, const char *description) {
@@ -40,7 +42,7 @@ glfw::GLFWwindow_ptr init_renderer(void) {
   glfw::GLFWwindow_ptr window = glfw::GLFWwindow_ptr{glfw::glfwCreateWindow(
       WINDOW_WIDTH, WINDOW_HEIGHT, "Title goes here", NULL, NULL)};
   if (window.get() == nullptr) {
-    std::cout << "Failed to open GLFW window. See error logs for more info.\n";
+    std::cerr << "Failed to open GLFW window. See error logs for more info.\n";
     glfw::glfwTerminate();
     return glfw::GLFWwindow_ptr{};
   }
@@ -48,7 +50,7 @@ glfw::GLFWwindow_ptr init_renderer(void) {
 
   // initialize glew
   if (glew::glewInit() != GLEW_OK) {
-    std::cout << "Failed to initialize GLEW\n";
+    std::cerr << "Failed to initialize GLEW\n";
     glfw::glfwTerminate();
     return glfw::GLFWwindow_ptr{};
   }
@@ -66,6 +68,12 @@ glfw::GLFWwindow_ptr init_renderer(void) {
 
   programID = load_shaders();
 
+  if (!programID) {
+    std::cerr << "Failed to initialize shaders\n";
+    glfw::glfwTerminate();
+    return glfw::GLFWwindow_ptr{};
+  }
+
   return window;
 }
 
@@ -74,6 +82,7 @@ void render(Scene &scene, glfw::GLFWwindow *window) {
   glew::glUseProgram(programID);
 
   for (auto &&obj : scene.objects()) {
+    // not good
     auto *sphere = static_cast<Sphere *>(obj.get());
     drawCircle(sphere->position.x, sphere->position.y, sphere->radius);
   }
@@ -82,7 +91,8 @@ void render(Scene &scene, glfw::GLFWwindow *window) {
   glfw::glfwPollEvents();
 }
 
-void destroy_renderer() {
+void destroy_renderer(glfw::GLFWwindow_ptr window) {
+  glfw::glfwDestroyWindow(window.release());
   glew::glDeleteVertexArrays(1, &VertexArrayID);
   glfw::glfwTerminate();
 }
