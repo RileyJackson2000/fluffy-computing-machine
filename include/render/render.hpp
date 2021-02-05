@@ -3,6 +3,7 @@
 #include <utils/glfw.hpp>
 #include <model/scene.hpp>
 #include <render/shaderProgram.hpp>
+#include <render/camera.hpp>
 
 namespace fcm {
 
@@ -22,8 +23,8 @@ struct Window {
 
 struct Viewer {
     Window window;
-    
     ShaderProgram shader;
+    Camera cam;
 
     Viewer();
     ~Viewer();

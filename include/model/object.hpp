@@ -24,12 +24,31 @@ struct Object {
   Material mat;
   float mass;
 
-  std::string meshFile; // REMOVE - objects should eventually be created from meshes instead of the other way around
-  GLMesh mesh;
+  MeshData meshData;
+  GLMeshData glMeshData;
+
+  glm::mat4 getTransform()
+  {
+    glm::mat4 t{1.f};
+    t = glm::translate(t, position);
+
+    glm::mat4 r = glm::eulerAngleYXZ(angular_position.y, angular_position.x, angular_position.z);
+
+    return t * r;
+  }
+
+  // this is bad. it has a bunch of copies for no reason. TODO fix this
+  Object(const MeshData &meshData)
+  : meshData{meshData}, glMeshData{meshData} {}
 };
 
 struct Sphere : public Object {
   float radius;
+
+  Sphere(float radius, bool faceNormals = true)
+  : Object{genSphereMesh(radius, 50, 50, faceNormals)},
+    radius{radius}
+  {}
 };
 
 }

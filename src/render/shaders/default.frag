@@ -10,7 +10,7 @@ uniform vec3 uLightPos;
 
 void main()
 {
-	vec3 dir = normalize(v_pos - uLightPos);
+	vec3 dir = normalize(uLightPos - v_pos);
 	float diffuse = clamp(dot(dir, v_norm), 0, 1);
 	color = diffuse * uColor;
 }

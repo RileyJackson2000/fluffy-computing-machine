@@ -21,7 +21,7 @@ struct GLMeshData
 
     GLMeshData(const MeshData &meshData)
     :   mesh{meshData},
-        vb{mesh.vertices.data(), sizeof(glm::vec3) * mesh.vertices.size()},
+        vb{mesh.vertices.data(), sizeof(Vertex) * mesh.vertices.size()},
         ib{mesh.indices.data(), mesh.indices.size()}
     {
         VertexBufferLayout layout;
@@ -30,12 +30,6 @@ struct GLMeshData
 
         va.addVertexBuffer(vb, layout);
     }
-};
-
-struct GLMesh
-{
-    GLMeshData *meshData;
-    glm::mat4 transform;
 };
 
 } // namespace fcm
