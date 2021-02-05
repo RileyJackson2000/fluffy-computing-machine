@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <utils/glew.hpp>
+#include <iostream>
 
 namespace glfw {
 // hack

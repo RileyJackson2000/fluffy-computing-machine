@@ -67,12 +67,14 @@ int main(void) {
   for (int i = 0; i < 25; ++i) {
     auto s = std::make_unique<fcm::Sphere>();
     s->name = std::string("s") + std::to_string(i);
-    s->radius = 1 + std::rand() % 3 / 3. * 0.2;
+    s->radius = 1 + std::rand() % 3 / 3. * 0.5;
     s->mass = std::rand() % 2 + 1;
     s->mat = fcm::STEEL;
     s->position = {(i % 5) * 2.5 - 5,(i / 5) * 2.5 - 5, 0};
     s->velocity = {std::rand()%13-6, std::rand()%13-6, 0};
-    scene.insert(std::move(s));
+    s->name = "sphere";
+
+    scene.insert(std::move(s), glm::vec3{s->radius});
   }
 
   // main loop

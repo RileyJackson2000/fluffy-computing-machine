@@ -2,7 +2,7 @@
 
 #include <utils/glfw.hpp>
 #include <model/scene.hpp>
-#include <render/GLPipeline.hpp>
+#include <render/shaderProgram.hpp>
 
 namespace fcm {
 
@@ -13,6 +13,7 @@ void render(Scene &, glfw::GLFWwindow *);
 void destroy_renderer(void);
 
 // this is really scuffed - We need to load shaders after initializing window - TODO fix this
+// this shit causes a bunch of errors - we should figure out how to change this
 struct Window {
     // TODO resizable window?
     glfw::GLFWwindow_ptr ptr;
@@ -22,12 +23,15 @@ struct Window {
 struct Viewer {
     Window window;
     
-    GLPipeline pipeline;
+    ShaderProgram shader;
 
     Viewer();
     ~Viewer();
 
     void render(Scene &scene);
+
+    void draw(const VertexArray &va, const IndexBuffer &ib);
+
     bool closeWindow();
 };
 

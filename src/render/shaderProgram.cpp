@@ -5,14 +5,48 @@
 #include <fstream>
 #include <streambuf>
 
-#include <render/GLPipeline.hpp>
+#include <render/shaderProgram.hpp>
 
 #include <utils/glew.hpp>
 
-namespace
-{
+namespace fcm {
 
-glew::GLuint compileShader(const glew::GLenum& shaderType, const std::string& shaderSource)
+ShaderProgram::ShaderProgram(const std::string& shaderName)
+:   name{shaderName}
+{
+    handle = createShaderProgram(shaderName);
+}
+ShaderProgram::~ShaderProgram()
+{
+    glew::glDeleteProgram(handle);
+}
+
+void ShaderProgram::bind()
+{
+    glew::glUseProgram(handle);
+}
+
+void ShaderProgram::unbind()
+{
+    glew::glUseProgram(0);
+}
+
+void ShaderProgram::setUniform3fv(const std::string &name, glm::vec3 v)
+{
+    glew::glUniform3fv(getUniformLocation(name), 1, glm::value_ptr(v));
+}
+
+void ShaderProgram::setUniform4fv(const std::string &name, glm::vec4 v)
+{
+    glew::glUniform4fv(getUniformLocation(name), 1, glm::value_ptr(v));
+}
+
+void ShaderProgram::setUniformMat4fv(const std::string &name, glm::mat4 m)
+{
+    glew::glUniformMatrix4fv(getUniformLocation(name), 1, GL_FALSE, glm::value_ptr(m));
+}
+
+glew::GLHandle ShaderProgram::compileShader(const glew::GLenum& shaderType, const std::string& shaderSource)
 {        
     glew::GLuint shaderId{glew::glCreateShader(shaderType)};
     
@@ -32,25 +66,28 @@ glew::GLuint compileShader(const glew::GLenum& shaderType, const std::string& sh
         glew::glGetShaderInfoLog(shaderId, errorMessageLength, nullptr, errorMessage.data());
 
         std::cerr << errorMessage.data() << std::endl;
-        throw std::runtime_error("Shader failed to compile.");
+
+        std::string type = shaderType == GL_VERTEX_SHADER ? "Vertex" : "Fragment";
+        throw std::runtime_error(type + " shader failed to compile.");
     }
 
     return shaderId;
 }
 
 // TODO move this to a utility file
-std::string loadTextFile(const std::string& filepath)
+std::string ShaderProgram::loadTextFile(const std::string& filepath)
 {
     std::string fileContents;
     std::ifstream in(filepath, std::ios::in);
     if (in.is_open()) {
         return std::string{(std::istreambuf_iterator<char>(in)), std::istreambuf_iterator<char>()};
-    } else {
-        std::cout << filepath << " not found!" << std::endl;;
+    
+    std::cout << filepath << " not found!" << std::endl;
+    return std::string{};
     }
 }
 
-glew::GLuint createShaderProgram(const std::string& shaderName)
+glew::GLHandle ShaderProgram::createShaderProgram(const std::string& shaderName)
 {
     std::cout << "Initializing Shader: " << shaderName << std::endl;
 
@@ -58,8 +95,8 @@ glew::GLuint createShaderProgram(const std::string& shaderName)
     const std::string fragmentShaderSource{loadTextFile("../src/render/shaders/" + shaderName + ".frag")};
 
     glew::GLuint shaderProgramId{glew::glCreateProgram()};
-    glew::GLuint vertexShaderId{::compileShader(GL_VERTEX_SHADER, vertexShaderSource)};
-    glew::GLuint fragmentShaderId{::compileShader(GL_FRAGMENT_SHADER, fragmentShaderSource)};
+    glew::GLuint vertexShaderId{compileShader(GL_VERTEX_SHADER, vertexShaderSource)};
+    glew::GLuint fragmentShaderId{compileShader(GL_FRAGMENT_SHADER, fragmentShaderSource)};
 
     glew::glAttachShader(shaderProgramId, vertexShaderId);
     glew::glAttachShader(shaderProgramId, fragmentShaderId);
@@ -87,17 +124,19 @@ glew::GLuint createShaderProgram(const std::string& shaderName)
     return shaderProgramId;
 }
 
-} // namespace
-
-namespace fcm {
-
-GLPipeline::GLPipeline(const std::string& shaderName)
-:   shaderProgramId(::createShaderProgram(shaderName)),
-    uniformLocationMVP(glew::glGetUniformLocation(shaderProgramId, "mvp")),
-    attributeLocationVertexPosition(glew::glGetAttribLocation(shaderProgramId, "position")) {}
-GLPipeline::~GLPipeline()
+glew::GLint ShaderProgram::getUniformLocation(const std::string& uniformName)
 {
-    glew::glDeleteProgram(shaderProgramId);
+    if (uniformCache.find(uniformName) == uniformCache.end())
+    {
+        glew::GLint uniformLocation = glew::glGetUniformLocation(handle, uniformName.c_str());
+        uniformCache[uniformName] = uniformLocation;
+
+        if (uniformLocation == -1)
+        {
+            std::cerr << "WARNING: Couldn't find uniform (" << uniformName << ") in shader (" << name << ")" << std::endl;
+        }
+    }
+    return uniformCache[uniformName];
 }
 
 } // namespace fcm

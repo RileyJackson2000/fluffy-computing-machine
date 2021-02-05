@@ -16,14 +16,12 @@ namespace {
 } // namespace
 
 namespace fcm {
-glew::GLuint programID;
-glew::GLuint VertexArrayID;
 
 Window::Window(unsigned int width, unsigned int height) {
     // Initialise GLFW
     if(!glfw::glfwInit())
     {
-    throw std::runtime_error("Failed to initialize GLFW.");
+        throw std::runtime_error("Failed to initialize GLFW.");
     }
 
 
@@ -40,56 +38,92 @@ Window::Window(unsigned int width, unsigned int height) {
     glfw::glfwSetErrorCallback(error_callback);
 
     ptr = glfw::GLFWwindow_ptr{
-    glfw::glfwCreateWindow(width, height, "Title goes here", NULL, NULL)
+        glfw::glfwCreateWindow(width, height, "Title goes here", NULL, NULL)
     };
 
     if (ptr.get() == nullptr) {
-    glfw::glfwTerminate();
-    throw std::runtime_error("Failed to open GLFW window. See error logs for more info.");
+        glfw::glfwTerminate();
+        throw std::runtime_error("Failed to open GLFW window. See error logs for more info.");
     }
 
     glfw::glfwMakeContextCurrent(ptr.get());
 
     // initialize glew
     if (glew::glewInit() != GLEW_OK) {
-    glfw::glfwTerminate();
-    throw std::runtime_error("Failed to initialize GLEW.");
+        glfw::glfwTerminate();
+        throw std::runtime_error("Failed to initialize GLEW.");
     }
 
     glew::glewExperimental=true; // ? is this needed
 
+    std::cout << "OpenGL Version: " << glew::glGetString(GL_VERSION) << std::endl;
+
+
     // Ensure we can capture the escape key being pressed below
     glfw::glfwSetInputMode(ptr.get(), GLFW_STICKY_KEYS, GL_TRUE);
-
-    // Dark blue background
-    glew::glClearColor(0.0f, 0.0f, 0.3f, 0.0f);
-
-    glew::glGenVertexArrays(1, &VertexArrayID);
-    glew::glBindVertexArray(VertexArrayID);
 }
 
 Viewer::Viewer()
 :   window{WINDOW_WIDTH, WINDOW_HEIGHT},
-    pipeline{std::string{"old"}}
+    shader{std::string{"default"}}  
 {
-    // programID = load_shaders();
+    // Dark blue background
+    glew::glClearColor(0.0f, 0.0f, 0.3f, 0.0f);
 }
 
 Viewer::~Viewer() {
-  glfw::glfwTerminate();
+    glfw::glfwTerminate();
 }
 
 void Viewer::render(Scene &scene) {
   glew::glClear(GL_COLOR_BUFFER_BIT);
-  glew::glUseProgram(pipeline.shaderProgramId);
+  glew::glEnable(GL_CULL_FACE);  
+  
+
+  glm::mat4 p = glm::perspective(glm::radians(60.0f), float(WINDOW_WIDTH) / float(WINDOW_HEIGHT), 0.01f, 100.0f);
+
+  glm::vec3 position{0.0, 0.0, 40.0};
+  glm::vec3 target{0.0, 0.0, 0.0};
+  glm::vec3 up{0.0, 1.0, 0.0};
+  glm::mat4 v = glm::lookAt(position, target, up);
+
+  shader.setUniform4fv("uColor", glm::vec4{1., 0., 1., 1.});
+  shader.setUniform3fv("uLightPos", -1.5f*position);
 
   for (auto &&obj : scene.objects()) {
-    auto *sphere = static_cast<Sphere*>(obj.get());
-    drawCircle(sphere->position.x, sphere->position.y, sphere->radius);
+    // auto *sphere = static_cast<Sphere*>(obj.get());
+    // drawCircle(sphere->position.x, sphere->position.y, sphere->radius);
+    auto &mesh = obj->mesh;
+
+    glm::mat4 t{1.f};
+    t = glm::translate(t, obj->position);
+
+    auto rx = obj->angular_position;
+    glm::mat4 r = glm::eulerAngleYXZ(rx.y, rx.x, rx.z);
+
+    glm::mat4 s = mesh.transform;
+
+    glm::mat4 xform = s * t;
+
+    
+    glm::mat4 mvp = p * v * xform;
+
+    shader.setUniformMat4fv("uMVP", mvp);
+    shader.setUniformMat4fv("uM", xform);
+    
+    draw(mesh.meshData->va, mesh.meshData->ib);
   }
   
   glfw::glfwSwapBuffers(window.ptr.get());
   glfw::glfwPollEvents();
+}
+
+void Viewer::draw(const VertexArray &va, const IndexBuffer &ib)
+{
+    shader.bind();
+    va.bind();
+    ib.bind();
+    glew::glDrawElements(GL_TRIANGLES, ib.numIndices, GL_UNSIGNED_INT, nullptr);
 }
 
 // todo - have a controller for pressed keys

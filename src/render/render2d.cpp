@@ -6,7 +6,9 @@
 #include <utils/constants.hpp>
 #include <utils/utils.hpp>
 #include <utils/glew.hpp>
-
+#include <render/vertexBuffer.hpp>
+#include <render/vertexBufferLayout.hpp>
+#include <render/vertexArray.hpp>
 
 namespace fcm {
 
@@ -27,27 +29,18 @@ void drawCircle(double x, double y, double radius, int sides)
     v_buffer[3 * i + 2] = 0.;
   }
 
-  glew::GLuint vertexbuffer;
-  glew::glGenBuffers(1, &vertexbuffer);
-  glew::glBindBuffer(GL_ARRAY_BUFFER, vertexbuffer);
-  glew::glBufferData(GL_ARRAY_BUFFER, sides * 3 * sizeof(glew::GLfloat), v_buffer, GL_STATIC_DRAW);
+  VertexArray va;
+  VertexBuffer vb{v_buffer, sides * 3 * sizeof(glew::GLfloat)};
 
-  glew::glEnableVertexAttribArray(0);
-  glew::glBindBuffer(GL_ARRAY_BUFFER, vertexbuffer);
+  VertexBufferLayout layout;
+  layout.addElem<glew::GLfloat>(3);
 
-  glew::glVertexAttribPointer(
-    0,                  // attribute 0. No particular reason for 0, but must match the layout in the shader.
-    3,                  // size
-    GL_FLOAT,           // type
-    GL_FALSE,           // normalized?
-    0,                  // stride
-    (void*)0            // array buffer offset
-  );
+  va.addVertexBuffer(vb, layout);
+  va.bind();
+
   glew::glDrawArrays(GL_TRIANGLE_FAN, 0, sides);
 
-  glew::glDisableVertexAttribArray(0);
   delete[] v_buffer;
-  glew::glDeleteBuffers(1, &vertexbuffer);
 }
 
 }

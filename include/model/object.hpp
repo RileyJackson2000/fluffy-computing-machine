@@ -2,8 +2,10 @@
 
 #include <string>
 
-#include <model/material.hpp>
 #include <utils/glm.hpp>
+
+#include <model/material.hpp>
+#include <render/GLMesh.hpp>
 
 namespace fcm {
 
@@ -21,6 +23,9 @@ struct Object {
 
   Material mat;
   float mass;
+
+  std::string meshFile; // REMOVE - objects should eventually be created from meshes instead of the other way around
+  GLMesh mesh;
 };
 
 struct Sphere : public Object {
