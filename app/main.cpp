@@ -1,28 +1,21 @@
+#include <chrono>
 #include <iostream>
 #include <memory>
 #include <random>
-
-#include <chrono>
 #include <thread>
 
-#include <utils/constants.hpp>
-
-#include <physics/physics.hpp>
-#include <render/render.hpp>
 #include <utils/glew.hpp>
 #include <utils/glfw.hpp>
 
-#include <model/scene.hpp>
 #include <model/object.hpp>
+#include <model/scene.hpp>
+#include <physics/physics.hpp>
+#include <render/render.hpp>
+#include <utils/constants.hpp>
 
-float rfloat()
-{
-  return static_cast <float> (rand()) / static_cast <float> (RAND_MAX);
+float rfloat() {
+  return static_cast<float>(rand()) / static_cast<float>(RAND_MAX);
 }
-
-using namespace std::chrono;
-typedef high_resolution_clock::time_point timePoint;
-typedef high_resolution_clock::duration duration;
 
 int main(void) {
   std::cout << "Hello there\n";
@@ -39,12 +32,12 @@ int main(void) {
     auto s = std::make_unique<fcm::Sphere>(r, true);
     s->name = std::string("s") + std::to_string(i);
     s->mass = std::rand() % 2 + 1;
+    s->moment_of_inertia = s->mass * s->radius * s->radius;
     s->mat = fcm::STEEL;
-    s->position = {(i % 5) * 2.5 - 5,(i / 5) * 2.5 - 5, 0};
-    s->velocity = {std::rand()%13-6, std::rand()%13-6, 0};
+    s->position = {(i % 5) * 2.5 - 5, (i / 5) * 2.5 - 5, 0};
+    s->velocity = {std::rand() % 13 - 6, std::rand() % 13 - 6, 0};
     s->angular_position = glm::vec3{rfloat(), rfloat(), rfloat()};
     s->angular_velocity = glm::vec3{rfloat(), rfloat(), rfloat()};
-    s->name = "sphere";
 
     scene.insert(std::move(s));
   }
@@ -59,17 +52,17 @@ int main(void) {
   int framesTillUpdate = 120;
   double totalFrameTime = 0;
 
-  while (!viewer.closeWindow())
-  {
+  while (!viewer.closeWindow()) {
     double frameStart = viewer.getTime();
     fcm::update(scene, dt); // TODO time steps
     viewer.render(scene);
 
-    double now = viewer.getTime();;
-    if (now < nextFrameTarget)
-    {
+    double now = viewer.getTime();
+    ;
+    if (now < nextFrameTarget) {
       int msLeftTilNextFrame = int((nextFrameTarget - now) * 1000);
-      std::this_thread::sleep_for(std::chrono::milliseconds(msLeftTilNextFrame));
+      std::this_thread::sleep_for(
+          std::chrono::milliseconds(msLeftTilNextFrame));
     }
     double frameEnd = viewer.getTime();
 
@@ -78,8 +71,7 @@ int main(void) {
     ++nFrames;
     totalFrameTime += frameEnd - frameStart;
 
-    if (nFrames % framesTillUpdate == 0)
-    {
+    if (nFrames % framesTillUpdate == 0) {
       std::cout << "Avg FPS: " << nFrames / totalFrameTime << std::endl;
     }
   }

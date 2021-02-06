@@ -7,30 +7,30 @@
 #include <utils/glm.hpp>
 
 namespace fcm {
-    
-struct Shader
-{
-    std::string name;
-    glew::GLHandle handle;
 
-    Shader(const std::string &shaderName);
-    ~Shader();
+struct Shader {
+  std::string name;
+  glew::GLHandle handle;
 
-    void bind();
-    void unbind();
+  Shader(const std::string &shaderName);
+  ~Shader();
 
-    // add setters here as necessary
-    void setVec3(const std::string &name, glm::vec3 v);
-    void setVec4(const std::string &name, glm::vec4 v);
-    void setMat4(const std::string &name, glm::mat4 m);
+  void bind();
+  void unbind();
+
+  // add setters here as necessary
+  void setVec3(const std::string &name, glm::vec3 v);
+  void setVec4(const std::string &name, glm::vec4 v);
+  void setMat4(const std::string &name, glm::mat4 m);
 
 private:
-    std::unordered_map<std::string, glew::GLint> uniformCache;
+  std::unordered_map<std::string, glew::GLint> uniformCache;
 
-    glew::GLHandle compileShader(const glew::GLenum& shaderType, const std::string& shaderSource);
-    std::string loadTextFile(const std::string& filepath);
-    glew::GLHandle createShader(const std::string& shaderName);
-    glew::GLint getUniformLocation(const std::string& uniformName);
+  glew::GLHandle compileShader(const glew::GLenum &shaderType,
+                               const std::string &shaderSource);
+  std::string loadTextFile(const std::string &filepath);
+  glew::GLHandle createShader(const std::string &shaderName);
+  glew::GLint getUniformLocation(const std::string &uniformName);
 };
 
 } // namespace fcm

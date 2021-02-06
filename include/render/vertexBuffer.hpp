@@ -5,16 +5,15 @@
 #include <utils/glew.hpp>
 
 namespace fcm {
-    
-struct VertexBuffer
-{
-    glew::GLHandle handle;
 
-    VertexBuffer(const void* data, size_t size);
-    ~VertexBuffer();
+struct VertexBuffer {
+  glew::GLHandle handle;
 
-    void bind() const;
-    void unbind() const;
+  VertexBuffer(const void *data, size_t size);
+  ~VertexBuffer();
+
+  void bind() const;
+  void unbind() const;
 };
 
 } // namespace fcm
