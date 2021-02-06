@@ -9,9 +9,6 @@
 #include <unordered_map>
 #include <vector>
 
-#include <model/mesh.hpp>
-#include <render/GLMesh.hpp>
-
 namespace fcm {
 
 class Scene {

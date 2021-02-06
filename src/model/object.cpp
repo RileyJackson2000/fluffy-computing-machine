@@ -16,9 +16,8 @@ glm::mat4 Object::getTransform() {
   return t * r;
 }
 
-// this is bad. it has a bunch of copies for no reason. TODO fix this
-Object::Object(const MeshData &meshData)
-    : meshData{meshData}, glMeshData{meshData} {}
+Object::Object(std::shared_ptr<MeshData> meshData)
+    : glMeshData{meshData.get()}, meshData{std::move(meshData)} {}
 
 Sphere::Sphere(float radius, bool faceNormals)
     : Object{genSphereMesh(radius, 10, 10, faceNormals)}, radius{radius} {}

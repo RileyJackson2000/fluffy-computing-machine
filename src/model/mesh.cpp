@@ -36,9 +36,10 @@ void MeshData::faceNormals() {
   indices = tempInds;
 }
 
-MeshData genSphereMesh(float radius, uint32_t sectorCount, uint32_t stackCount,
-                       bool faceNormals = true) {
-  MeshData md;
+std::shared_ptr<MeshData> genSphereMesh(float radius, uint32_t sectorCount,
+                                        uint32_t stackCount,
+                                        bool faceNormals = true) {
+  auto md = std::make_shared<MeshData>();
 
   float x, y, z, xy;                           // vertex position
   float nx, ny, nz, lengthInv = 1.0f / radius; // vertex normal
@@ -70,7 +71,7 @@ MeshData genSphereMesh(float radius, uint32_t sectorCount, uint32_t stackCount,
       nz = z * lengthInv;
       v.norm = glm::vec3{nx, ny, nz};
 
-      md.vertices.push_back(v);
+      md->vertices.push_back(v);
     }
   }
 
@@ -83,22 +84,22 @@ MeshData genSphereMesh(float radius, uint32_t sectorCount, uint32_t stackCount,
       // 2 triangles per sector excluding first and last stacks
       // k1 => k2 => k1+1
       if (i != 0) {
-        md.indices.push_back(k1);
-        md.indices.push_back(k2);
-        md.indices.push_back(k1 + 1);
+        md->indices.push_back(k1);
+        md->indices.push_back(k2);
+        md->indices.push_back(k1 + 1);
       }
 
       // k1+1 => k2 => k2+1
       if (i != (stackCount - 1)) {
-        md.indices.push_back(k1 + 1);
-        md.indices.push_back(k2);
-        md.indices.push_back(k2 + 1);
+        md->indices.push_back(k1 + 1);
+        md->indices.push_back(k2);
+        md->indices.push_back(k2 + 1);
       }
     }
   }
 
   if (faceNormals)
-    md.faceNormals();
+    md->faceNormals();
 
   return md;
 }

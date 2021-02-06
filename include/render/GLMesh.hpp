@@ -14,15 +14,15 @@
 namespace fcm {
 
 struct GLMeshData {
-  MeshData mesh;
+  MeshData *mesh;
   VertexBuffer vb;
   IndexBuffer ib;
   VertexArray va;
 
-  GLMeshData(const MeshData &meshData)
-      : mesh{meshData}, vb{mesh.vertices.data(),
-                           sizeof(Vertex) * mesh.vertices.size()},
-        ib{mesh.indices.data(), mesh.indices.size()} {
+  GLMeshData(MeshData *meshData)
+      : mesh{meshData}, vb{mesh->vertices.data(),
+                           sizeof(Vertex) * mesh->vertices.size()},
+        ib{mesh->indices.data(), mesh->indices.size()} {
     VertexBufferLayout layout;
     layout.addElem<glew::GLfloat>(3, false); // pos
     layout.addElem<glew::GLfloat>(3, false); // norm
