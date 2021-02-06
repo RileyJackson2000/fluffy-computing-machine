@@ -79,12 +79,11 @@ std::string Shader::loadTextFile(const std::string& filepath)
 {
     std::string fileContents;
     std::ifstream in(filepath, std::ios::in);
-    if (in.is_open()) {
+    if (in.is_open())
         return std::string{(std::istreambuf_iterator<char>(in)), std::istreambuf_iterator<char>()};
-    
+        
     std::cout << filepath << " not found!" << std::endl;
     return std::string{};
-    }
 }
 
 glew::GLHandle Shader::createShader(const std::string& shaderName)

@@ -16,11 +16,11 @@ struct Vertex
 struct MeshData
 {
     std::vector<Vertex> vertices;
-    std::vector<unsigned int> indices;
+    std::vector<uint32_t> indices;
 
     void faceNormals();
 };
 
-MeshData genSphereMesh(float radius, unsigned int sectorCount, unsigned int stackCount, bool faceNormals);
+MeshData genSphereMesh(float radius, uint32_t sectorCount, uint32_t stackCount, bool faceNormals);
 
 }

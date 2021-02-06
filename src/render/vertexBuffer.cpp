@@ -1,11 +1,11 @@
-#pragma once
+#include <cstddef>
 
 #include <utils/glew.hpp>
 #include <render/vertexBuffer.hpp>
 
 namespace fcm {
 
-VertexBuffer::VertexBuffer(const void* data, unsigned int size)
+VertexBuffer::VertexBuffer(const void* data, size_t size)
 {
     glew::glGenBuffers(1, &handle);
     glew::glBindBuffer(GL_ARRAY_BUFFER, handle);

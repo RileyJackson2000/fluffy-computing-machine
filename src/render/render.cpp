@@ -15,7 +15,7 @@ namespace {
 
 namespace fcm {
 
-Window::Window(unsigned int width, unsigned int height) {
+Window::Window(uint32_t width, uint32_t height) {
     // Initialise GLFW
     if(!glfw::glfwInit())
     {
@@ -72,6 +72,8 @@ glm::vec3 camDir{0.f,0.f,-1.f};
 
 static void mouse_callback(glfw::GLFWwindow *window, double xpos, double ypos)
 {
+    (void)window;
+
     float xoffset = xpos - lastMouseX;
     float yoffset = lastMouseY - ypos;
     lastMouseX = xpos;
@@ -92,6 +94,9 @@ static void mouse_callback(glfw::GLFWwindow *window, double xpos, double ypos)
 
 static void scroll_callback(glfw::GLFWwindow *window, double xoff, double yoff)
 {
+    (void)window;
+    (void)xoff;
+
     fov -= yoff;
     glm::clamp(fov, 1.f, 60.f);
 }

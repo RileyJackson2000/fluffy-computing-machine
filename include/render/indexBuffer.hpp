@@ -1,5 +1,7 @@
 #pragma once
 
+#include <cstddef>
+
 #include <utils/glew.hpp>
 
 namespace fcm {
@@ -7,9 +9,9 @@ namespace fcm {
 struct IndexBuffer
 {
     glew::GLHandle handle;
-    const unsigned int numIndices;
+    const size_t numIndices;
 
-    IndexBuffer(const glew::GLuint* data, unsigned int numIndices);
+    IndexBuffer(const glew::GLuint* data, size_t numIndices);
     ~IndexBuffer();
 
     void bind() const;

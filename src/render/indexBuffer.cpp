@@ -1,10 +1,12 @@
+#include <cstddef>
+
 #include <utils/glew.hpp>
 
 #include <render/indexBuffer.hpp>
 
 namespace fcm {
 
-IndexBuffer::IndexBuffer(const glew::GLuint* data, unsigned int numIndices)
+IndexBuffer::IndexBuffer(const glew::GLuint* data, size_t numIndices)
 :   numIndices{numIndices}
 {
     glew::glGenBuffers(1, &handle);

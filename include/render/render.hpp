@@ -14,7 +14,7 @@ namespace fcm {
 struct Window {
     // TODO resizable window?
     glfw::GLFWwindow_ptr ptr;
-    Window(unsigned int width, unsigned int height);
+    Window(uint32_t width, uint32_t height);
     
     int getKey(int key) { return glfw::glfwGetKey(ptr.get(), key); }
     void setShouldClose(bool b) { glfw::glfwSetWindowShouldClose(ptr.get(), b); }

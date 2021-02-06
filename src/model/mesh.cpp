@@ -8,10 +8,10 @@ void MeshData::faceNormals()
     std::vector<Vertex> tempVerts;
     tempVerts.reserve(indices.size());
 
-    std::vector<unsigned int> tempInds;
+    std::vector<uint32_t> tempInds;
     tempInds.reserve(indices.size());
 
-    for (unsigned int i = 0; i < indices.size(); i += 3)
+    for (uint32_t i = 0; i < indices.size(); i += 3)
     {
         glm::vec3 a = vertices[indices[i + 0]].pos;
         glm::vec3 b = vertices[indices[i + 1]].pos;
@@ -38,19 +38,18 @@ void MeshData::faceNormals()
     indices = tempInds;
 }
 
-MeshData genSphereMesh(float radius, unsigned int sectorCount, unsigned int stackCount, bool faceNormals = true)
+MeshData genSphereMesh(float radius, uint32_t sectorCount, uint32_t stackCount, bool faceNormals = true)
 {
     MeshData md;
 
     float x, y, z, xy;                              // vertex position
     float nx, ny, nz, lengthInv = 1.0f / radius;    // vertex normal
-    float s, t;                                     // vertex texCoord
 
     float sectorStep = 2.0 * M_PI / float(sectorCount);
     float stackStep = M_PI / float(stackCount);
     float sectorAngle, stackAngle;
 
-    for(int i = 0; i <= stackCount; ++i)
+    for(uint32_t i = 0; i <= stackCount; ++i)
     {
         stackAngle = M_PI / 2.0 - i * stackStep;        // starting from pi/2 to -pi/2
         xy = radius * std::cos(stackAngle);             // r * cos(u)
@@ -58,7 +57,7 @@ MeshData genSphereMesh(float radius, unsigned int sectorCount, unsigned int stac
 
         // add (sectorCount+1) vertices per stack
         // the first and last vertices have same position and normal, but different tex coords
-        for(int j = 0; j <= sectorCount; ++j)
+        for(uint32_t j = 0; j <= sectorCount; ++j)
         {
             Vertex v;
             sectorAngle = j * sectorStep;           // starting from 0 to 2pi
@@ -79,12 +78,12 @@ MeshData genSphereMesh(float radius, unsigned int sectorCount, unsigned int stac
     }
 
     int k1, k2;
-    for(int i = 0; i < stackCount; ++i)
+    for(uint32_t i = 0; i < stackCount; ++i)
     {
         k1 = i * (sectorCount + 1);     // beginning of current stack
         k2 = k1 + sectorCount + 1;      // beginning of next stack
 
-        for(int j = 0; j < sectorCount; ++j, ++k1, ++k2)
+        for(uint32_t j = 0; j < sectorCount; ++j, ++k1, ++k2)
         {
             // 2 triangles per sector excluding first and last stacks
             // k1 => k2 => k1+1

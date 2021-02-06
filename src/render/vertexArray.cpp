@@ -21,7 +21,7 @@ void VertexArray::addVertexBuffer(const VertexBuffer &vb, const VertexBufferLayo
 {
     bind();
     vb.bind();
-    for (unsigned int i = 0; i < layout.elems.size(); ++i)
+    for (size_t i = 0; i < layout.elems.size(); ++i)
     {
         const auto& elem = layout.elems[i];
         glew::glEnableVertexAttribArray(i);

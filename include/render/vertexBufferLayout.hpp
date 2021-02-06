@@ -25,22 +25,22 @@ constexpr glew::GLenum getTypeEnum()
 struct VertexBufferLayoutElem
 {
     glew::GLenum type;
-    unsigned int count;
+    size_t count;
     glew::GLint normalized;
 
-    unsigned int offset;
+    size_t offset;
 };
 
 struct VertexBufferLayout
 {
     std::vector<VertexBufferLayoutElem> elems;
-    unsigned int numBytes; // stride
+    size_t numBytes; // stride
 
     VertexBufferLayout() : numBytes{0} {}
     ~VertexBufferLayout() {}
 
     template <typename T>
-    void addElem(unsigned int count, bool normalized = false)
+    void addElem(size_t count, bool normalized = false)
     {
         // struct packing issues possible?
         elems.push_back({ getTypeEnum<T>(), count, normalized ? GL_TRUE : GL_FALSE, numBytes });

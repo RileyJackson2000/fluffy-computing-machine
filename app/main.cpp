@@ -46,7 +46,7 @@ int main(void) {
     s->angular_velocity = glm::vec3{rfloat(), rfloat(), rfloat()};
     s->name = "sphere";
 
-    scene.insert(std::move(s), glm::vec3{s->radius});
+    scene.insert(std::move(s));
   }
 
   // main loop
