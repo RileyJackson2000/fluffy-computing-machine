@@ -5,48 +5,48 @@
 #include <fstream>
 #include <streambuf>
 
-#include <render/shaderProgram.hpp>
-
 #include <utils/glew.hpp>
+
+#include <render/shader.hpp>
 
 namespace fcm {
 
-ShaderProgram::ShaderProgram(const std::string& shaderName)
+Shader::Shader(const std::string& shaderName)
 :   name{shaderName}
 {
-    handle = createShaderProgram(shaderName);
+    handle = createShader(shaderName);
 }
-ShaderProgram::~ShaderProgram()
+Shader::~Shader()
 {
     glew::glDeleteProgram(handle);
 }
 
-void ShaderProgram::bind()
+void Shader::bind()
 {
     glew::glUseProgram(handle);
 }
 
-void ShaderProgram::unbind()
+void Shader::unbind()
 {
     glew::glUseProgram(0);
 }
 
-void ShaderProgram::setUniform3fv(const std::string &name, glm::vec3 v)
+void Shader::setVec3(const std::string &name, glm::vec3 v)
 {
     glew::glUniform3fv(getUniformLocation(name), 1, glm::value_ptr(v));
 }
 
-void ShaderProgram::setUniform4fv(const std::string &name, glm::vec4 v)
+void Shader::setVec4(const std::string &name, glm::vec4 v)
 {
     glew::glUniform4fv(getUniformLocation(name), 1, glm::value_ptr(v));
 }
 
-void ShaderProgram::setUniformMat4fv(const std::string &name, glm::mat4 m)
+void Shader::setMat4(const std::string &name, glm::mat4 m)
 {
     glew::glUniformMatrix4fv(getUniformLocation(name), 1, GL_FALSE, glm::value_ptr(m));
 }
 
-glew::GLHandle ShaderProgram::compileShader(const glew::GLenum& shaderType, const std::string& shaderSource)
+glew::GLHandle Shader::compileShader(const glew::GLenum& shaderType, const std::string& shaderSource)
 {        
     glew::GLuint shaderId{glew::glCreateShader(shaderType)};
     
@@ -75,7 +75,7 @@ glew::GLHandle ShaderProgram::compileShader(const glew::GLenum& shaderType, cons
 }
 
 // TODO move this to a utility file
-std::string ShaderProgram::loadTextFile(const std::string& filepath)
+std::string Shader::loadTextFile(const std::string& filepath)
 {
     std::string fileContents;
     std::ifstream in(filepath, std::ios::in);
@@ -87,44 +87,44 @@ std::string ShaderProgram::loadTextFile(const std::string& filepath)
     }
 }
 
-glew::GLHandle ShaderProgram::createShaderProgram(const std::string& shaderName)
+glew::GLHandle Shader::createShader(const std::string& shaderName)
 {
     std::cout << "Initializing Shader: " << shaderName << std::endl;
 
     const std::string vertexShaderSource{loadTextFile("../src/render/shaders/" + shaderName + ".vert")};
     const std::string fragmentShaderSource{loadTextFile("../src/render/shaders/" + shaderName + ".frag")};
 
-    glew::GLuint shaderProgramId{glew::glCreateProgram()};
+    glew::GLuint ShaderId{glew::glCreateProgram()};
     glew::GLuint vertexShaderId{compileShader(GL_VERTEX_SHADER, vertexShaderSource)};
     glew::GLuint fragmentShaderId{compileShader(GL_FRAGMENT_SHADER, fragmentShaderSource)};
 
-    glew::glAttachShader(shaderProgramId, vertexShaderId);
-    glew::glAttachShader(shaderProgramId, fragmentShaderId);
-    glew::glLinkProgram(shaderProgramId);
+    glew::glAttachShader(ShaderId, vertexShaderId);
+    glew::glAttachShader(ShaderId, fragmentShaderId);
+    glew::glLinkProgram(ShaderId);
 
-    glew::GLint shaderProgramLinkResult;
-    glew::glGetProgramiv(shaderProgramId, GL_LINK_STATUS, &shaderProgramLinkResult);
+    glew::GLint ShaderLinkResult;
+    glew::glGetProgramiv(ShaderId, GL_LINK_STATUS, &ShaderLinkResult);
 
-    if (!shaderProgramLinkResult)
+    if (!ShaderLinkResult)
     {
         glew::GLint errorMessageLength;
-        glew::glGetProgramiv(shaderProgramId, GL_INFO_LOG_LENGTH, &errorMessageLength);
+        glew::glGetProgramiv(ShaderId, GL_INFO_LOG_LENGTH, &errorMessageLength);
         std::vector<char> errorMessage(errorMessageLength + 1);
-        glew::glGetProgramInfoLog(shaderProgramId, errorMessageLength, nullptr, &errorMessage[0]);
+        glew::glGetProgramInfoLog(ShaderId, errorMessageLength, nullptr, &errorMessage[0]);
         
         std::cerr << errorMessage.data() << std::endl;
         throw std::runtime_error("Shader program failed to link.");
     }
 
-    glew::glDetachShader(shaderProgramId, vertexShaderId);
-    glew::glDetachShader(shaderProgramId, fragmentShaderId);
+    glew::glDetachShader(ShaderId, vertexShaderId);
+    glew::glDetachShader(ShaderId, fragmentShaderId);
     glew::glDeleteShader(vertexShaderId);
     glew::glDeleteShader(fragmentShaderId);
 
-    return shaderProgramId;
+    return ShaderId;
 }
 
-glew::GLint ShaderProgram::getUniformLocation(const std::string& uniformName)
+glew::GLint Shader::getUniformLocation(const std::string& uniformName)
 {
     if (uniformCache.find(uniformName) == uniformCache.end())
     {

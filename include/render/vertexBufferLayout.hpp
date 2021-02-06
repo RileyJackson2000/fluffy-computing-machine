@@ -4,7 +4,6 @@
 
 #include <utils/glew.hpp>
 
-#include <render/vertexBuffer.hpp>
 
 namespace fcm {
 

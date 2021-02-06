@@ -1,9 +1,12 @@
 add_library(
   render
   render.cpp
-  render2d.cpp
-  shaders.cpp
-  shaderProgram.cpp)
+  shader.cpp
+  camera.cpp
+  vertexBuffer.cpp
+  indexBuffer.cpp
+  vertexArray.cpp
+  vertexBufferLayout.cpp)
 
 target_include_directories(render PUBLIC ../../include)
 

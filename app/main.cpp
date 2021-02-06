@@ -20,6 +20,10 @@ float rfloat()
   return static_cast <float> (rand()) / static_cast <float> (RAND_MAX);
 }
 
+using namespace std::chrono;
+typedef high_resolution_clock::time_point timePoint;
+typedef high_resolution_clock::duration duration;
+
 int main(void) {
   std::cout << "Hello there\n";
 
@@ -47,28 +51,38 @@ int main(void) {
 
   // main loop
 
-  int nframes = 0;
-  int updateInteravl = 30;
-  float total = 0;
+  int fps = 60;
+  double dt = 1.0 / fps;
+  double nextFrameTarget = viewer.getTime();
 
-  do {
-    fcm::update(scene, 0.01f); // TODO time steps
+  int nFrames = 0;
+  int framesTillUpdate = 120;
+  double totalFrameTime = 0;
 
-    auto start = std::chrono::high_resolution_clock::now();
+  while (!viewer.closeWindow())
+  {
+    double frameStart = viewer.getTime();
+    fcm::update(scene, dt); // TODO time steps
     viewer.render(scene);
-    auto finish = std::chrono::high_resolution_clock::now();
-    std::chrono::duration<double, std::milli> d = finish - start;
-    total += d.count();
 
-    if (++nframes % updateInteravl == 0)
+    double now = viewer.getTime();;
+    if (now < nextFrameTarget)
     {
-      std::cout << "avg frametime " << total / nframes << "ms" << std::endl;
-      nframes = 0;
-      total = 0;
+      int msLeftTilNextFrame = int((nextFrameTarget - now) * 1000);
+      std::this_thread::sleep_for(std::chrono::milliseconds(msLeftTilNextFrame));
     }
+    double frameEnd = viewer.getTime();
 
-    std::this_thread::sleep_for(std::chrono::milliseconds(30));
-  } while (!viewer.closeWindow());
+    nextFrameTarget = nextFrameTarget + dt;
+
+    ++nFrames;
+    totalFrameTime += frameEnd - frameStart;
+
+    if (nFrames % framesTillUpdate == 0)
+    {
+      std::cout << "Avg FPS: " << nFrames / totalFrameTime << std::endl;
+    }
+  }
 
   std::cout << "Goodbye\n";
   return 0;

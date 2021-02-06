@@ -1,33 +1,30 @@
 #pragma once
 
-#include <utils/glew.hpp>
 #include <utils/glm.hpp>
 
 namespace fcm {
     
 struct Camera
 {
-    glm::mat4 projMat, viewMat;
+    float fov;
+    float aspect;
+    glm::vec3 pos;
+    glm::vec3 dir;
+    glm::vec3 up;
 
     Camera(float aspect)
+    : aspect{aspect}
     {
-        setProjMat(glm::radians(60.0f), aspect);
+        fov = 60.f;
 
-        glm::vec3 position{0.0, 0.0, 30.0};
-        glm::vec3 target{0.0, 0.0, 0.0};
-        glm::vec3 up{0.0, 1.0, 0.0};
-        setViewMat(position, target, up);
+        pos = glm::vec3{0.0, 0.0, 30.0};
+        dir = glm::vec3{0.0, 0.0, -1.0};
+        up = glm::vec3{0.0, 1.0, 0.0};
     }
 
-    void setProjMat(float fov, float aspect)
-    {
-        projMat = glm::perspective(fov, aspect, 0.01f, 100.0f);
-    }
+    glm::mat4 projectionMat() { return glm::perspective(glm::radians(fov), aspect, 0.01f, 100.0f); }
 
-    void setViewMat(glm::vec3 from, glm::vec3 to, glm::vec3 up)
-    {
-        viewMat = glm::lookAt(from, to, up);
-    }
+    glm::mat4 viewMat() { return glm::lookAt(pos, pos + dir, up); }
 };
 
 } // namespace fcm

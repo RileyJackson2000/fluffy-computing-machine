@@ -6,6 +6,7 @@
 
 #include <model/material.hpp>
 #include <render/GLMesh.hpp>
+#include <model/mesh.hpp>
 
 namespace fcm {
 
@@ -27,28 +28,15 @@ struct Object {
   MeshData meshData;
   GLMeshData glMeshData;
 
-  glm::mat4 getTransform()
-  {
-    glm::mat4 t{1.f};
-    t = glm::translate(t, position);
-
-    glm::mat4 r = glm::eulerAngleYXZ(angular_position.y, angular_position.x, angular_position.z);
-
-    return t * r;
-  }
+  glm::mat4 getTransform();
 
   // this is bad. it has a bunch of copies for no reason. TODO fix this
-  Object(const MeshData &meshData)
-  : meshData{meshData}, glMeshData{meshData} {}
+  Object(const MeshData &meshData);
 };
 
 struct Sphere : public Object {
   float radius;
-
-  Sphere(float radius, bool faceNormals = true)
-  : Object{genSphereMesh(radius, 50, 50, faceNormals)},
-    radius{radius}
-  {}
+  Sphere(float radius, bool faceNormals = true);
 };
 
 }
