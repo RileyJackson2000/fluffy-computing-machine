@@ -10,8 +10,7 @@ glm::mat4 Object::getTransform() {
   glm::mat4 t{1.f};
   t = glm::translate(t, position);
 
-  glm::mat4 r = glm::eulerAngleYXZ(angular_position.y, angular_position.x,
-                                   angular_position.z);
+  glm::mat4 r = glm::toMat4(orientation);
 
   return t * r;
 }
