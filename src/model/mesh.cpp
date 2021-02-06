@@ -1,4 +1,5 @@
 #include <model/mesh.hpp>
+#include <utils/constants.hpp>
 
 namespace fcm {
 
@@ -42,14 +43,14 @@ MeshData genSphereMesh(float radius, uint32_t sectorCount, uint32_t stackCount,
   float x, y, z, xy;                           // vertex position
   float nx, ny, nz, lengthInv = 1.0f / radius; // vertex normal
 
-  float sectorStep = 2.0 * M_PI / float(sectorCount);
-  float stackStep = M_PI / float(stackCount);
+  float sectorStep = 2.0 * PI / float(sectorCount);
+  float stackStep = PI / float(stackCount);
   float sectorAngle, stackAngle;
 
   for (uint32_t i = 0; i <= stackCount; ++i) {
-    stackAngle = M_PI / 2.0 - i * stackStep; // starting from pi/2 to -pi/2
-    xy = radius * std::cos(stackAngle);      // r * cos(u)
-    z = radius * std::sin(stackAngle);       // r * sin(u)
+    stackAngle = PI / 2.0 - i * stackStep; // starting from pi/2 to -pi/2
+    xy = radius * std::cos(stackAngle);    // r * cos(u)
+    z = radius * std::sin(stackAngle);     // r * sin(u)
 
     // add (sectorCount+1) vertices per stack
     // the first and last vertices have same position and normal, but different

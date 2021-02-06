@@ -4,6 +4,7 @@
 #include <string>
 #include <type_traits>
 
+#include <utils/constants.hpp>
 #include <utils/glm.hpp>
 
 #include <model/material.hpp>
@@ -44,7 +45,12 @@ protected:
 
 public:
   virtual ~Object() {}
+
   std::string name;
+
+  MeshData meshData;
+  GLMeshData glMeshData;
+
   glm::vec3 position;
   glm::vec3 angular_position;
   glm::vec3 centroid;
@@ -55,13 +61,10 @@ public:
   glm::vec3 force;
   glm::vec3 torque;
 
-  float moment_of_inertia;
-
   Material mat;
-  float mass;
 
-  MeshData meshData;
-  GLMeshData glMeshData;
+  float mass;
+  float moment_of_inertia;
 
   glm::mat4 getTransform();
 };
@@ -79,8 +82,8 @@ struct Sphere : public Object {
                {0, 0, 0},
                position,
                mat,
-               density(mat) * 4. / 3. * M_PI * radius * radius * radius, // mass
-               density(mat) * 8. / 15. * M_PI * radius * radius * radius *
+               density(mat) * 4.f / 3.f * PI * radius * radius * radius, // mass
+               density(mat) * 8.f / 15.f * PI * radius * radius * radius *
                    radius * radius}, // moment of inertia
         radius{radius} {}
 };
