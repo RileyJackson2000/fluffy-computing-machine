@@ -1,5 +1,5 @@
 name: gtest
-on: [push, pull_request]
+on: pull_request
 jobs:
   gtest:
     runs-on: ubuntu-20.04
