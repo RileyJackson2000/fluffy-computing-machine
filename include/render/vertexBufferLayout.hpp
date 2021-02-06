@@ -1,25 +1,24 @@
 #pragma once
 
+#include <type_traits>
 #include <vector>
 
 #include <utils/glew.hpp>
 
 namespace fcm {
 
+template <class T> struct dependent_false : std::false_type {};
+
 template <typename T> constexpr glew::GLenum getTypeEnum() {
   if constexpr (std::is_same<T, glew::GLuint>::value ||
                 std::is_same<T, unsigned int>::value)
     return GL_UNSIGNED_INT;
-  if constexpr (std::is_same<T, glew::GLfloat>::value ||
-                std::is_same<T, float>::value)
+  else if constexpr (std::is_same<T, glew::GLfloat>::value ||
+                     std::is_same<T, float>::value)
     return GL_FLOAT;
-  // add types here as necessary
-
-  return 0;
-
-  // idk why this doesnt work
-  // static_assert(false, "Unrecognized type in
-  // fcm::vertexBufferLayout::getTypeEnum");
+  else
+    static_assert(dependent_false<T>::value,
+                  "Unrecognized type in fcm::vertexBufferLayout::getTypeEnum");
 }
 
 struct VertexBufferLayoutElem {
