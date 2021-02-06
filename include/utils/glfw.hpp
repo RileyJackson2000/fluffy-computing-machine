@@ -4,6 +4,7 @@
  * c++ wrappings for the c glfw library
  */
 
+#include <iostream>
 #include <memory>
 #include <utils/glew.hpp>
 

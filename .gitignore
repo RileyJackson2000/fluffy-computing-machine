@@ -28,4 +28,4 @@ CMakeCache.txt
 app/fluff
 
 # VSCode
-./vscode/*
+.vscode/*

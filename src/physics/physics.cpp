@@ -22,17 +22,17 @@ void _collide(Object *obj1, Object *obj2) {
   }
 }
 
-void iterate_linear(Object *obj, double dt) {
+void iterate_linear(Object *obj, float dt) {
   obj->velocity += obj->force / obj->mass * dt;
   obj->position += obj->velocity * dt;
 }
 
-void iterate_angular(Object *obj, double dt) {
+void iterate_angular(Object *obj, float dt) {
   obj->angular_velocity += obj->torque / obj->moment_of_inertia * dt;
   obj->angular_position += obj->angular_velocity * dt;
 }
 
-void update(Scene &scene, double dt) {
+void update(Scene &scene, float dt) {
   // to reduce typing
   const auto &objs = scene.objects();
 

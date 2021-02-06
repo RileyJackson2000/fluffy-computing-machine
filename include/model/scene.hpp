@@ -3,8 +3,10 @@
 #include <model/object.hpp>
 #include <utils/glm.hpp>
 
+#include <iostream>
 #include <memory>
 #include <string>
+#include <unordered_map>
 #include <vector>
 
 namespace fcm {
@@ -21,6 +23,7 @@ public:
   void insert(std::unique_ptr<Object> obj) {
     _objects.emplace_back(std::move(obj));
   }
+
   const std::vector<std::unique_ptr<Object>> &objects() const {
     return _objects;
   }

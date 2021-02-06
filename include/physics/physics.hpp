@@ -6,6 +6,6 @@ namespace fcm {
 
 void init_physics(void);
 
-void update(Scene &, double dt);
+void update(Scene &, float dt);
 
 } // namespace fcm
