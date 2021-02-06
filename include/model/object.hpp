@@ -79,9 +79,9 @@ struct Sphere : public Object {
                {0, 0, 0},
                position,
                mat,
-               density(mat) * 4. / 3. * M_PIf * radius * radius *
+               density(mat) * 4. / 3. * M_PI * radius * radius *
                    radius, // mass
-               density(mat) * 8. / 15. * M_PIf * radius * radius * radius *
+               density(mat) * 8. / 15. * M_PI * radius * radius * radius *
                    radius * radius}, // moment of inertia
         radius{radius} {}
 };
