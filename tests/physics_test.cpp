@@ -1,8 +1,8 @@
 #include <gtest/gtest.h>
 #include <memory>
 
-#include <model/mesh.hpp>
 #include <model/material.hpp>
+#include <model/mesh.hpp>
 #include <model/object.hpp>
 #include <physics/physics.hpp>
 #include <utils/constants.hpp>
