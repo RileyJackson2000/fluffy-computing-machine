@@ -36,14 +36,11 @@ std::tuple<glm::vec3, glm::mat3, float> computeMassProps(const MeshData &mesh,
   glm::mat3 totalCovariance{0.f};
   glm::vec3 centreOfMass{0.f};
   float totalMass{0.f};
-
-  glm::vec3 com{6.f, 0.f, 5.f};
-
   for (size_t i = 0; i < mesh.indices.size(); i += 3) {
     // implicit tet with vertices (0,0,0), v1, v2, v3
-    glm::vec3 v1 = mesh.vertices[i + 0].pos + com;
-    glm::vec3 v2 = mesh.vertices[i + 1].pos + com;
-    glm::vec3 v3 = mesh.vertices[i + 2].pos + com;
+    glm::vec3 v1 = mesh.vertices[i + 0].pos;
+    glm::vec3 v2 = mesh.vertices[i + 1].pos;
+    glm::vec3 v3 = mesh.vertices[i + 2].pos;
 
     // A is the transformation to convert our canonical tet to implicit tet
     glm::mat3 A{v1, v2, v3};
