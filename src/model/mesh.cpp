@@ -1,3 +1,5 @@
+#include <iostream>
+
 #include <model/mesh.hpp>
 #include <utils/constants.hpp>
 
@@ -36,6 +38,44 @@ void MeshData::faceNormals() {
   indices = tempInds;
 }
 
+std::shared_ptr<MeshData> genCubeMesh(float side, bool faceNormals = true) {
+  auto md = std::make_shared<MeshData>();
+  float verts[] = {
+      // front
+      -1.0, -1.0, 1.0, 1.0, -1.0, 1.0, 1.0, 1.0, 1.0, -1.0, 1.0, 1.0,
+      // back
+      -1.0, -1.0, -1.0, 1.0, -1.0, -1.0, 1.0, 1.0, -1.0, -1.0, 1.0, -1.0};
+
+  uint32_t tris[] = {// front
+                     0, 1, 2, 2, 3, 0,
+                     // right
+                     1, 5, 6, 6, 2, 1,
+                     // back
+                     7, 6, 5, 5, 4, 7,
+                     // left
+                     4, 0, 3, 3, 7, 4,
+                     // bottom
+                     4, 5, 1, 1, 0, 4,
+                     // top
+                     3, 2, 6, 6, 7, 3};
+
+  for (uint32_t i = 0; i < 8 * 3; i += 3) {
+    Vertex v;
+    v.pos = side * glm::vec3{verts[i + 0], verts[i + 1], verts[i + 2]};
+    v.norm = glm::normalize(v.pos);
+    md->vertices.push_back(v);
+  }
+
+  for (uint32_t i = 0; i < 6 * 2 * 3; ++i) {
+    md->indices.push_back(tris[i]);
+  }
+
+  if (faceNormals)
+    md->faceNormals();
+
+  return md;
+}
+
 std::shared_ptr<MeshData> genSphereMesh(float radius, uint32_t sectorCount,
                                         uint32_t stackCount,
                                         bool faceNormals = true) {
@@ -64,12 +104,7 @@ std::shared_ptr<MeshData> genSphereMesh(float radius, uint32_t sectorCount,
       x = xy * std::cos(sectorAngle); // r * cos(u) * cos(v)
       y = xy * std::sin(sectorAngle); // r * cos(u) * sin(v)
       v.pos = glm::vec3{x, y, z};
-
-      // normalized vertex normal (nx, ny, nz)
-      nx = x * lengthInv;
-      ny = y * lengthInv;
-      nz = z * lengthInv;
-      v.norm = glm::vec3{nx, ny, nz};
+      v.norm = glm::normalize(v.pos);
 
       md->vertices.push_back(v);
     }

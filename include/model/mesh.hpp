@@ -19,6 +19,7 @@ struct MeshData {
   void faceNormals();
 };
 
+std::shared_ptr<MeshData> genCubeMesh(float side, bool faceNormals);
 std::shared_ptr<MeshData> genSphereMesh(float radius, uint32_t sectorCount,
                                         uint32_t stackCount, bool faceNormals);
 
