@@ -38,7 +38,7 @@ void MeshData::faceNormals() {
   indices = tempInds;
 }
 
-std::shared_ptr<MeshData> genCubeMesh(float side, bool faceNormals = true) {
+std::shared_ptr<MeshData> genCubeMesh(float side, bool faceNormals) {
   auto md = std::make_shared<MeshData>();
   float verts[] = {
       // front
@@ -77,8 +77,7 @@ std::shared_ptr<MeshData> genCubeMesh(float side, bool faceNormals = true) {
 }
 
 std::shared_ptr<MeshData> genSphereMesh(float radius, uint32_t sectorCount,
-                                        uint32_t stackCount,
-                                        bool faceNormals = true) {
+                                        uint32_t stackCount, bool faceNormals) {
   auto md = std::make_shared<MeshData>();
 
   float x, y, z, xy;                           // vertex position

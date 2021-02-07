@@ -1,5 +1,3 @@
-#pragma once
-
 #include <tuple>
 
 #include <utils/glm.hpp>
@@ -7,6 +5,12 @@
 #include <model/mesh.hpp>
 
 namespace fcm {
+
+void transformMeshPoints(MeshData &mesh, glm::mat4 transform) {
+  for (Vertex &v : mesh.vertices) {
+    v.pos = glm::vec3(transform * glm::vec4(v.pos, 1.f));
+  }
+}
 
 float computeVolume(const MeshData &mesh) {
   float totalVolume = 0.f;
@@ -24,7 +28,7 @@ float computeVolume(const MeshData &mesh) {
   return totalVolume / 6.f;
 }
 
-std::tuple<glm::vec3, glm::mat3, float> computeMassProps(const MeshData &mesh,
+std::tuple<float, glm::vec3, glm::mat3> computeMassProps(const MeshData &mesh,
                                                          float density) {
   // assume density=1, we will scale everything before returning
   // we start with the covariance of a canonical tet {w0, w1, w2, w3}
@@ -74,7 +78,7 @@ std::tuple<glm::vec3, glm::mat3, float> computeMassProps(const MeshData &mesh,
   }
 
   // scale by density
-  return {centreOfMass, density * inertiaTensor, density * totalMass};
+  return {density * totalMass, centreOfMass, density * inertiaTensor};
 }
 
 } // namespace fcm
