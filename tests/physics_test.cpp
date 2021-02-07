@@ -5,11 +5,13 @@
 #include <model/mesh.hpp>
 #include <model/object.hpp>
 #include <physics/physics.hpp>
+#include <render/render.hpp>
 #include <utils/constants.hpp>
 #include <utils/glm.hpp>
 
 TEST(PhysicsSuite, IterateAngularTest) {
   fcm::init_physics();
+  fcm::Viewer viewer{};
 
   float R = 2;            // m
   float dt = 0.3;         // s
