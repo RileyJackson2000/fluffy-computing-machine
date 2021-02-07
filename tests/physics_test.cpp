@@ -1,6 +1,7 @@
 #include <gtest/gtest.h>
 #include <memory>
 
+#include <model/mesh.hpp>
 #include <model/material.hpp>
 #include <model/object.hpp>
 #include <physics/physics.hpp>
@@ -15,7 +16,7 @@ TEST(PhysicsSuite, IterateAngularTest) {
   float torque_mag = 150; // Nm
 
   fcm::Object *o =
-      new fcm::Sphere("test sphere", std::make_shared<fcm::MeshData>(),
+      new fcm::Sphere("test sphere", fcm::genSphereMesh(R, 10, 10, true),
                       {0, 0, 0}, R, fcm::TEST_MAT_1);
   o->torque = {0, 0, torque_mag};
   // mass = volume * density

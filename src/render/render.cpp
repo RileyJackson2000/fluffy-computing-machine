@@ -35,7 +35,7 @@ Window::Window(uint32_t width, uint32_t height) {
   glfw::glfwSetErrorCallback(error_callback);
 
   ptr = glfw::GLFWwindow_ptr{
-      glfw::glfwCreateWindow(width, height, "Title goes here", NULL, NULL)};
+      glfw::glfwCreateWindow(width, height, WINDOW_TITLE, NULL, NULL)};
 
   if (ptr.get() == nullptr) {
     glfw::glfwTerminate();
