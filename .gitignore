@@ -26,6 +26,7 @@ compile_commands.json
 CMakeCache.txt
 **/CMakeFiles/
 app/fluff
+tests/tests
 
 # VSCode
 .vscode/*

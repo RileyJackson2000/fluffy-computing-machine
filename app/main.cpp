@@ -36,8 +36,6 @@ int main(void) {
     s->mat = fcm::STEEL;
     s->position = {(i % 5) * 2.5 - 5, (i / 5) * 2.5 - 5, 0};
     s->velocity = {std::rand() % 13 - 6, std::rand() % 13 - 6, 0};
-    s->angular_position = glm::vec3{rfloat(), rfloat(), rfloat()};
-    s->angular_velocity = glm::vec3{rfloat(), rfloat(), rfloat()};
 
     scene.insert(std::move(s));
   }
@@ -66,7 +64,7 @@ int main(void) {
       timeRendering += viewer.getTime() - now;
       now = viewer.getTime();
     }
-    double frameEnd = viewer.getTime();
+    float frameEnd = viewer.getTime();
 
     nextTickTarget += dt;
 

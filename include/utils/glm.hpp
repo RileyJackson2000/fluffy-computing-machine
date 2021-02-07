@@ -6,6 +6,4 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include <glm/gtx/projection.hpp>
-
-// for euler angles - remove when we have quaternions
-#include <glm/gtx/euler_angles.hpp>
+#include <glm/gtx/quaternion.hpp>
