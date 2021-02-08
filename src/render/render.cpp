@@ -32,6 +32,8 @@ Window::Window(uint32_t width, uint32_t height) {
   // no old opengl
   glfw::glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
+  glfw::glfwWindowHint( GLFW_DOUBLEBUFFER, GL_FALSE );
+
   glfw::glfwSetErrorCallback(error_callback);
 
   ptr = glfw::GLFWwindow_ptr{
@@ -134,7 +136,8 @@ void Viewer::render(Scene &scene) {
     draw(obj->glMeshData);
   }
 
-  glfw::glfwSwapBuffers(window.ptr.get());
+  // glfw::glfwSwapBuffers(window.ptr.get());
+  glew::glFlush();
 }
 
 void Viewer::draw(const GLMeshData &glMeshData) {
