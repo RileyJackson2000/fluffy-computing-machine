@@ -4,7 +4,8 @@ add_library(
   material.cpp
   mesh.cpp
   object.cpp
-  meshUtils.cpp)
+  meshUtils.cpp
+  rayCaster.cpp)
 
 target_include_directories(model PUBLIC ../../include)
 

@@ -65,6 +65,8 @@ public:
   float mass = 0;
   float moment_of_inertia = 0;
 
+  glm::vec4 colour{1.f, 0.f, 1.f, 1.f};
+
   glm::mat4 getTransform();
 };
 

@@ -18,6 +18,14 @@ struct Window {
   Window(uint32_t width, uint32_t height);
 
   int getKey(int key) { return glfw::glfwGetKey(ptr.get(), key); }
+  int getMouseButton(int key) {
+    return glfw::glfwGetMouseButton(ptr.get(), key);
+  }
+  glm::vec2 getCursorPos() {
+    double x, y;
+    glfw::glfwGetCursorPos(ptr.get(), &x, &y);
+    return glm::vec2{x, y};
+  }
   void setShouldClose(bool b) { glfw::glfwSetWindowShouldClose(ptr.get(), b); }
   bool shouldClose() { return glfw::glfwWindowShouldClose(ptr.get()); }
 };
@@ -27,6 +35,7 @@ struct Viewer {
   Shader shader; // shaders should be part of materials. We should also support
                  // more than one shader
   Camera cam;
+  RayCaster rayCaster;
 
   Viewer();
   ~Viewer();
@@ -39,6 +48,7 @@ struct Viewer {
   double lastFrameTime;
 
   void updateCameraPos(double dt);
+  void selectObject(Scene &scene);
   bool closeWindow();
 
   void pollEvents() { glfw::glfwPollEvents(); }
