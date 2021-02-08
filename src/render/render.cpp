@@ -75,7 +75,7 @@ Viewer::Viewer()
 
 Viewer::~Viewer() { glfw::glfwTerminate(); }
 
-void Viewer::render(Scene &scene) {
+void Viewer::render(GLScene *scene) {
   // controller
   pollEvents();
   double currentTime = getTime();
@@ -111,8 +111,12 @@ void Viewer::render(Scene &scene) {
 
 void Viewer::draw(const GLMeshData &glMeshData) {
   shader.bind();
+  //std::cout <<shader.handle<<"\n";
   glMeshData.va.bind();
+  //std::cout <<glMeshData.va.handle<<"\n";
   glMeshData.ib.bind();
+  //std::cout <<glMeshData.ib.handle<<"\n";
+  //std::cout <<glMeshData.ib.numIndices<<"\n";
   glew::glDrawElements(GL_TRIANGLES, glMeshData.ib.numIndices, GL_UNSIGNED_INT,
                        nullptr);
 }

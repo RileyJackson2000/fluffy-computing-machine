@@ -37,9 +37,9 @@ void iterate_angular(Object *obj, float dt) {
   }
 }
 
-void update(Scene &scene, float dt) {
+void update(Scene *scene, float dt) {
   // to reduce typing
-  const auto &objs = scene.objects();
+  const auto &objs = scene->objects();
 
   for (auto &&obj_ptr : objs) {
     obj_ptr->force = {0, 0, 0};

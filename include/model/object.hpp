@@ -18,8 +18,7 @@ class Object {
 protected:
   Object(std::shared_ptr<MeshData> meshData);
   Object(std::string name, std::shared_ptr<MeshData> meshData)
-      : name{std::move(name)}, glMeshData{meshData.get()}, meshData{std::move(
-                                                               meshData)} {}
+      : name{std::move(name)}, glMeshData{meshData.get()}, meshData{std::move(meshData)} {}
 
   Object( // only statics
       std::string name, std::shared_ptr<MeshData> meshData, glm::vec3 position,

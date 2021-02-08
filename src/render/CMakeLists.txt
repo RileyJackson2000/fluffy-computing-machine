@@ -3,6 +3,8 @@ add_library(
   render.cpp
   shader.cpp
   camera.cpp
+  globject.cpp
+  glscene.cpp
   GLMesh.cpp
   vertexBuffer.cpp
   indexBuffer.cpp

@@ -9,6 +9,7 @@
 
 #include <model/object.hpp>
 #include <model/scene.hpp>
+#include <render/glscene.hpp>
 #include <physics/physics.hpp>
 #include <render/render.hpp>
 #include <utils/constants.hpp>
@@ -25,7 +26,7 @@ int main(void) {
   std::cout << "Initializing renderer...\n";
   fcm::Viewer viewer{};
 
-  fcm::Scene scene{"Scene 1"};
+  std::unique_ptr<fcm::Scene> scene = std::make_unique<fcm::GLScene>("Scene 1");
 
   for (int i = 0; i < 25; ++i) {
     float r = 1 + std::rand() % 3 / 3. * 0.2;
@@ -37,7 +38,7 @@ int main(void) {
     s->position = {(i % 5) * 2.5 - 5, (i / 5) * 2.5 - 5, 0};
     s->velocity = {std::rand() % 13 - 6, std::rand() % 13 - 6, 0};
 
-    scene.insert(std::move(s));
+    scene->insert(std::move(s));
   }
 
   // main loop
@@ -54,12 +55,12 @@ int main(void) {
 
   while (!viewer.closeWindow()) {
     double frameStart = viewer.getTime();
-    fcm::update(scene, dt);
+    fcm::update(scene.get(), dt);
 
     timeUpdating += viewer.getTime() - frameStart;
     double now = viewer.getTime();
     while (now < nextTickTarget) {
-      viewer.render(scene);
+      viewer.render(static_cast<fcm::GLScene*>(scene.get()));
       ++nFrames;
       timeRendering += viewer.getTime() - now;
       now = viewer.getTime();
@@ -72,7 +73,7 @@ int main(void) {
     totalUpdateTime += frameEnd - frameStart;
 
     if (nTicks % ticksTillUpdate == 0) {
-      std::cout << "Avg TPS:" << nTicks / totalUpdateTime << " | ";
+      std::cout << "Avg TPS: " << nTicks / totalUpdateTime << " | ";
       std::cout << "Avg FPS: " << nFrames / totalUpdateTime << " || ";
       std::cout << " Time spent updating: " << timeUpdating;
       std::cout << " rendering: " << timeRendering;
