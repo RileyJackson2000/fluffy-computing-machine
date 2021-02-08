@@ -47,7 +47,14 @@ struct Viewer {
   float movementSpeed = 0.1;
   double lastFrameTime;
 
+  glm::vec2 lastMousePos{WINDOW_WIDTH / 2.f, WINDOW_HEIGHT / 2.f};
+  float yaw = -90.f;
+  float pitch = 0;
+  float mouseSensitivity = 0.15;
+  bool rbuttonDown = false;
+
   void updateCameraPos(double dt);
+  void updateCameraDir();
   void selectObject(Scene &scene);
   bool closeWindow();
 
