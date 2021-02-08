@@ -3,7 +3,8 @@ add_library(
   scene.cpp
   material.cpp
   mesh.cpp
-  object.cpp)
+  object.cpp
+  meshUtils.cpp)
 
 target_include_directories(model PUBLIC ../../include)
 
