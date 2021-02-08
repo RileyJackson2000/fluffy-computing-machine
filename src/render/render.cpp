@@ -55,8 +55,7 @@ Window::Window(uint32_t width, uint32_t height) {
 
   std::cout << "OpenGL Version: " << glew::glGetString(GL_VERSION) << std::endl;
 
-  // glfw::glfwSetInputMode(ptr.get(), GLFW_STICKY_KEYS, GL_TRUE);
-  glfw::glfwSetInputMode(ptr.get(), GLFW_CURSOR, GLFW_CURSOR_HIDDEN);
+  glfw::glfwSetInputMode(ptr.get(), GLFW_CURSOR, GLFW_CURSOR_NORMAL);
 }
 
 float lastMouseX = WINDOW_WIDTH / 2.f;
