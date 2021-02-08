@@ -66,6 +66,10 @@ Viewer::Viewer()
   // Dark blue background
   glew::glClearColor(0.0f, 0.0f, 0.3f, 0.0f);
 
+  // glew::glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );
+  glew::glEnable(GL_CULL_FACE);
+  glew::glEnable(GL_DEPTH_TEST);
+
   lastFrameTime = getTime();
 }
 
@@ -81,17 +85,24 @@ void Viewer::render(Scene &scene) {
   updateCameraDir();
   selectObject(scene);
 
-  glew::glClear(GL_COLOR_BUFFER_BIT);
-  // glew::glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );
-  glew::glEnable(GL_CULL_FACE);
+  glew::glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-  shader.setVec3("uLightPos", glm::vec3{1, 2, 300});
-  shader.setMat4("uV", cam.viewMat());
-  shader.setMat4("uP", cam.projectionMat());
+  shader.setVec3("uLightPos", glm::vec3{0, 0, 10});
+  shader.setVec3("uLightColour", glm::vec3{1.f});
+  shader.setFloat("uLightPower", 50);
+
+  glm::mat4 vp = cam.projectionMat() * cam.viewMat();
 
   for (auto &&obj : scene.objects()) {
-    shader.setVec4("uColor", obj->colour);
+    shader.setMat4("uMVP", vp * obj->getTransform());
     shader.setMat4("uM", obj->getTransform());
+    shader.setMat3("uMti", glm::inverse(glm::transpose(obj->getTransform())));
+
+    shader.setVec3("uAmbientColour", obj->ambientColour);
+    shader.setVec3("uDiffuseColour", obj->diffuseColour);
+    shader.setVec3("uSpecColour", obj->specColour);
+    shader.setFloat("uShininess", obj->shininess);
+
     draw(obj->glMeshData);
   }
 
@@ -171,7 +182,8 @@ void Viewer::selectObject(Scene &scene) {
 
     result = rayCaster.castRay(cam.pos, dir, scene.objects());
     if (result.hit) {
-      result.object->colour = glm::vec4{0.f, 1.f, 0.f, 1.f};
+      result.object->ambientColour = glm::vec3{0.f, 0.1f, 0.f};
+      result.object->diffuseColour = glm::vec3{0.f, 0.5f, 0.f};
     }
   }
 }

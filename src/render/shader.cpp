@@ -20,12 +20,21 @@ void Shader::bind() { glew::glUseProgram(handle); }
 
 void Shader::unbind() { glew::glUseProgram(0); }
 
+void Shader::setFloat(const std::string &name, float v) {
+  glew::glUniform1f(getUniformLocation(name), v);
+}
+
 void Shader::setVec3(const std::string &name, glm::vec3 v) {
   glew::glUniform3fv(getUniformLocation(name), 1, glm::value_ptr(v));
 }
 
 void Shader::setVec4(const std::string &name, glm::vec4 v) {
   glew::glUniform4fv(getUniformLocation(name), 1, glm::value_ptr(v));
+}
+
+void Shader::setMat3(const std::string &name, glm::mat3 m) {
+  glew::glUniformMatrix3fv(getUniformLocation(name), 1, GL_FALSE,
+                           glm::value_ptr(m));
 }
 
 void Shader::setMat4(const std::string &name, glm::mat4 m) {
