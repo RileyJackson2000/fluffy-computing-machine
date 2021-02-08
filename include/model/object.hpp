@@ -18,8 +18,7 @@ class Object {
 protected:
   Object(std::shared_ptr<MeshData> meshData);
   Object(std::string name, std::shared_ptr<MeshData> meshData)
-      : name{std::move(name)}, glMeshData{meshData.get()}, meshData{std::move(
-                                                               meshData)} {}
+      : name{std::move(name)}, glMeshData{meshData.get()}, meshData{std::move(meshData)} {}
 
   Object( // only statics
       std::string name, std::shared_ptr<MeshData> meshData, glm::vec3 position,
@@ -65,7 +64,14 @@ public:
   float mass = 0;
   float moment_of_inertia = 0;
 
-  glm::mat4 getTransform();
+  glm::mat4 getTransform() const {
+  glm::mat4 t{1.f};
+  t = glm::translate(t, position);
+
+  glm::mat4 r = glm::toMat4(orientation);
+
+  return t * r;
+}
 };
 
 struct Sphere : public Object {

@@ -1,6 +1,7 @@
 #pragma once
 
 #include <vector>
+#include <iostream>
 
 #include <utils/glew.hpp>
 #include <utils/glm.hpp>
@@ -15,14 +16,16 @@ namespace fcm {
 
 struct GLMeshData {
   MeshData *mesh;
+  std::vector<Vertex> mesh_vertices;
+  std::vector<uint32_t> mesh_indices;
   VertexBuffer vb;
   IndexBuffer ib;
   VertexArray va;
 
-  GLMeshData(MeshData *meshData)
-      : mesh{meshData}, vb{mesh->vertices.data(),
-                           sizeof(Vertex) * mesh->vertices.size()},
-        ib{mesh->indices.data(), mesh->indices.size()} {
+  explicit GLMeshData(MeshData *meshData)
+      : mesh{meshData}, mesh_vertices{mesh->vertices}, mesh_indices{mesh->indices},
+        vb{mesh_vertices.data(), sizeof(Vertex) * mesh_vertices.size()},
+        ib{mesh_indices.data(), mesh_indices.size()} {
     VertexBufferLayout layout;
     layout.addElem<glew::GLfloat>(3, false); // pos
     layout.addElem<glew::GLfloat>(3, false); // norm

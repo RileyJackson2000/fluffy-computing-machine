@@ -2,7 +2,7 @@
 
 #include <utils/glfw.hpp>
 
-#include <model/scene.hpp>
+#include <render/glscene.hpp>
 #include <render/GLMesh.hpp>
 #include <render/camera.hpp>
 #include <render/shader.hpp>
@@ -31,7 +31,7 @@ struct Viewer {
   Viewer();
   ~Viewer();
 
-  void render(Scene &scene);
+  void render(GLScene *);
   void draw(const GLMeshData &glMeshData);
 
   // controller - TODO: move this to separete class
