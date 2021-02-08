@@ -11,7 +11,7 @@ Camera::Camera(float aspect) : aspect{aspect} {
 }
 
 glm::mat4 Camera::projectionMat() {
-  return glm::perspective(glm::radians(fov), aspect, 0.01f, 100.0f);
+  return glm::perspective(glm::radians(fov), aspect, 0.01f, 300.0f);
 }
 
 glm::mat4 Camera::viewMat() { return glm::lookAt(pos, pos + dir, up); }
