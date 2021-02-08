@@ -36,43 +36,52 @@ int main(void) {
     s->mat = fcm::STEEL;
     s->position = {(i % 5) * 2.5 - 5, (i / 5) * 2.5 - 5, 0};
     s->velocity = {std::rand() % 13 - 6, std::rand() % 13 - 6, 0};
-    s->angular_position = glm::vec3{rfloat(), rfloat(), rfloat()};
-    s->angular_velocity = glm::vec3{rfloat(), rfloat(), rfloat()};
 
     scene.insert(std::move(s));
   }
 
   // main loop
 
-  int fps = 60;
-  double dt = 1.0 / fps;
-  double nextFrameTarget = viewer.getTime();
+  int tps = 60; // tick per second
+  double dt = 1.0 / tps;
+  double nextTickTarget = viewer.getTime() + dt;
 
-  int nFrames = 0;
-  int framesTillUpdate = 120;
-  double totalFrameTime = 0;
+  int nFrames = 0, nTicks = 0;
+  int ticksTillUpdate = tps * 2; // print every 2 seconds
+  double totalUpdateTime = 0;
+
+  double timeUpdating = 0, timeRendering = 0;
 
   while (!viewer.closeWindow()) {
     double frameStart = viewer.getTime();
-    fcm::update(scene, dt); // TODO time steps
-    viewer.render(scene);
+    fcm::update(scene, dt);
 
+    timeUpdating += viewer.getTime() - frameStart;
     double now = viewer.getTime();
-    ;
-    if (now < nextFrameTarget) {
-      int msLeftTilNextFrame = int((nextFrameTarget - now) * 1000);
-      std::this_thread::sleep_for(
-          std::chrono::milliseconds(msLeftTilNextFrame));
+    while (now < nextTickTarget) {
+      viewer.render(scene);
+      ++nFrames;
+      timeRendering += viewer.getTime() - now;
+      now = viewer.getTime();
     }
-    double frameEnd = viewer.getTime();
+    float frameEnd = viewer.getTime();
 
-    nextFrameTarget = nextFrameTarget + dt;
+    nextTickTarget += dt;
 
-    ++nFrames;
-    totalFrameTime += frameEnd - frameStart;
+    ++nTicks;
+    totalUpdateTime += frameEnd - frameStart;
 
-    if (nFrames % framesTillUpdate == 0) {
-      std::cout << "Avg FPS: " << nFrames / totalFrameTime << std::endl;
+    if (nTicks % ticksTillUpdate == 0) {
+      std::cout << "Avg TPS:" << nTicks / totalUpdateTime << " | ";
+      std::cout << "Avg FPS: " << nFrames / totalUpdateTime << " || ";
+      std::cout << " Time spent updating: " << timeUpdating;
+      std::cout << " rendering: " << timeRendering;
+      std::cout << " iding: " << totalUpdateTime - timeUpdating - timeRendering;
+      std::cout << std::endl;
+      timeUpdating = timeRendering = 0;
+      nFrames = 0;
+      nTicks = 0;
+      totalUpdateTime = 0;
     }
   }
 

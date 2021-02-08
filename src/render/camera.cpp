@@ -5,9 +5,9 @@ namespace fcm {
 Camera::Camera(float aspect) : aspect{aspect} {
   fov = 60.f;
 
-  pos = glm::vec3{0.0, 0.0, 30.0};
-  dir = glm::vec3{0.0, 0.0, -1.0};
-  up = glm::vec3{0.0, 1.0, 0.0};
+  pos = glm::vec3{0.f, 0.f, 30.f};
+  dir = glm::vec3{0.f, 0.f, -1.f};
+  up = glm::vec3{0.f, 1.f, 0.f};
 }
 
 glm::mat4 Camera::projectionMat() {

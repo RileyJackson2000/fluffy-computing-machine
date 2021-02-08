@@ -12,6 +12,9 @@ void transformMeshPoints(MeshData &mesh, glm::mat4 transform) {
   }
 }
 
+// 9.9999997473787516e-05
+
+
 float computeVolume(const MeshData &mesh) {
   float totalVolume = 0.f;
   for (size_t i = 0; i < mesh.indices.size(); i += 3) {

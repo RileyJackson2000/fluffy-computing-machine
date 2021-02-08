@@ -28,8 +28,13 @@ void iterate_linear(Object *obj, float dt) {
 }
 
 void iterate_angular(Object *obj, float dt) {
-  obj->angular_velocity += obj->torque / obj->moment_of_inertia * dt;
-  obj->angular_position += obj->angular_velocity * dt;
+  const glm::vec3 angular_acceleration = obj->torque / obj->moment_of_inertia;
+  obj->spin += angular_acceleration * dt;
+  const float spin_angle = glm::length(obj->spin) * dt;
+  const glm::vec3 spin_axis = glm::normalize(obj->spin);
+  if (spin_angle > eps) {
+    obj->orientation = glm::rotate(obj->orientation, spin_angle, spin_axis);
+  }
 }
 
 void update(Scene &scene, float dt) {
@@ -49,9 +54,11 @@ void update(Scene &scene, float dt) {
     }
   }
 
+  float a = 0;
   for (auto &&obj_ptr : objs) {
     iterate_linear(obj_ptr.get(), dt);
     iterate_angular(obj_ptr.get(), dt);
+    a += obj_ptr->spin.z * obj_ptr->moment_of_inertia;
   }
 }
 

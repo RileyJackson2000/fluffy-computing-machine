@@ -77,8 +77,12 @@ template <> void collide(Sphere &obj_1, Sphere &obj_2) {
 
   // convert to torque
   // torque = r x F
-  obj_1.torque += glm::cross((r1 - x1) * rad1, fforce_1);
-  obj_1.torque += glm::cross((r2 - x2) * rad2, fforce_2);
+  const glm::dvec3 torque_1 = glm::cross((r1 - x1) * rad1, fforce_1);
+  const glm::dvec3 torque_2 = glm::cross((r2 - x2) * rad2, fforce_2);
+  // this is def wrong
+
+  obj_1.torque += torque_1;
+  obj_2.torque += torque_2;
 }
 
 } // namespace fcm

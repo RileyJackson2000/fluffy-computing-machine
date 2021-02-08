@@ -1,5 +1,6 @@
 #pragma once
 
+#include <iostream>
 #include <memory>
 #include <string>
 #include <type_traits>
@@ -22,26 +23,24 @@ protected:
 
   Object( // only statics
       std::string name, std::shared_ptr<MeshData> meshData, glm::vec3 position,
-      glm::vec3 angular_position, glm::vec3 centroid, Material mat, float mass,
+      glm::quat orientation, glm::vec3 centroid, Material mat, float mass,
       float moment_of_inertia)
       : name{std::move(name)}, glMeshData{meshData.get()},
         meshData{std::move(meshData)}, position{std::move(position)},
-        angular_position{std::move(angular_position)}, centroid{std::move(
-                                                           centroid)},
+        orientation{std::move(orientation)}, centroid{std::move(centroid)},
         mat{mat}, mass{mass}, moment_of_inertia{moment_of_inertia} {}
 
   Object( // statics + kinematics
       std::string name, std::shared_ptr<MeshData> meshData, glm::vec3 position,
-      glm::vec3 angular_position, glm::vec3 centroid, glm::vec3 velocity,
-      glm::vec3 angular_velocity, glm::vec3 force, glm::vec3 torque,
-      Material mat, float mass, float moment_of_inertia)
+      glm::quat orientation, glm::vec3 centroid, glm::vec3 velocity,
+      glm::vec3 spin, glm::vec3 force, glm::vec3 torque, Material mat,
+      float mass, float moment_of_inertia)
       : name{std::move(name)}, glMeshData{meshData.get()},
         meshData{std::move(meshData)}, position{std::move(position)},
-        angular_position{std::move(angular_position)},
-        centroid{std::move(centroid)}, velocity{std::move(velocity)},
-        angular_velocity{std::move(angular_velocity)}, force{std::move(force)},
-        torque{std::move(torque)}, mat{mat}, mass{mass},
-        moment_of_inertia{moment_of_inertia} {}
+        orientation{std::move(orientation)}, centroid{std::move(centroid)},
+        velocity{std::move(velocity)}, spin{std::move(spin)},
+        force{std::move(force)}, torque{std::move(torque)}, mat{mat},
+        mass{mass}, moment_of_inertia{moment_of_inertia} {}
 
 public:
   virtual ~Object() {}
@@ -51,20 +50,20 @@ public:
   GLMeshData glMeshData;
   std::shared_ptr<MeshData> meshData;
 
-  glm::vec3 position;
-  glm::vec3 angular_position;
-  glm::vec3 centroid;
+  glm::vec3 position = {0, 0, 0};
+  glm::quat orientation = {1, 0, 0, 0};
+  glm::vec3 centroid = {0, 0, 0};
 
-  glm::vec3 velocity;
-  glm::vec3 angular_velocity;
+  glm::vec3 velocity = {0, 0, 0};
+  glm::vec3 spin = {0, 0, 0}; // angular velocity
 
-  glm::vec3 force;
-  glm::vec3 torque;
+  glm::vec3 force = {0, 0, 0};
+  glm::vec3 torque = {0, 0, 0};
 
   Material mat;
 
-  float mass;
-  float moment_of_inertia;
+  float mass = 0;
+  float moment_of_inertia = 0;
 
   glm::mat4 getTransform();
 };
@@ -79,7 +78,7 @@ struct Sphere : public Object {
       : Object{std::move(name),
                std::move(meshData),
                position,
-               {0, 0, 0},
+               {1, 0, 0, 0},
                position,
                mat,
                density(mat) * 4.f / 3.f * PI * radius * radius * radius, // mass
