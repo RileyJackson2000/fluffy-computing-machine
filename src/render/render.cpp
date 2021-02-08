@@ -182,8 +182,6 @@ void Viewer::selectObject(Scene &scene) {
     farResult /= farResult.w;
     glm::vec3 dir = glm::normalize(glm::vec3(farResult - nearResult));
 
-    // std::cout << glm::to_string(dir) << std::endl;
-
     result = rayCaster.castRay(cam.pos, dir, scene.objects());
     if (result.hit) {
       result.object->colour = glm::vec4{0.f, 1.f, 0.f, 1.f};
