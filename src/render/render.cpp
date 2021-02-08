@@ -32,6 +32,8 @@ Window::Window(uint32_t width, uint32_t height) {
   // no old opengl
   glfw::glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
+  glfw::glfwWindowHint(GLFW_DOUBLEBUFFER, GL_FALSE);
+
   glfw::glfwSetErrorCallback(error_callback);
 
   ptr = glfw::GLFWwindow_ptr{
@@ -55,9 +57,7 @@ Window::Window(uint32_t width, uint32_t height) {
 
   std::cout << "OpenGL Version: " << glew::glGetString(GL_VERSION) << std::endl;
 
-  // Ensure we can capture the escape key being pressed below
-  glfw::glfwSetInputMode(ptr.get(), GLFW_STICKY_KEYS, GL_TRUE);
-  glfw::glfwSetInputMode(ptr.get(), GLFW_CURSOR, GLFW_CURSOR_HIDDEN);
+  glfw::glfwSetInputMode(ptr.get(), GLFW_CURSOR, GLFW_CURSOR_NORMAL);
 }
 
 float lastMouseX = WINDOW_WIDTH / 2.f;
@@ -120,22 +120,23 @@ void Viewer::render(Scene &scene) {
   double dt = currentTime - lastFrameTime;
   lastFrameTime = currentTime;
   updateCameraPos(dt);
+  selectObject(scene);
 
   glew::glClear(GL_COLOR_BUFFER_BIT);
   // glew::glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );
   glew::glEnable(GL_CULL_FACE);
 
-  shader.setVec4("uColor", glm::vec4{1., 0., 1., 1.});
   shader.setVec3("uLightPos", glm::vec3{1, 2, 300});
   shader.setMat4("uV", cam.viewMat());
   shader.setMat4("uP", cam.projectionMat());
 
   for (auto &&obj : scene.objects()) {
+    shader.setVec4("uColor", obj->colour);
     shader.setMat4("uM", obj->getTransform());
     draw(obj->glMeshData);
   }
 
-  glfw::glfwSwapBuffers(window.ptr.get());
+  glew::glFlush();
 }
 
 void Viewer::draw(const GLMeshData &glMeshData) {
@@ -162,6 +163,30 @@ void Viewer::updateCameraPos(double dt) {
     cam.pos -= multiplier * glm::normalize(glm::cross(cam.dir, cam.up));
   if (window.getKey(GLFW_KEY_D) == GLFW_PRESS)
     cam.pos += multiplier * glm::normalize(glm::cross(cam.dir, cam.up));
+}
+
+void Viewer::selectObject(Scene &scene) {
+  RayCastResult result;
+  if (window.getMouseButton(GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS) {
+    glm::vec2 pos = window.getCursorPos();
+    glm::mat4 invCam = glm::inverse(cam.projectionMat() * cam.viewMat());
+    float hw = WINDOW_WIDTH / 2.f;
+    float hh = WINDOW_HEIGHT / 2.f;
+    glm::vec4 near =
+        glm::vec4((pos.x - hw) / hw, -1 * (pos.y - hh) / hh, -1, 1.0);
+    glm::vec4 far =
+        glm::vec4((pos.x - hw) / hw, -1 * (pos.y - hh) / hh, 1, 1.0);
+    glm::vec4 nearResult = invCam * near;
+    glm::vec4 farResult = invCam * far;
+    nearResult /= nearResult.w;
+    farResult /= farResult.w;
+    glm::vec3 dir = glm::normalize(glm::vec3(farResult - nearResult));
+
+    result = rayCaster.castRay(cam.pos, dir, scene.objects());
+    if (result.hit) {
+      result.object->colour = glm::vec4{0.f, 1.f, 0.f, 1.f};
+    }
+  }
 }
 
 // todo - have a controller for pressed keys

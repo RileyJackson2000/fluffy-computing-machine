@@ -2,7 +2,8 @@
 
 namespace fcm {
 
-constexpr inline float eps = 1e-4;
+constexpr inline float INF = 1e+12;
+constexpr inline float eps = 1e-6;
 constexpr inline float PI = 3.14159265358979323846f;
 
 /* window options */
