@@ -142,43 +142,47 @@ void Viewer::render(GLScene *scene) {
   shader.setMat4("uV", cam.viewMat());
   shader.setMat4("uP", cam.projectionMat());
 
+  // auto md = genSphereMesh(1, 10, 10, true);
+  // GLMeshData glmd{md.get()};
+  shader.setMat4("uM", glm::mat4{1.f});
+  draw(scene->globjects()[0].glMeshData);
+
   //for (auto &&obj : scene->globjects()) {
-  for (int i = 0; i < scene->globjects().size(); ++i) {
-    auto &&obj = scene->objects()[i];
-    auto &&globj = scene->globjects()[i];
-    shader.setMat4("uM", globj.getTransform());
+  // for (int i = 0; i < scene->globjects().size(); ++i) {
+  //   auto &&obj = scene->objects()[i];
+  //   auto &&globj = scene->globjects()[i];
+  //   shader.setMat4("uM", globj.getTransform());
+  //   draw(obj->glMeshData);
     //draw(globj.glMeshData);
-    //draw(globj.glMeshData);
-  shader.bind();
   //globj.glMeshData.ib.bind();
   //glew::glDrawElements(GL_TRIANGLES, globj.glMeshData.ib.numIndices, GL_UNSIGNED_INT,
                        //nullptr);
                         //This will identify our vertex buffer
-  std::vector<glm::vec3> verts;  
-  for (int j=0; j<obj->glMeshData.mesh->vertices.size(); ++j) {
-  verts.push_back(obj->meshData->vertices[j].pos);
-  }
-  glew::GLuint vertexbuffer;
-                        // Generate 1 buffer, put the resulting identifier in vertexbuffer
-  glew::glGenBuffers(1, &vertexbuffer);
-                        // The following commands will talk about our 'vertexbuffer' buffer
-  glew::glBindBuffer(GL_ARRAY_BUFFER, vertexbuffer);
-                        // Give our vertices to OpenGL.
-  glew::glBufferData(GL_ARRAY_BUFFER, sizeof(glm::vec3)*verts.size(), &verts, GL_STATIC_DRAW);
-  glew::glEnableVertexAttribArray(0);
-  glew::glBindBuffer(GL_ARRAY_BUFFER, vertexbuffer);
-  glew::glVertexAttribPointer(
-         0,                  // attribute 0. No particular reason for 0, but must match the layout in the shader.
-        3,                  // size
-           GL_FLOAT,           // type
-              GL_FALSE,           // normalized?
-                 0,                  // stride
-                    (void*)0            // array buffer offset
+  // std::vector<glm::vec3> verts;  
+  // for (int j=0; j<obj->glMeshData.mesh->vertices.size(); ++j) {
+  // verts.push_back(obj->meshData->vertices[j].pos);
+  // }
+  // glew::GLuint vertexbuffer;
+  //                       // Generate 1 buffer, put the resulting identifier in vertexbuffer
+  // glew::glGenBuffers(1, &vertexbuffer);
+  //                       // The following commands will talk about our 'vertexbuffer' buffer
+  // glew::glBindBuffer(GL_ARRAY_BUFFER, vertexbuffer);
+  //                       // Give our vertices to OpenGL.
+  // glew::glBufferData(GL_ARRAY_BUFFER, sizeof(glm::vec3)*verts.size(), &verts, GL_STATIC_DRAW);
+  // glew::glEnableVertexAttribArray(0);
+  // glew::glBindBuffer(GL_ARRAY_BUFFER, vertexbuffer);
+  // glew::glVertexAttribPointer(
+  //        0,                  // attribute 0. No particular reason for 0, but must match the layout in the shader.
+  //       3,                  // size
+  //          GL_FLOAT,           // type
+  //             GL_FALSE,           // normalized?
+  //                0,                  // stride
+  //                   (void*)0            // array buffer offset
                         
-      );
-  glew::glDrawArrays(GL_TRIANGLES, 0, obj->glMeshData.mesh_indices.size());
-  glew::glDisableVertexAttribArray(0);
-  }
+  //     );
+  // glew::glDrawArrays(GL_TRIANGLES, 0, obj->glMeshData.mesh_indices.size());
+  // glew::glDisableVertexAttribArray(0);
+  // }
 
   glfw::glfwSwapBuffers(window.ptr.get());
 }
