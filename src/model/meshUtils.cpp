@@ -42,9 +42,9 @@ std::tuple<float, glm::vec3, glm::mat3> computeMassProps(const MeshData &mesh,
   float totalMass{0.f};
   for (size_t i = 0; i < mesh.indices.size(); i += 3) {
     // implicit tet with vertices (0,0,0), v1, v2, v3
-    glm::vec3 v1 = mesh.vertices[i + 0].pos;
-    glm::vec3 v2 = mesh.vertices[i + 1].pos;
-    glm::vec3 v3 = mesh.vertices[i + 2].pos;
+    glm::vec3 v1 = mesh.vertices[mesh.indices[i + 0]].pos;
+    glm::vec3 v2 = mesh.vertices[mesh.indices[i + 1]].pos;
+    glm::vec3 v3 = mesh.vertices[mesh.indices[i + 2]].pos;
 
     // A is the transformation to convert our canonical tet to implicit tet
     glm::mat3 A{v1, v2, v3};
