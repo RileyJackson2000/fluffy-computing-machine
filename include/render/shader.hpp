@@ -19,8 +19,10 @@ struct Shader {
   void unbind();
 
   // add setters here as necessary
+  void setFloat(const std::string &name, float v);
   void setVec3(const std::string &name, glm::vec3 v);
   void setVec4(const std::string &name, glm::vec4 v);
+  void setMat3(const std::string &name, glm::mat3 m);
   void setMat4(const std::string &name, glm::mat4 m);
 
 private:

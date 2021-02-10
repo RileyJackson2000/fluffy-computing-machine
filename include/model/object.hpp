@@ -65,7 +65,10 @@ public:
   float mass = 0;
   float moment_of_inertia = 0;
 
-  glm::vec4 colour{1.f, 0.f, 1.f, 1.f};
+  glm::vec3 ambientColour{0.1, 0.f, 0.1f};
+  glm::vec3 diffuseColour{0.5f, 0.0f, 0.5f};
+  glm::vec3 specColour{1.0, 1.0, 1.0};
+  float shininess = 16.0;
 
   glm::mat4 getTransform();
 };

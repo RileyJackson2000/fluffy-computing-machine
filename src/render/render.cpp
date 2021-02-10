@@ -60,52 +60,16 @@ Window::Window(uint32_t width, uint32_t height) {
   glfw::glfwSetInputMode(ptr.get(), GLFW_CURSOR, GLFW_CURSOR_NORMAL);
 }
 
-float lastMouseX = WINDOW_WIDTH / 2.f;
-float lastMouseY = WINDOW_HEIGHT / 2.f;
-float yaw = -90.f;
-float pitch = 0;
-float fov = 60.f;
-float mouseSensitivity = 0.1;
-glm::vec3 camDir{0.f, 0.f, -1.f};
-
-static void mouse_callback(glfw::GLFWwindow *window, double xpos, double ypos) {
-  (void)window;
-
-  float xoffset = xpos - lastMouseX;
-  float yoffset = lastMouseY - ypos;
-  lastMouseX = xpos;
-  lastMouseY = ypos;
-
-  xoffset *= mouseSensitivity;
-  yoffset *= mouseSensitivity;
-
-  yaw += xoffset;
-  pitch += yoffset;
-
-  glm::clamp(pitch, -89.f, 89.f);
-  camDir.x = glm::cos(glm::radians(yaw)) * glm::cos(glm::radians(pitch));
-  camDir.y = glm::sin(glm::radians(pitch));
-  camDir.z = glm::sin(glm::radians(yaw)) * glm::cos(glm::radians(pitch));
-  camDir = glm::normalize(camDir);
-}
-
-static void scroll_callback(glfw::GLFWwindow *window, double xoff,
-                            double yoff) {
-  (void)window;
-  (void)xoff;
-
-  fov -= yoff;
-  glm::clamp(fov, 1.f, 60.f);
-}
-
 Viewer::Viewer()
     : window{WINDOW_WIDTH, WINDOW_HEIGHT}, shader{std::string{"default"}},
       cam{float(WINDOW_WIDTH) / float(WINDOW_HEIGHT)} {
   // Dark blue background
   glew::glClearColor(0.0f, 0.0f, 0.3f, 0.0f);
 
-  glfw::glfwSetCursorPosCallback(window.ptr.get(), mouse_callback);
-  glfw::glfwSetScrollCallback(window.ptr.get(), scroll_callback);
+  // glew::glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );
+  glew::glEnable(GL_CULL_FACE);
+  glew::glEnable(GL_DEPTH_TEST);
+
   lastFrameTime = getTime();
 }
 
@@ -114,25 +78,31 @@ Viewer::~Viewer() { glfw::glfwTerminate(); }
 void Viewer::render(Scene &scene) {
   // controller
   pollEvents();
-  cam.fov = fov;
-  cam.dir = camDir;
   double currentTime = getTime();
   double dt = currentTime - lastFrameTime;
   lastFrameTime = currentTime;
   updateCameraPos(dt);
+  updateCameraDir();
   selectObject(scene);
 
-  glew::glClear(GL_COLOR_BUFFER_BIT);
-  // glew::glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );
-  glew::glEnable(GL_CULL_FACE);
+  glew::glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-  shader.setVec3("uLightPos", glm::vec3{1, 2, 300});
-  shader.setMat4("uV", cam.viewMat());
-  shader.setMat4("uP", cam.projectionMat());
+  shader.setVec3("uLightPos", glm::vec3{0, 0, 10});
+  shader.setVec3("uLightColour", glm::vec3{1.f});
+  shader.setFloat("uLightPower", 50);
+
+  glm::mat4 vp = cam.projectionMat() * cam.viewMat();
 
   for (auto &&obj : scene.objects()) {
-    shader.setVec4("uColor", obj->colour);
+    shader.setMat4("uMVP", vp * obj->getTransform());
     shader.setMat4("uM", obj->getTransform());
+    shader.setMat3("uMti", glm::inverse(glm::transpose(obj->getTransform())));
+
+    shader.setVec3("uAmbientColour", obj->ambientColour);
+    shader.setVec3("uDiffuseColour", obj->diffuseColour);
+    shader.setVec3("uSpecColour", obj->specColour);
+    shader.setFloat("uShininess", obj->shininess);
+
     draw(obj->glMeshData);
   }
 
@@ -165,6 +135,34 @@ void Viewer::updateCameraPos(double dt) {
     cam.pos += multiplier * glm::normalize(glm::cross(cam.dir, cam.up));
 }
 
+void Viewer::updateCameraDir() {
+  int state = window.getMouseButton(GLFW_MOUSE_BUTTON_RIGHT);
+  if (state == GLFW_PRESS) {
+    glm::vec2 pos = window.getCursorPos();
+    if (!rbuttonDown) {
+      lastMousePos = pos;
+    }
+    rbuttonDown = true;
+    float xoffset = pos.x - lastMousePos.x;
+    float yoffset = lastMousePos.y - pos.y;
+    lastMousePos = pos;
+
+    xoffset *= mouseSensitivity;
+    yoffset *= mouseSensitivity;
+
+    yaw += xoffset;
+    pitch += yoffset;
+
+    glm::clamp(pitch, -89.f, 89.f);
+    cam.dir.x = glm::cos(glm::radians(yaw)) * glm::cos(glm::radians(pitch));
+    cam.dir.y = glm::sin(glm::radians(pitch));
+    cam.dir.z = glm::sin(glm::radians(yaw)) * glm::cos(glm::radians(pitch));
+    cam.dir = glm::normalize(cam.dir);
+  } else if (state == GLFW_RELEASE) {
+    rbuttonDown = false;
+  }
+}
+
 void Viewer::selectObject(Scene &scene) {
   RayCastResult result;
   if (window.getMouseButton(GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS) {
@@ -184,7 +182,8 @@ void Viewer::selectObject(Scene &scene) {
 
     result = rayCaster.castRay(cam.pos, dir, scene.objects());
     if (result.hit) {
-      result.object->colour = glm::vec4{0.f, 1.f, 0.f, 1.f};
+      result.object->ambientColour = glm::vec3{0.f, 0.1f, 0.f};
+      result.object->diffuseColour = glm::vec3{0.f, 0.5f, 0.f};
     }
   }
 }
