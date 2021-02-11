@@ -6,7 +6,7 @@ project (
   LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD 17)
-add_compile_options(-Wall -Wextra -g -O3)
+add_compile_options(-Wall -Wextra -Werror -g -O3)
 
 include(CTest)
 
@@ -25,6 +25,6 @@ add_subdirectory(tests)
 
 add_subdirectory(extern/googletest)
 add_subdirectory(extern/glew-cmake)
-add_subdirectory(extern/glfw)
+#add_subdirectory(extern/glfw)
 add_subdirectory(extern/glm)
 

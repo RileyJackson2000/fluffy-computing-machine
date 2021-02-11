@@ -80,8 +80,7 @@ std::shared_ptr<MeshData> genSphereMesh(float radius, uint32_t sectorCount,
                                         uint32_t stackCount, bool faceNormals) {
   auto md = std::make_shared<MeshData>();
 
-  float x, y, z, xy;                           // vertex position
-  float nx, ny, nz, lengthInv = 1.0f / radius; // vertex normal
+  float x, y, z, xy; // vertex position
 
   float sectorStep = 2.0 * PI / float(sectorCount);
   float stackStep = PI / float(stackCount);
