@@ -1,5 +1,6 @@
 #include <cstddef>
 
+#include <iostream>
 #include <render/vertexBuffer.hpp>
 #include <utils/glew.hpp>
 

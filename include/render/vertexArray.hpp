@@ -11,6 +11,12 @@ struct VertexArray {
   glew::GLHandle handle;
 
   VertexArray();
+  // non-copyable, non-movable
+  // this prevents annoying opengl issues with the handle
+  // see GLMesh.hpp for more details
+  VertexArray(const VertexArray &) = delete;
+  VertexArray(VertexArray &&) = delete;
+  VertexArray &operator=(VertexArray) = delete;
   ~VertexArray();
 
   void addVertexBuffer(const VertexBuffer &vb,

@@ -11,6 +11,12 @@ struct IndexBuffer {
   const size_t numIndices;
 
   IndexBuffer(const glew::GLuint *data, size_t numIndices);
+  // non-copyable, non-movable
+  // this prevents annoying opengl issues with the handle
+  // see GLMesh.hpp for more details
+  IndexBuffer(const IndexBuffer &) = delete;
+  IndexBuffer(IndexBuffer &&) = delete;
+  IndexBuffer &operator=(IndexBuffer) = delete;
   ~IndexBuffer();
 
   void bind() const;

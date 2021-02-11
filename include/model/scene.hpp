@@ -1,15 +1,15 @@
 #pragma once
 
 #include <model/object.hpp>
+#include <model/rayCaster.hpp>
 #include <utils/glm.hpp>
+#include <utils/types.hpp>
 
 #include <iostream>
 #include <memory>
 #include <string>
 #include <unordered_map>
 #include <vector>
-
-#include <model/rayCaster.hpp>
 
 namespace fcm {
 
@@ -18,11 +18,16 @@ class Scene {
 protected:
   std::string _name;
   std::vector<std::unique_ptr<Object>> _objects;
+  MeshCache *_meshCache;
 
   RayCaster rayCaster;
 
 public:
-  explicit Scene(std::string name) : _name{std::move(name)} {}
+  explicit Scene(std::string name, MeshCache *meshCache)
+      : _name{std::move(name)}, _meshCache{meshCache}, rayCaster{meshCache} {}
+  // can't copy references
+  Scene &operator=(const Scene &) = delete;
+  Scene &operator=(Scene &&) = delete;
   virtual ~Scene() {}
 
   const std::string &name() const { return _name; }

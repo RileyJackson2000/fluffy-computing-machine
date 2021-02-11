@@ -2,6 +2,7 @@
 #include <render/render.hpp>
 
 #include <iostream>
+#include <render/model.hpp>
 #include <utils/constants.hpp>
 #include <utils/glew.hpp>
 
@@ -60,9 +61,9 @@ Window::Window(uint32_t width, uint32_t height) {
   glfw::glfwSetInputMode(ptr.get(), GLFW_CURSOR, GLFW_CURSOR_NORMAL);
 }
 
-Viewer::Viewer()
+Viewer::Viewer(ModelCache *modelCache, RayCaster *rayCaster, Camera *cam)
     : window{WINDOW_WIDTH, WINDOW_HEIGHT}, shader{std::string{"default"}},
-      cam{float(WINDOW_WIDTH) / float(WINDOW_HEIGHT)} {
+      modelCache{modelCache}, rayCaster{rayCaster}, cam{cam} {
   // Dark blue background
   glew::glClearColor(0.0f, 0.0f, 0.3f, 0.0f);
 
@@ -75,7 +76,7 @@ Viewer::Viewer()
 
 Viewer::~Viewer() { glfw::glfwTerminate(); }
 
-void Viewer::render(GLScene *scene) {
+void Viewer::render(Scene *scene) {
   // controller
   pollEvents();
   double currentTime = getTime();
@@ -83,7 +84,7 @@ void Viewer::render(GLScene *scene) {
   lastFrameTime = currentTime;
   updateCameraPos(dt);
   updateCameraDir();
-  selectObject(scene);
+  selectObject(*scene);
 
   glew::glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -91,9 +92,9 @@ void Viewer::render(GLScene *scene) {
   shader.setVec3("uLightColour", glm::vec3{1.f});
   shader.setFloat("uLightPower", 50);
 
-  glm::mat4 vp = cam.projectionMat() * cam.viewMat();
+  glm::mat4 vp = cam->projectionMat() * cam->viewMat();
 
-  for (auto &&obj : scene.objects()) {
+  for (auto &&obj : scene->objects()) {
     shader.setMat4("uMVP", vp * obj->getTransform());
     shader.setMat4("uM", obj->getTransform());
     shader.setMat3("uMti", glm::inverse(glm::transpose(obj->getTransform())));
@@ -103,21 +104,19 @@ void Viewer::render(GLScene *scene) {
     shader.setVec3("uSpecColour", obj->specColour);
     shader.setFloat("uShininess", obj->shininess);
 
-    draw(obj->glMeshData);
+    draw(obj->modelKey);
   }
 
   glew::glFlush();
 }
 
-void Viewer::draw(const GLMeshData &glMeshData) {
+void Viewer::draw(ModelKey modelKey) {
+  const auto &model = *((*modelCache)[modelKey]);
   shader.bind();
-  //std::cout <<shader.handle<<"\n";
-  glMeshData.va.bind();
-  //std::cout <<glMeshData.va.handle<<"\n";
-  glMeshData.ib.bind();
-  //std::cout <<glMeshData.ib.handle<<"\n";
-  //std::cout <<glMeshData.ib.numIndices<<"\n";
-  glew::glDrawElements(GL_TRIANGLES, glMeshData.ib.numIndices, GL_UNSIGNED_INT,
+  model.va.bind();
+  model.ib.bind();
+
+  glew::glDrawElements(GL_TRIANGLES, model.ib.numIndices, GL_UNSIGNED_INT,
                        nullptr);
 }
 
@@ -130,13 +129,13 @@ void Viewer::updateCameraPos(double dt) {
 
   float multiplier = speed * (dt * 1000.f);
   if (window.getKey(GLFW_KEY_W) == GLFW_PRESS)
-    cam.pos += multiplier * cam.dir;
+    cam->pos += multiplier * cam->dir;
   if (window.getKey(GLFW_KEY_S) == GLFW_PRESS)
-    cam.pos -= multiplier * cam.dir;
+    cam->pos -= multiplier * cam->dir;
   if (window.getKey(GLFW_KEY_A) == GLFW_PRESS)
-    cam.pos -= multiplier * glm::normalize(glm::cross(cam.dir, cam.up));
+    cam->pos -= multiplier * glm::normalize(glm::cross(cam->dir, cam->up));
   if (window.getKey(GLFW_KEY_D) == GLFW_PRESS)
-    cam.pos += multiplier * glm::normalize(glm::cross(cam.dir, cam.up));
+    cam->pos += multiplier * glm::normalize(glm::cross(cam->dir, cam->up));
 }
 
 void Viewer::updateCameraDir() {
@@ -158,10 +157,10 @@ void Viewer::updateCameraDir() {
     pitch += yoffset;
 
     glm::clamp(pitch, -89.f, 89.f);
-    cam.dir.x = glm::cos(glm::radians(yaw)) * glm::cos(glm::radians(pitch));
-    cam.dir.y = glm::sin(glm::radians(pitch));
-    cam.dir.z = glm::sin(glm::radians(yaw)) * glm::cos(glm::radians(pitch));
-    cam.dir = glm::normalize(cam.dir);
+    cam->dir.x = glm::cos(glm::radians(yaw)) * glm::cos(glm::radians(pitch));
+    cam->dir.y = glm::sin(glm::radians(pitch));
+    cam->dir.z = glm::sin(glm::radians(yaw)) * glm::cos(glm::radians(pitch));
+    cam->dir = glm::normalize(cam->dir);
   } else if (state == GLFW_RELEASE) {
     rbuttonDown = false;
   }
@@ -171,7 +170,7 @@ void Viewer::selectObject(Scene &scene) {
   RayCastResult result;
   if (window.getMouseButton(GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS) {
     glm::vec2 pos = window.getCursorPos();
-    glm::mat4 invCam = glm::inverse(cam.projectionMat() * cam.viewMat());
+    glm::mat4 invCam = glm::inverse(cam->projectionMat() * cam->viewMat());
     float hw = WINDOW_WIDTH / 2.f;
     float hh = WINDOW_HEIGHT / 2.f;
     glm::vec4 near =
@@ -184,7 +183,7 @@ void Viewer::selectObject(Scene &scene) {
     farResult /= farResult.w;
     glm::vec3 dir = glm::normalize(glm::vec3(farResult - nearResult));
 
-    result = rayCaster.castRay(cam.pos, dir, scene.objects());
+    result = rayCaster->castRay(cam->pos, dir, scene.objects());
     if (result.hit) {
       result.object->ambientColour = glm::vec3{0.f, 0.1f, 0.f};
       result.object->diffuseColour = glm::vec3{0.f, 0.5f, 0.f};
