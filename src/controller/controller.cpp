@@ -60,12 +60,12 @@ void SceneController::run(size_t numSteps) {
     totalUpdateTime += frameEnd - frameStart;
 
     if (nTicks % ticksTillUpdate == 0) {
-      std::cout << "Avg TPS: " << nTicks / totalUpdateTime << " | ";
-      std::cout << "Avg FPS: " << nFrames / totalUpdateTime << " || ";
-      std::cout << " Time spent updating: " << timeUpdating;
-      std::cout << " rendering: " << timeRendering;
-      std::cout << " iding: " << totalUpdateTime - timeUpdating - timeRendering;
-      std::cout << std::endl;
+      printf("Avg TPS: %0.2lf | Avg FPS: %0.2lf || ", nTicks / totalUpdateTime,
+             nFrames / totalUpdateTime);
+      printf("Time spent updating: %0.5lf ", timeUpdating);
+      printf("rendering: %0.5lf ", timeRendering);
+      printf("idling: %0.5lf\n",
+             totalUpdateTime - timeUpdating - timeRendering);
       timeUpdating = timeRendering = 0;
       nFrames = 0;
       nTicks = 0;

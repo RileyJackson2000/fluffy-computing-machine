@@ -30,15 +30,18 @@ int main(void) {
   // should move opengl initialization here instead of the constructor of window
 
   fcm::SceneController ctrl{"Scene 1", config};
-  auto sphereKey = ctrl.insertMesh(fcm::genSphereMesh(1, 10, 10, config.faceNormals));
+  auto sphereKey =
+      ctrl.insertMesh(fcm::genSphereMesh(1, 10, 10, config.faceNormals));
   auto sphereModel = ctrl.createModel(sphereKey);
 
   for (int i = 0; i < 25; ++i) {
     float rad = 1 + std::rand() % 3 / 3. * 0.2;
-    glm::vec3 pos= {(i % 5) * 2.5 - 5, (i / 5) * 2.5 - 5, 0};
-    auto s = std::make_unique<fcm::Sphere>("sphere", sphereKey, rad, pos, fcm::STEEL);
+    glm::vec3 pos = {(i % 5) * 2.5 - 5, (i / 5) * 2.5 - 5, 0};
+    auto s = std::make_unique<fcm::Sphere>("sphere", sphereKey, rad, pos,
+                                           fcm::STEEL);
     s->velocity = {std::rand() % 13 - 6, std::rand() % 13 - 6, 0};
     s->modelKey = sphereModel;
+    s->mass = 3;
 
     ctrl.insertRigidBody(std::move(s));
   }
