@@ -1,6 +1,7 @@
 add_library(
   model
   scene.cpp
+  camera.cpp
   material.cpp
   mesh.cpp
   object.cpp

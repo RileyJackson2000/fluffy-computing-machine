@@ -1,4 +1,4 @@
-#include <render/camera.hpp>
+#include <model/camera.hpp>
 
 namespace fcm {
 

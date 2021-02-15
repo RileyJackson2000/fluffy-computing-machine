@@ -5,11 +5,12 @@
 namespace fcm {
 
 Server::Server(std::string sceneName, Config config)
-    : _config{config}, _rayCaster{&_meshCache}, _camera{float(WINDOW_WIDTH) /
-                                                        float(WINDOW_HEIGHT)},
+    : _config{config}, 
       _scene{std::make_unique<Scene>(sceneName, &_meshCache)},
-      _viewer{std::make_unique<Viewer>(&_renderObjectCache, &_rayCaster,
-                                       &_camera)} {}
+      _renderScene{std::make_unique<RenderScene>(
+          _scene.get(), RayCaster{&_meshCache},
+          Camera{float(config.windowWidth) / float(config.windowHeight)})},
+      _viewer{std::make_unique<Viewer>(config, &_renderObjectCache)} {}
 
 MeshKey Server::getOrLoadMesh(const std::string &path) {
   (void)path;
@@ -49,7 +50,7 @@ void Server::run(size_t numSteps) {
     timeUpdating += _viewer->getTime() - frameStart;
     double now = _viewer->getTime();
     while (now < nextTickTarget) {
-      _viewer->render(_scene.get());
+      _viewer->render(*_renderScene);
       ++nFrames;
       timeRendering += _viewer->getTime() - now;
       now = _viewer->getTime();
@@ -80,7 +81,9 @@ void Server::run(size_t numSteps) {
 
 const MeshData &Server::meshByKey(MeshKey key) { return *_meshCache[key]; }
 
-Scene &Server::scene() { return *_scene; }
+const Scene &Server::scene() const { return *_scene; }
+
+const RenderScene &Server::renderScene() const { return *_renderScene; }
 
 const Config &Server::config() const { return _config; }
 

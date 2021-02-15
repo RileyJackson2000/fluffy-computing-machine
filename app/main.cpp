@@ -1,4 +1,3 @@
-#include <server/config.hpp>
 #include <server/server.hpp>
 
 #include <model/object.hpp>
@@ -8,6 +7,8 @@
 #include <utils/constants.hpp>
 #include <utils/glew.hpp>
 #include <utils/glfw.hpp>
+
+#include <config.hpp>
 
 #include <chrono>
 #include <iostream>
