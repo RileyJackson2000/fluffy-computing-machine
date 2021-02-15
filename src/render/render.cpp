@@ -2,7 +2,7 @@
 #include <render/render.hpp>
 
 #include <iostream>
-#include <render/model.hpp>
+#include <render/renderObject.hpp>
 #include <utils/constants.hpp>
 #include <utils/glew.hpp>
 
@@ -61,9 +61,10 @@ Window::Window(uint32_t width, uint32_t height) {
   glfw::glfwSetInputMode(ptr.get(), GLFW_CURSOR, GLFW_CURSOR_NORMAL);
 }
 
-Viewer::Viewer(ModelCache *modelCache, RayCaster *rayCaster, Camera *cam)
+Viewer::Viewer(RenderObjectCache *renderObjectCache, RayCaster *rayCaster,
+               Camera *cam)
     : window{WINDOW_WIDTH, WINDOW_HEIGHT}, shader{std::string{"default"}},
-      modelCache{modelCache}, rayCaster{rayCaster}, cam{cam} {
+      renderObjectCache{renderObjectCache}, rayCaster{rayCaster}, cam{cam} {
   // Dark blue background
   glew::glClearColor(0.0f, 0.0f, 0.3f, 0.0f);
 
@@ -104,14 +105,14 @@ void Viewer::render(Scene *scene) {
     shader.setVec3("uSpecColour", obj->specColour);
     shader.setFloat("uShininess", obj->shininess);
 
-    draw(obj->modelKey);
+    draw(obj->renderObjectKey);
   }
 
   glew::glFlush();
 }
 
-void Viewer::draw(ModelKey modelKey) {
-  const auto &model = *((*modelCache)[modelKey]);
+void Viewer::draw(RenderObjectKey renderObjectKey) {
+  const auto &model = *((*renderObjectCache)[renderObjectKey]);
   shader.bind();
   model.va.bind();
   model.ib.bind();

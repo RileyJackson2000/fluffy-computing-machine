@@ -36,15 +36,15 @@ struct Viewer {
   Window window;
   Shader shader; // shaders should be part of materials. We should also support
                  // more than one shader
-  ModelCache *modelCache;
+  RenderObjectCache *renderObjectCache;
   RayCaster *rayCaster;
   Camera *cam;
 
-  Viewer(ModelCache *, RayCaster *, Camera *);
+  Viewer(RenderObjectCache *, RayCaster *, Camera *);
   ~Viewer();
 
   void render(Scene *);
-  void draw(ModelKey modelKey);
+  void draw(RenderObjectKey renderObjectKey);
 
   // controller - TODO: move this to separete class
   float movementSpeed = 0.1;

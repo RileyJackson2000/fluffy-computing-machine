@@ -1,35 +1,37 @@
-#include <controller/controller.hpp>
 #include <physics/physics.hpp>
+#include <server/server.hpp>
 #include <utils/constants.hpp>
 
 namespace fcm {
 
-SceneController::SceneController(std::string sceneName, Config config)
+Server::Server(std::string sceneName, Config config)
     : _config{config}, _rayCaster{&_meshCache}, _camera{float(WINDOW_WIDTH) /
                                                         float(WINDOW_HEIGHT)},
       _scene{std::make_unique<Scene>(sceneName, &_meshCache)},
-      _viewer{std::make_unique<Viewer>(&_modelCache, &_rayCaster, &_camera)} {}
+      _viewer{std::make_unique<Viewer>(&_renderObjectCache, &_rayCaster,
+                                       &_camera)} {}
 
-MeshKey SceneController::getOrLoadMesh(const std::string &path) {
+MeshKey Server::getOrLoadMesh(const std::string &path) {
   (void)path;
   throw "not implemented";
 }
 
-MeshKey SceneController::insertMesh(std::unique_ptr<MeshData> mesh) {
+MeshKey Server::insertMesh(std::unique_ptr<MeshData> mesh) {
   _meshCache.emplace_back(std::move(mesh));
   return _meshCache.size() - 1;
 }
 
-ModelKey SceneController::createModel(MeshKey meshKey) {
-  _modelCache.emplace_back(std::make_unique<Model>(_meshCache[meshKey].get()));
-  return _modelCache.size() - 1;
+RenderObjectKey Server::createRenderObject(MeshKey meshKey) {
+  _renderObjectCache.emplace_back(
+      std::make_unique<RenderObject>(_meshCache[meshKey].get()));
+  return _renderObjectCache.size() - 1;
 }
 
-void SceneController::insertRigidBody(std::unique_ptr<Object> obj) {
+void Server::insertRigidBody(std::unique_ptr<Object> obj) {
   _scene->insert(std::move(obj));
 }
 
-void SceneController::run(size_t numSteps) {
+void Server::run(size_t numSteps) {
   // main loop
   double dt = 1.0 / _config.maxTPS;
   double nextTickTarget = _viewer->getTime() + dt;
@@ -76,12 +78,10 @@ void SceneController::run(size_t numSteps) {
 
 // getter/setters below
 
-const MeshData &SceneController::meshByKey(MeshKey key) {
-  return *_meshCache[key];
-}
+const MeshData &Server::meshByKey(MeshKey key) { return *_meshCache[key]; }
 
-Scene &SceneController::scene() { return *_scene; }
+Scene &Server::scene() { return *_scene; }
 
-const Config &SceneController::config() const { return _config; }
+const Config &Server::config() const { return _config; }
 
 } // namespace fcm

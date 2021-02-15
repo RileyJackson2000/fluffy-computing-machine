@@ -1,5 +1,5 @@
-add_subdirectory(controller)
 add_subdirectory(model)
 add_subdirectory(physics)
 add_subdirectory(render)
+add_subdirectory(server)
 add_subdirectory(utils)

@@ -45,7 +45,7 @@ public:
   std::string name;
 
   MeshKey meshKey;
-  ModelKey modelKey;
+  RenderObjectKey renderObjectKey;
   glm::vec3 scale = {1, 1, 1}; // amount to scalein each dir
 
   glm::vec3 position = {0, 0, 0};

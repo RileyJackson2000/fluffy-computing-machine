@@ -14,13 +14,13 @@
 
 namespace fcm {
 
-struct Model {
+struct RenderObject {
   MeshData *mesh;
   VertexBuffer vb;
   IndexBuffer ib;
   VertexArray va;
 
-  explicit Model(MeshData *meshData)
+  explicit RenderObject(MeshData *meshData)
       : mesh{meshData}, vb{meshData->vertices.data(),
                            sizeof(Vertex) * meshData->vertices.size()},
         ib{meshData->indices.data(), meshData->indices.size()} {
@@ -35,10 +35,10 @@ struct Model {
   // and this resource is released in the destructor
   // maintaining this resource through copies and moves is extra annoying and
   // not worth the hassle. Instead, always maintain pointers to Model
-  Model(const Model &) = delete;
-  Model(Model &&) = delete;
-  Model &operator=(Model other) = delete;
-  ~Model() {}
+  RenderObject(const RenderObject &) = delete;
+  RenderObject(RenderObject &&) = delete;
+  RenderObject &operator=(RenderObject other) = delete;
+  ~RenderObject() {}
 };
 
 } // namespace fcm
