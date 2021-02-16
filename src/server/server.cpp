@@ -5,8 +5,7 @@
 namespace fcm {
 
 Server::Server(std::string sceneName, Config config)
-    : _config{config}, 
-      _scene{std::make_unique<Scene>(sceneName, &_meshCache)},
+    : _config{config}, _scene{std::make_unique<Scene>(sceneName, &_meshCache)},
       _renderScene{std::make_unique<RenderScene>(
           _scene.get(), RayCaster{&_meshCache},
           Camera{float(config.windowWidth) / float(config.windowHeight)})},
@@ -26,6 +25,14 @@ RenderObjectKey Server::createRenderObject(MeshKey meshKey) {
   _renderObjectCache.emplace_back(
       std::make_unique<RenderObject>(_meshCache[meshKey].get()));
   return _renderObjectCache.size() - 1;
+}
+
+void Server::insertDirLight(std::unique_ptr<DirLight> light) {
+  _renderScene->insertDirLight(std::move(light));
+}
+
+void Server::insertPointLight(std::unique_ptr<PointLight> light) {
+  _renderScene->insertPointLight(std::move(light));
 }
 
 void Server::insertRigidBody(std::unique_ptr<Object> obj) {

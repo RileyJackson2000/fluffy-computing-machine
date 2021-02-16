@@ -17,7 +17,7 @@ static void error_callback(int error, const char *description) {
 
 namespace fcm {
 
-Window::Window(const char *title, uint32_t width, uint32_t height) {
+Window::Window(const std::string &title, uint32_t width, uint32_t height) {
   // Initialise GLFW
   if (!glfw::glfwInit()) {
     throw std::runtime_error("Failed to initialize GLFW.");
@@ -38,7 +38,7 @@ Window::Window(const char *title, uint32_t width, uint32_t height) {
   glfw::glfwSetErrorCallback(error_callback);
 
   ptr = glfw::GLFWwindow_ptr{
-      glfw::glfwCreateWindow(width, height, title, NULL, NULL)};
+      glfw::glfwCreateWindow(width, height, title.c_str(), NULL, NULL)};
 
   if (ptr.get() == nullptr) {
     glfw::glfwTerminate();
@@ -62,8 +62,8 @@ Window::Window(const char *title, uint32_t width, uint32_t height) {
 }
 
 Viewer::Viewer(Config config, RenderObjectCache *renderObjectCache)
-    : config{config},
-      window{config.windowTitle, config.windowWidth, config.windowHeight},
+    : config{config}, window{config.windowTitle, config.windowWidth,
+                             config.windowHeight},
       shader{std::string{"default"}}, renderObjectCache{renderObjectCache} {
   // Dark blue background
   glew::glClearColor(0.0f, 0.0f, 0.3f, 0.0f);
@@ -89,9 +89,9 @@ void Viewer::render(RenderScene &scene) {
 
   glew::glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-  shader.setVec3("uLightPos", glm::vec3{0, 0, 10});
-  shader.setVec3("uLightColour", glm::vec3{1.f});
-  shader.setFloat("uLightPower", 50);
+  _bindLights(scene);
+
+  shader.setVec3("uCamPos", scene.camera.pos);
 
   glm::mat4 vp = scene.camera.projectionMat() * scene.camera.viewMat();
 
@@ -102,7 +102,7 @@ void Viewer::render(RenderScene &scene) {
 
     shader.setVec3("uAmbientColour", obj->ambientColour);
     shader.setVec3("uDiffuseColour", obj->diffuseColour);
-    shader.setVec3("uSpecColour", obj->specColour);
+    shader.setVec3("uSpecularColour", obj->specularColour);
     shader.setFloat("uShininess", obj->shininess);
 
     draw(obj->renderObjectKey);
@@ -134,9 +134,13 @@ void Viewer::updateCameraPos(double dt, RenderScene &scene) {
   if (window.getKey(GLFW_KEY_S) == GLFW_PRESS)
     scene.camera.pos -= multiplier * scene.camera.dir;
   if (window.getKey(GLFW_KEY_A) == GLFW_PRESS)
-    scene.camera.pos -= multiplier * glm::normalize(glm::cross(scene.camera.dir, scene.camera.up));
+    scene.camera.pos -=
+        multiplier *
+        glm::normalize(glm::cross(scene.camera.dir, scene.camera.up));
   if (window.getKey(GLFW_KEY_D) == GLFW_PRESS)
-    scene.camera.pos += multiplier * glm::normalize(glm::cross(scene.camera.dir, scene.camera.up));
+    scene.camera.pos +=
+        multiplier *
+        glm::normalize(glm::cross(scene.camera.dir, scene.camera.up));
 }
 
 void Viewer::updateCameraDir(RenderScene &scene) {
@@ -158,9 +162,11 @@ void Viewer::updateCameraDir(RenderScene &scene) {
     pitch += yoffset;
 
     glm::clamp(pitch, -89.f, 89.f);
-    scene.camera.dir.x = glm::cos(glm::radians(yaw)) * glm::cos(glm::radians(pitch));
+    scene.camera.dir.x =
+        glm::cos(glm::radians(yaw)) * glm::cos(glm::radians(pitch));
     scene.camera.dir.y = glm::sin(glm::radians(pitch));
-    scene.camera.dir.z = glm::sin(glm::radians(yaw)) * glm::cos(glm::radians(pitch));
+    scene.camera.dir.z =
+        glm::sin(glm::radians(yaw)) * glm::cos(glm::radians(pitch));
     scene.camera.dir = glm::normalize(scene.camera.dir);
   } else if (state == GLFW_RELEASE) {
     rbuttonDown = false;
@@ -171,7 +177,8 @@ void Viewer::selectObject(RenderScene &scene) {
   RayCastResult result;
   if (window.getMouseButton(GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS) {
     glm::vec2 pos = window.getCursorPos();
-    glm::mat4 invCam = glm::inverse(scene.camera.projectionMat() * scene.camera.viewMat());
+    glm::mat4 invCam =
+        glm::inverse(scene.camera.projectionMat() * scene.camera.viewMat());
     float hw = config.windowWidth / 2.f;
     float hh = config.windowHeight / 2.f;
     glm::vec4 near =
@@ -197,6 +204,38 @@ bool Viewer::closeWindow() {
   if (window.getKey(GLFW_KEY_ESCAPE) == GLFW_PRESS)
     window.setShouldClose(true);
   return window.shouldClose();
+}
+
+void Viewer::_bindLights(const RenderScene &scene) {
+  // dir lights
+  for (size_t i = 0; i < scene.dirLights().size(); ++i) {
+    const auto &light = scene.dirLights()[i];
+    std::string uDirLights = "uDirLights[" + std::to_string(i) + "].";
+
+    shader.setVec3(uDirLights + "dir", light->dir);
+
+    shader.setVec3(uDirLights + "ambientColour", light->ambientColour);
+    shader.setVec3(uDirLights + "diffuseColour", light->diffuseColour);
+    shader.setVec3(uDirLights + "specularColour", light->specularColour);
+  }
+  shader.setInt("numDirLights", scene.dirLights().size());
+
+  // point lights
+  for (size_t i = 0; i < scene.pointLights().size(); ++i) {
+    const auto &light = scene.pointLights()[i];
+    std::string uPointLights = "uPointLights[" + std::to_string(i) + "].";
+
+    shader.setVec3(uPointLights + "pos", light->pos);
+
+    shader.setFloat(uPointLights + "constant", light->constant);
+    shader.setFloat(uPointLights + "linear", light->linear);
+    shader.setFloat(uPointLights + "quadratic", light->quadratic);
+
+    shader.setVec3(uPointLights + "ambientColour", light->ambientColour);
+    shader.setVec3(uPointLights + "diffuseColour", light->diffuseColour);
+    shader.setVec3(uPointLights + "specularColour", light->specularColour);
+  }
+  shader.setInt("numPointLights", scene.pointLights().size());
 }
 
 } // namespace fcm

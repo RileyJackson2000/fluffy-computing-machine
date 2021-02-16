@@ -1,8 +1,9 @@
 #pragma once
 
+#include <model/light.hpp>
 #include <model/mesh.hpp>
-#include <model/scene.hpp>
 #include <model/renderScene.hpp>
+#include <model/scene.hpp>
 
 #include <render/render.hpp>
 #include <render/renderObject.hpp>
@@ -21,11 +22,14 @@ class Server {
   std::unique_ptr<Scene> _scene;
   std::unique_ptr<RenderScene> _renderScene;
   std::unique_ptr<Viewer> _viewer;
+
 public:
   Server(std::string sceneName, Config);
   MeshKey getOrLoadMesh(const std::string &path);
   MeshKey insertMesh(std::unique_ptr<MeshData>);
   RenderObjectKey createRenderObject(MeshKey);
+  void insertDirLight(std::unique_ptr<DirLight>);
+  void insertPointLight(std::unique_ptr<PointLight>);
   void insertRigidBody(std::unique_ptr<Object>);
 
   // run the simulation for the following number time steps

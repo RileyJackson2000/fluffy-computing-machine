@@ -1,5 +1,6 @@
 #include <server/server.hpp>
 
+#include <model/light.hpp>
 #include <model/object.hpp>
 #include <model/scene.hpp>
 #include <physics/physics.hpp>
@@ -30,10 +31,10 @@ int main(void) {
   std::cout << "Initializing renderer...\n";
   // should move opengl initialization here instead of the constructor of window
 
-  fcm::Server ctrl{"Scene 1", config};
+  fcm::Server server{"Scene 1", config};
   auto sphereKey =
-      ctrl.insertMesh(fcm::genSphereMesh(1, 10, 10, config.faceNormals));
-  auto sphereModel = ctrl.createRenderObject(sphereKey);
+      server.insertMesh(fcm::genSphereMesh(1, 10, 10, config.faceNormals));
+  auto sphereModel = server.createRenderObject(sphereKey);
 
   for (int i = 0; i < 25; ++i) {
     float rad = 1 + std::rand() % 3 / 3. * 0.2;
@@ -44,10 +45,32 @@ int main(void) {
     s->renderObjectKey = sphereModel;
     s->mass = 3;
 
-    ctrl.insertRigidBody(std::move(s));
+    server.insertRigidBody(std::move(s));
   }
 
-  ctrl.run();
+  std::unique_ptr<fcm::DirLight> dirLight = std::make_unique<fcm::DirLight>();
+  dirLight->dir = {0, -1, 0};
+
+  dirLight->ambientColour = {0.1, 0.1, 0.1};
+  dirLight->diffuseColour = {0.2, 0.2, 0.2};
+  dirLight->specularColour = {1.0, 1.0, 1.0};
+
+  server.insertDirLight(std::move(dirLight));
+
+  std::unique_ptr<fcm::PointLight> light = std::make_unique<fcm::PointLight>();
+  light->pos = {0, 0, 0};
+
+  light->constant = 1.0;
+  light->linear = 0.007;
+  light->quadratic = 0.0017;
+
+  light->ambientColour = {0.1, 0.1, 0.1};
+  light->diffuseColour = {1.0, 1.0, 1.0};
+  light->specularColour = {1.0, 1.0, 1.0};
+
+  server.insertPointLight(std::move(light));
+
+  server.run();
 
   std::cout << "Goodbye\n";
   return 0;

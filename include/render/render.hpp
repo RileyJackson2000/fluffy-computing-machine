@@ -19,7 +19,7 @@ namespace fcm {
 struct Window {
   // TODO resizable window?
   glfw::GLFWwindow_ptr ptr;
-  Window(const char *title, uint32_t width, uint32_t height);
+  Window(const std::string &title, uint32_t width, uint32_t height);
 
   int getKey(int key) { return glfw::glfwGetKey(ptr.get(), key); }
   int getMouseButton(int key) {
@@ -64,6 +64,10 @@ struct Viewer {
 
   void pollEvents() { glfw::glfwPollEvents(); }
   double getTime() { return glfw::glfwGetTime(); }
+
+private:
+  // copy lights to the gpu
+  void _bindLights(const RenderScene &scene);
 };
 
 } // namespace fcm

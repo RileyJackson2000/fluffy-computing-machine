@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cstdint>
+#include <string>
 
 namespace fcm {
 
@@ -17,7 +18,7 @@ struct Config {
   /* window options */
   uint32_t windowWidth = 720;
   uint32_t windowHeight = 540;
-  const char *windowTitle = "Title goes here";
+  std::string windowTitle = "Title goes here";
 };
 
 } // namespace fcm
