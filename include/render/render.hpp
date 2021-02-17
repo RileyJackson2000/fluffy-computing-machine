@@ -1,9 +1,11 @@
 #pragma once
 
 #include <utils/glfw.hpp>
+#include <utils/types.hpp>
 
+#include <model/rayCaster.hpp>
 #include <model/scene.hpp>
-#include <render/GLMesh.hpp>
+
 #include <render/camera.hpp>
 #include <render/shader.hpp>
 
@@ -34,14 +36,15 @@ struct Viewer {
   Window window;
   Shader shader; // shaders should be part of materials. We should also support
                  // more than one shader
-  Camera cam;
-  RayCaster rayCaster;
+  RenderObjectCache *renderObjectCache;
+  RayCaster *rayCaster;
+  Camera *cam;
 
-  Viewer();
+  Viewer(RenderObjectCache *, RayCaster *, Camera *);
   ~Viewer();
 
-  void render(Scene &scene);
-  void draw(const GLMeshData &glMeshData);
+  void render(Scene *);
+  void draw(RenderObjectKey renderObjectKey);
 
   // controller - TODO: move this to separete class
   float movementSpeed = 0.1;
