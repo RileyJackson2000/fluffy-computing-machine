@@ -1,12 +1,14 @@
 #pragma once
 
+#include <config.hpp>
+
 #include <utils/glfw.hpp>
 #include <utils/types.hpp>
 
+#include <model/camera.hpp>
 #include <model/rayCaster.hpp>
-#include <model/scene.hpp>
+#include <model/renderScene.hpp>
 
-#include <render/camera.hpp>
 #include <render/shader.hpp>
 
 namespace fcm {
@@ -17,7 +19,7 @@ namespace fcm {
 struct Window {
   // TODO resizable window?
   glfw::GLFWwindow_ptr ptr;
-  Window(uint32_t width, uint32_t height);
+  Window(const std::string &title, uint32_t width, uint32_t height);
 
   int getKey(int key) { return glfw::glfwGetKey(ptr.get(), key); }
   int getMouseButton(int key) {
@@ -33,36 +35,39 @@ struct Window {
 };
 
 struct Viewer {
+  Config config;
   Window window;
   Shader shader; // shaders should be part of materials. We should also support
                  // more than one shader
   RenderObjectCache *renderObjectCache;
-  RayCaster *rayCaster;
-  Camera *cam;
 
-  Viewer(RenderObjectCache *, RayCaster *, Camera *);
+  Viewer(Config, RenderObjectCache *);
   ~Viewer();
 
-  void render(Scene *);
+  void render(RenderScene &);
   void draw(RenderObjectKey renderObjectKey);
 
   // controller - TODO: move this to separete class
   float movementSpeed = 0.1;
   double lastFrameTime;
 
-  glm::vec2 lastMousePos{WINDOW_WIDTH / 2.f, WINDOW_HEIGHT / 2.f};
+  glm::vec2 lastMousePos{config.windowWidth / 2.f, config.windowHeight / 2.f};
   float yaw = -90.f;
   float pitch = 0;
   float mouseSensitivity = 0.15;
   bool rbuttonDown = false;
 
-  void updateCameraPos(double dt);
-  void updateCameraDir();
-  void selectObject(Scene &scene);
+  void updateCameraPos(double dt, RenderScene &);
+  void updateCameraDir(RenderScene &);
+  void selectObject(RenderScene &);
   bool closeWindow();
 
   void pollEvents() { glfw::glfwPollEvents(); }
   double getTime() { return glfw::glfwGetTime(); }
+
+private:
+  // copy lights to the gpu
+  void _bindLights(const RenderScene &scene);
 };
 
 } // namespace fcm

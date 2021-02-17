@@ -20,6 +20,10 @@ void Shader::bind() { glew::glUseProgram(handle); }
 
 void Shader::unbind() { glew::glUseProgram(0); }
 
+void Shader::setInt(const std::string &name, int i) {
+  glew::glUniform1i(getUniformLocation(name), i);
+}
+
 void Shader::setFloat(const std::string &name, float v) {
   glew::glUniform1f(getUniformLocation(name), v);
 }
