@@ -2,7 +2,6 @@ add_library(
   render
   render.cpp
   shader.cpp
-  camera.cpp
   vertexBuffer.cpp
   indexBuffer.cpp
   vertexArray.cpp
