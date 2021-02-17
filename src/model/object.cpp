@@ -6,14 +6,14 @@
 
 namespace fcm {
 
-Object::Object(OBJECT_TYPES objectType, MeshKey meshKey)
+Object::Object(ObjectType objectType, MeshKey meshKey)
     : objectType{objectType}, meshKey{meshKey} {}
 
-Object::Object(OBJECT_TYPES objectType, std::string name, MeshKey meshKey)
+Object::Object(ObjectType objectType, std::string name, MeshKey meshKey)
     : objectType{objectType}, name{std::move(name)}, meshKey{meshKey} {}
 
 Object::Object( // only statics
-    OBJECT_TYPES objectType, std::string name, MeshKey meshKey,
+    ObjectType objectType, std::string name, MeshKey meshKey,
     glm::vec3 position, glm::quat orientation, glm::vec3 centroid, Material mat,
     float mass, float moment_of_inertia)
     : objectType{objectType}, name{std::move(name)}, meshKey{meshKey},
@@ -22,7 +22,7 @@ Object::Object( // only statics
       moment_of_inertia{moment_of_inertia} {}
 
 Object::Object( // statics + kinematics
-    OBJECT_TYPES objectType, std::string name, MeshKey meshKey,
+    ObjectType objectType, std::string name, MeshKey meshKey,
     glm::vec3 position, glm::quat orientation, glm::vec3 centroid,
     glm::vec3 velocity, glm::vec3 spin, glm::vec3 force, glm::vec3 torque,
     Material mat, float mass, float moment_of_inertia)
@@ -44,7 +44,7 @@ glm::mat4 Object::getTransform() const {
 
 Sphere::Sphere(std::string name, MeshKey meshKey, float radius,
                glm::vec3 position, Material mat)
-    : Object{SPHERE,
+    : Object{ObjectType::SPHERE,
              std::move(name),
              meshKey,
              position,
@@ -58,9 +58,9 @@ Sphere::Sphere(std::string name, MeshKey meshKey, float radius,
   scale = {radius, radius, radius};
 }
 
-Mesh::Mesh(MeshKey meshKey) : Object{MESH, meshKey} {}
+Mesh::Mesh(MeshKey meshKey) : Object{ObjectType::MESH, meshKey} {}
 
 Mesh::Mesh(std::string name, MeshKey meshKey)
-    : Object{MESH, std::move(name), meshKey} {}
+    : Object{ObjectType::MESH, std::move(name), meshKey} {}
 
 } // namespace fcm

@@ -14,21 +14,21 @@
 
 namespace fcm {
 
-enum OBJECT_TYPES { SPHERE = 0, MESH = 1 };
+enum class ObjectType { SPHERE = 0, MESH = 1 };
 
 struct Object {
 protected:
-  Object(OBJECT_TYPES objectType, MeshKey meshKey);
+  Object(ObjectType objectType, MeshKey meshKey);
 
-  Object(OBJECT_TYPES objectType, std::string name, MeshKey meshKey);
+  Object(ObjectType objectType, std::string name, MeshKey meshKey);
 
   Object( // only statics
-      OBJECT_TYPES objectType, std::string name, MeshKey meshKey,
+      ObjectType objectType, std::string name, MeshKey meshKey,
       glm::vec3 position, glm::quat orientation, glm::vec3 centroid,
       Material mat, float mass, float moment_of_inertia);
 
   Object( // statics + kinematics
-      OBJECT_TYPES objectType, std::string name, MeshKey meshKey,
+      ObjectType objectType, std::string name, MeshKey meshKey,
       glm::vec3 position, glm::quat orientation, glm::vec3 centroid,
       glm::vec3 velocity, glm::vec3 spin, glm::vec3 force, glm::vec3 torque,
       Material mat, float mass, float moment_of_inertia);
@@ -36,7 +36,7 @@ protected:
 public:
   virtual ~Object() {}
 
-  OBJECT_TYPES objectType;
+  ObjectType objectType;
 
   std::string name;
 

@@ -81,10 +81,10 @@ inline void collide(Mesh &m, Sphere &s) { collide(s, m); }
 namespace {
 template <typename T> void collidesWith(T &obj_1, Object &obj_2) {
   switch (obj_2.objectType) {
-  case SPHERE:
+  case ObjectType::SPHERE:
     collide(obj_1, static_cast<Sphere &>(obj_2));
     return;
-  case MESH:
+  case ObjectType::MESH:
     collide(obj_1, static_cast<Mesh &>(obj_2));
     return;
   default:
@@ -95,10 +95,10 @@ template <typename T> void collidesWith(T &obj_1, Object &obj_2) {
 
 void collide(Object &obj_1, Object &obj_2) {
   switch (obj_1.objectType) {
-  case SPHERE:
+  case ObjectType::SPHERE:
     collidesWith(static_cast<Sphere &>(obj_1), obj_2);
     return;
-  case MESH:
+  case ObjectType::MESH:
     collidesWith(static_cast<Mesh &>(obj_1), obj_2);
     return;
   default:
