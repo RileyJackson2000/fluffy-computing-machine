@@ -1,5 +1,6 @@
 add_library(
   physics
+  collision.cpp
   physics.cpp)
 
 target_include_directories(physics PUBLIC ../../include)

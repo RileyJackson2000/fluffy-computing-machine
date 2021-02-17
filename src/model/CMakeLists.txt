@@ -1,11 +1,9 @@
+file(GLOB_RECURSE sources ${CMAKE_CURRENT_SOURCE_DIR}/*.cpp)
+
 add_library(
   model
-  scene.cpp
-  material.cpp
-  mesh.cpp
-  object.cpp
-  meshUtils.cpp
-  rayCaster.cpp)
+  ${sources}
+)
 
 target_include_directories(model PUBLIC ../../include)
 

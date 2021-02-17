@@ -14,36 +14,29 @@
 
 namespace fcm {
 
-class Object {
+enum OBJECT_TYPES { SPHERE = 0, MESH = 1 };
+
+struct Object {
 protected:
-  Object(std::shared_ptr<MeshData> meshData);
-  Object(std::string name, std::shared_ptr<MeshData> meshData)
-      : name{std::move(name)}, glMeshData{meshData.get()}, meshData{std::move(
-                                                               meshData)} {}
+  Object(std::shared_ptr<MeshData> meshData, OBJECT_TYPES objectType);
+  Object(std::string name, std::shared_ptr<MeshData> meshData,
+         OBJECT_TYPES objectType);
 
   Object( // only statics
       std::string name, std::shared_ptr<MeshData> meshData, glm::vec3 position,
       glm::quat orientation, glm::vec3 centroid, Material mat, float mass,
-      float moment_of_inertia)
-      : name{std::move(name)}, glMeshData{meshData.get()},
-        meshData{std::move(meshData)}, position{std::move(position)},
-        orientation{std::move(orientation)}, centroid{std::move(centroid)},
-        mat{mat}, mass{mass}, moment_of_inertia{moment_of_inertia} {}
+      float moment_of_inertia, OBJECT_TYPES objectType);
 
   Object( // statics + kinematics
       std::string name, std::shared_ptr<MeshData> meshData, glm::vec3 position,
       glm::quat orientation, glm::vec3 centroid, glm::vec3 velocity,
       glm::vec3 spin, glm::vec3 force, glm::vec3 torque, Material mat,
-      float mass, float moment_of_inertia)
-      : name{std::move(name)}, glMeshData{meshData.get()},
-        meshData{std::move(meshData)}, position{std::move(position)},
-        orientation{std::move(orientation)}, centroid{std::move(centroid)},
-        velocity{std::move(velocity)}, spin{std::move(spin)},
-        force{std::move(force)}, torque{std::move(torque)}, mat{mat},
-        mass{mass}, moment_of_inertia{moment_of_inertia} {}
+      float mass, float moment_of_inertia, OBJECT_TYPES objectType);
 
 public:
   virtual ~Object() {}
+
+  OBJECT_TYPES objectType;
 
   std::string name;
 
@@ -79,17 +72,13 @@ struct Sphere : public Object {
   Sphere(float radius, bool faceNormals = true);
 
   Sphere(std::string name, std::shared_ptr<MeshData> meshData,
-         glm::vec3 position, float radius, Material mat)
-      : Object{std::move(name),
-               std::move(meshData),
-               position,
-               {1, 0, 0, 0},
-               position,
-               mat,
-               density(mat) * 4.f / 3.f * PI * radius * radius * radius, // mass
-               density(mat) * 8.f / 15.f * PI * radius * radius * radius *
-                   radius * radius}, // moment of inertia
-        radius{radius} {}
+         glm::vec3 position, float radius, Material mat);
+};
+
+struct Mesh : public Object {
+  Mesh(std::shared_ptr<MeshData> meshData);
+
+  Mesh(std::string name, std::shared_ptr<MeshData> meshData);
 };
 
 } // namespace fcm
