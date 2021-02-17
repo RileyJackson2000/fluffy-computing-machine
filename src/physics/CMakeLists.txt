@@ -1,6 +1,9 @@
+file(GLOB_RECURSE sources ${CMAKE_CURRENT_SOURCE_DIR}/*.cpp)
+
 add_library(
   physics
-  physics.cpp)
+  ${sources}
+)
 
 target_include_directories(physics PUBLIC ../../include)
 
