@@ -5,8 +5,7 @@
 
 namespace fcm {
 
-SOLVER_CODES QCP_Lemke(Eigen::VectorXf c, Eigen::MatrixXf Q, Eigen::MatrixXf A,
-                       Eigen::VectorXf b, Eigen::VectorXf &x,
-                       Eigen::VectorXf &y);
+SolverCode QCP_Lemke(Eigen::VectorXf c, Eigen::MatrixXf Q, Eigen::MatrixXf A,
+                     Eigen::VectorXf b, Eigen::VectorXf &x, Eigen::VectorXf &y);
 
 }

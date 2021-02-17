@@ -16,15 +16,15 @@ TEST(SolverSuite, LemkeFeasible1) {
   Eigen::VectorXf q(n);
   q << 3, 5, -9, -5;
   Eigen::VectorXf w, z;
-  EXPECT_EQ(fcm::LCP_Lemke(M, q, w, z), fcm::SUCCESS);
-  EXPECT_GE(z.minCoeff(), -fcm::lemke_tol);
+  EXPECT_EQ(fcm::LCP_Lemke(M, q, w, z), fcm::SolverCode::SUCCESS);
+  EXPECT_GE(z.minCoeff(), -fcm::lemkeTol);
   Eigen::VectorXf w2 = q + M * z;
-  EXPECT_GE(w2.minCoeff(), -fcm::lemke_tol);
+  EXPECT_GE(w2.minCoeff(), -fcm::lemkeTol);
   for (int i = 0; i < n; ++i) {
-    EXPECT_TRUE(abs(w(i) - w2(i)) < fcm::lemke_tol);
+    EXPECT_TRUE(abs(w(i) - w2(i)) < fcm::lemkeTol);
   }
   for (int i = 0; i < n; ++i) {
-    EXPECT_TRUE(abs(z(i) * w(i)) < fcm::lemke_tol / n);
+    EXPECT_TRUE(abs(z(i) * w(i)) < fcm::lemkeTol / n);
   }
 }
 
@@ -35,15 +35,15 @@ TEST(SolverSuite, LemkeFeasible2) {
   Eigen::VectorXf q(n);
   q << -8, -12, -14;
   Eigen::VectorXf w, z;
-  EXPECT_EQ(fcm::LCP_Lemke(M, q, w, z), fcm::SUCCESS);
-  EXPECT_GE(z.minCoeff(), -fcm::lemke_tol);
+  EXPECT_EQ(fcm::LCP_Lemke(M, q, w, z), fcm::SolverCode::SUCCESS);
+  EXPECT_GE(z.minCoeff(), -fcm::lemkeTol);
   Eigen::VectorXf w2 = q + M * z;
-  EXPECT_GE(w2.minCoeff(), -fcm::lemke_tol);
+  EXPECT_GE(w2.minCoeff(), -fcm::lemkeTol);
   for (int i = 0; i < n; ++i) {
-    EXPECT_TRUE(abs(w(i) - w2(i)) < fcm::lemke_tol);
+    EXPECT_TRUE(abs(w(i) - w2(i)) < fcm::lemkeTol);
   }
   for (int i = 0; i < n; ++i) {
-    EXPECT_TRUE(abs(z(i) * w(i)) < fcm::lemke_tol / n);
+    EXPECT_TRUE(abs(z(i) * w(i)) < fcm::lemkeTol / n);
   }
 }
 
@@ -54,7 +54,7 @@ TEST(SolverSuite, LemkeRay) {
   Eigen::VectorXf q(n);
   q << -3, -2, -1;
   Eigen::VectorXf w, z;
-  EXPECT_EQ(fcm::LCP_Lemke(M, q, w, z), fcm::LEMKE_RAY_TERMINATION);
+  EXPECT_EQ(fcm::LCP_Lemke(M, q, w, z), fcm::SolverCode::LEMKE_RAY_TERMINATION);
 }
 
 TEST(SolverSuite, LemkeDegenerate) {
@@ -66,15 +66,15 @@ TEST(SolverSuite, LemkeDegenerate) {
   Eigen::VectorXf q(n);
   q << -1, -1, -1;
   Eigen::VectorXf w, z;
-  EXPECT_EQ(fcm::LCP_Lemke(M, q, w, z), fcm::SUCCESS);
-  EXPECT_GE(z.minCoeff(), -fcm::lemke_tol);
+  EXPECT_EQ(fcm::LCP_Lemke(M, q, w, z), fcm::SolverCode::SUCCESS);
+  EXPECT_GE(z.minCoeff(), -fcm::lemkeTol);
   Eigen::VectorXf w2 = q + M * z;
-  EXPECT_GE(w2.minCoeff(), -fcm::lemke_tol);
+  EXPECT_GE(w2.minCoeff(), -fcm::lemkeTol);
   for (int i = 0; i < n; ++i) {
-    EXPECT_TRUE(abs(w(i) - w2(i)) < fcm::lemke_tol);
+    EXPECT_TRUE(abs(w(i) - w2(i)) < fcm::lemkeTol);
   }
   for (int i = 0; i < n; ++i) {
-    EXPECT_TRUE(abs(z(i) * w(i)) < fcm::lemke_tol / n);
+    EXPECT_TRUE(abs(z(i) * w(i)) < fcm::lemkeTol / n);
   }
 }
 
@@ -88,13 +88,13 @@ TEST(SolverSuite, LPFeasible) {
   Eigen::VectorXf b(m);
   b << 12, 3, 4;
   Eigen::VectorXf x, y;
-  EXPECT_EQ(fcm::LP_Lemke(c, A, b, x, y), fcm::SUCCESS);
-  EXPECT_GE(x.minCoeff(), -fcm::lemke_tol);
+  EXPECT_EQ(fcm::LP_Lemke(c, A, b, x, y), fcm::SolverCode::SUCCESS);
+  EXPECT_GE(x.minCoeff(), -fcm::lemkeTol);
   Eigen::VectorXf tmp = b - A * x;
-  EXPECT_GE(tmp.minCoeff(), -fcm::lemke_tol);
+  EXPECT_GE(tmp.minCoeff(), -fcm::lemkeTol);
   tmp = A.transpose() * y - c;
-  EXPECT_GE(tmp.minCoeff(), -fcm::lemke_tol);
-  EXPECT_LE(abs((c.transpose() * x - b.transpose() * y)(0)), fcm::lemke_tol);
+  EXPECT_GE(tmp.minCoeff(), -fcm::lemkeTol);
+  EXPECT_LE(abs((c.transpose() * x - b.transpose() * y)(0)), fcm::lemkeTol);
 }
 
 TEST(SolverSuite, LPInfeasible) {
@@ -104,7 +104,7 @@ TEST(SolverSuite, LPInfeasible) {
   Eigen::VectorXf b = Eigen::VectorXf::Constant(m, -1);
   Eigen::VectorXf c = Eigen::VectorXf::Zero(n);
   Eigen::VectorXf x, y;
-  EXPECT_EQ(fcm::LP_Lemke(c, A, b, x, y), fcm::INFEASIBLE);
+  EXPECT_EQ(fcm::LP_Lemke(c, A, b, x, y), fcm::SolverCode::INFEASIBLE);
 }
 
 TEST(SolverSuite, QCPFeasible) {
@@ -119,21 +119,21 @@ TEST(SolverSuite, QCPFeasible) {
   Eigen::MatrixXf Q(n, n);
   Q << 34, 16, 4, 16, 34, 16, 4, 16, 8;
   Eigen::VectorXf x, y;
-  EXPECT_EQ(fcm::QCP_Lemke(c, Q, A, b, x, y), fcm::SUCCESS);
-  EXPECT_GE(x.minCoeff(), -fcm::lemke_tol);
-  EXPECT_GE(y.minCoeff(), -fcm::lemke_tol);
+  EXPECT_EQ(fcm::QCP_Lemke(c, Q, A, b, x, y), fcm::SolverCode::SUCCESS);
+  EXPECT_GE(x.minCoeff(), -fcm::lemkeTol);
+  EXPECT_GE(y.minCoeff(), -fcm::lemkeTol);
   Eigen::MatrixXf g(n, m + n);
   g.block(0, 0, n, m) = A.transpose();
   g.block(0, m, n, n) = -Eigen::MatrixXf::Identity(n, n);
   auto tmp = c + Q * x + g * y;
   for (int i = 0; i < n; ++i) {
-    EXPECT_LE(abs(tmp(i)), fcm::lemke_tol);
+    EXPECT_LE(abs(tmp(i)), fcm::lemkeTol);
   }
   Eigen::VectorXf tmp2(m + n);
   tmp2.head(m) = A * x - b;
   tmp2.tail(n) = x;
   for (int i = 0; i < n + m; ++i) {
-    EXPECT_LE(abs(y(i) * tmp2(i)), fcm::lemke_tol);
+    EXPECT_LE(abs(y(i) * tmp2(i)), fcm::lemkeTol);
   }
 }
 
@@ -145,5 +145,5 @@ TEST(SolverSuite, QCPInfeasible) {
   Eigen::VectorXf c = Eigen::VectorXf::Zero(n);
   Eigen::MatrixXf Q = Eigen::MatrixXf::Identity(n, n);
   Eigen::VectorXf x, y;
-  EXPECT_EQ(fcm::QCP_Lemke(c, Q, A, b, x, y), fcm::INFEASIBLE);
+  EXPECT_EQ(fcm::QCP_Lemke(c, Q, A, b, x, y), fcm::SolverCode::INFEASIBLE);
 }

@@ -14,23 +14,23 @@ namespace fcm {
 // z>=0
 // q+Mz>=0
 // z^T * (q+Mz)=0
-SOLVER_CODES LCP_Lemke(Eigen::MatrixXf M, Eigen::VectorXf q, Eigen::VectorXf &w,
-                       Eigen::VectorXf &z) {
+SolverCode LCP_Lemke(Eigen::MatrixXf M, Eigen::VectorXf q, Eigen::VectorXf &w,
+                     Eigen::VectorXf &z) {
   // not passing by const ref because M and q are modified
   // so user has option to move or copy them in.
   const int n = q.size();
 
   if (M.rows() != n and M.cols() != n)
-    return INVALID_INPUT;
+    return SolverCode::INVALID_INPUT;
 
   int r, s = 2 * n;
-  float min_coeff = q.minCoeff(&r);
+  float minCoeff = q.minCoeff(&r);
 
   // trivial case
-  if (min_coeff >= -lemke_tol) {
+  if (minCoeff >= -lemkeTol) {
     w = q;
     z = Eigen::VectorXf::Zero(n);
-    return SUCCESS;
+    return SolverCode::SUCCESS;
   }
 
   Eigen::MatrixXf P = Eigen::MatrixXf::Identity(n, n);
@@ -45,120 +45,118 @@ SOLVER_CODES LCP_Lemke(Eigen::MatrixXf M, Eigen::VectorXf q, Eigen::VectorXf &w,
   tab.col(2 * n + 1) = P * q;
 
   // We'll use these later but don't want to re-allocate
-  Eigen::MatrixXf rank_one_update(n, 2 * n + 2);
-  Eigen::MatrixXf r_row(1, 2 * n + 2);
-  Eigen::MatrixXf s_col(n, 1);
+  Eigen::MatrixXf rankOneUpdate(n, 2 * n + 2);
+  Eigen::MatrixXf rRow(1, 2 * n + 2);
+  Eigen::MatrixXf sCol(n, 1);
 
   // So we can map between variables and basic variables
-  std::vector<int> basic_idx_to_col(n), col_to_basic_idx(2 * n + 1, -1);
+  std::vector<int> basicIdxToCol(n), colToBasicIdx(2 * n + 1, -1);
   for (int i = 0; i < n; ++i)
     if (i != r)
-      basic_idx_to_col[i] = i;
-  basic_idx_to_col[r] = 2 * n;
+      basicIdxToCol[i] = i;
+  basicIdxToCol[r] = 2 * n;
   for (int i = 0; i < 2 * n + 1; ++i) {
     if (i != r and i < n) {
-      col_to_basic_idx[i] = i;
+      colToBasicIdx[i] = i;
     }
   }
-  col_to_basic_idx[2 * n] = r;
+  colToBasicIdx[2 * n] = r;
 
   // Indexes in tab of the columns of the inverse basis
-  std::vector<int> inv_idxs(n);
+  std::vector<int> invIdxs(n);
   for (int i = 0; i < n; ++i) {
     if (i != r) {
-      inv_idxs[i] = i;
+      invIdxs[i] = i;
     } else {
-      inv_idxs[i] = 2 * n;
+      invIdxs[i] = 2 * n;
     }
   }
 
   // Will be used later for lexico min entering variable
   std::vector<int> lex(n);
-  int lex_sz = 0, lex_idx = 0;
+  int lexSZ = 0, lexIdx = 0;
 
-  int col_that_left = r;
+  int colThatLeft = r;
 
   int iters = 0;
-  for (; iters < lemke_max_iters; ++iters) {
+  for (; iters < lemkeMaxIters; ++iters) {
     // Artificial variable left basis, we're done!
-    if (col_that_left == 2 * n) {
+    if (colThatLeft == 2 * n) {
       w = Eigen::VectorXf::Zero(n);
       z = Eigen::VectorXf::Zero(n);
       for (int i = 0; i < n; ++i) {
-        w(i) = (col_to_basic_idx[i] == -1)
+        w(i) = (colToBasicIdx[i] == -1) ? 0 : tab(colToBasicIdx[i], 2 * n + 1);
+        z(i) = colToBasicIdx[i + n] == -1
                    ? 0
-                   : tab(col_to_basic_idx[i], 2 * n + 1);
-        z(i) = col_to_basic_idx[i + n] == -1
-                   ? 0
-                   : tab(col_to_basic_idx[i + n], 2 * n + 1);
+                   : tab(colToBasicIdx[i + n], 2 * n + 1);
       }
-      return SUCCESS;
+      return SolverCode::SUCCESS;
     }
 
     // Complementary pivot rule
-    s = (col_that_left < n) ? col_that_left + n : col_that_left - n;
+    s = (colThatLeft < n) ? colThatLeft + n : colThatLeft - n;
 
     // Min ratio test
-    float min_ratio = std::numeric_limits<float>::max();
-    lex_sz = 0;
+    float minRatio = std::numeric_limits<float>::max();
+    lexSZ = 0;
     for (int i = 0; i < n; ++i) {
       if (tab(i, s) > 0) {
         float tmp = tab(i, 2 * n + 1) / tab(i, s);
-        if (tmp < min_ratio) {
-          lex_sz = lex_idx = 1;
+        if (tmp < minRatio) {
+          lexSZ = lexIdx = 1;
           ;
           lex[0] = i;
-          min_ratio = tmp;
-        } else if (tmp == min_ratio) {
-          ++lex_sz;
-          lex[lex_idx++] = i;
+          minRatio = tmp;
+        } else if (tmp == minRatio) {
+          ++lexSZ;
+          lex[lexIdx++] = i;
         }
       }
     }
 
-    if (lex_sz > 0) {
+    if (lexSZ > 0) {
       // Bland's rule on steroids
       int col = 0;
-      int new_sz = 0, new_idx = 0;
-      while (lex_sz != 1) {
-        min_ratio = tab(lex[0], inv_idxs[col]) / tab(lex[0], s);
-        for (int i = 1; i < lex_sz; ++i) {
-          float tmp = tab(lex[i], inv_idxs[col]) / tab(lex[i], s);
-          if (tmp < min_ratio) {
-            min_ratio = tmp;
-            new_sz = new_idx = 1;
+      int newSZ = 0, newIdx = 0;
+      while (lexSZ != 1) {
+        minRatio = tab(lex[0], invIdxs[col]) / tab(lex[0], s);
+        for (int i = 1; i < lexSZ; ++i) {
+          float tmp = tab(lex[i], invIdxs[col]) / tab(lex[i], s);
+          if (tmp < minRatio) {
+            minRatio = tmp;
+            newSZ = newIdx = 1;
             lex[0] = lex[i];
-          } else if (tmp == min_ratio) {
-            ++new_sz;
-            lex[new_idx++] = lex[i];
+          } else if (tmp == minRatio) {
+            ++newSZ;
+            lex[newIdx++] = lex[i];
           }
         }
-        lex_sz = new_sz;
+        lexSZ = newSZ;
         ++col;
       }
       r = lex[0];
     } else {
       // Entering column is <= 0, we've found a feasible ray
       // For our purposes, this means infeasible
-      return LEMKE_RAY_TERMINATION;
+      return SolverCode::LEMKE_RAY_TERMINATION;
     }
 
     // Pivot about tab(r, s)
-    r_row = tab.row(r) * (1 / tab(r, s));
-    s_col = tab.col(s);
-    rank_one_update.noalias() = s_col * r_row;
-    tab -= rank_one_update;
+    rRow = tab.row(r) * (1 / tab(r, s));
+    sCol = tab.col(s);
+    rankOneUpdate.noalias() = sCol * rRow;
+    tab -= rankOneUpdate;
     tab.col(s) = Eigen::VectorXf::Zero(n);
-    tab.row(r) = r_row;
+    tab.row(r) = rRow;
 
-    col_that_left = basic_idx_to_col[r];
+    colThatLeft = basicIdxToCol[r];
 
     // update basic / nonbasic vars
-    col_to_basic_idx[s] = r;
-    col_to_basic_idx[basic_idx_to_col[r]] = -1;
-    basic_idx_to_col[r] = s;
+    colToBasicIdx[s] = r;
+    colToBasicIdx[basicIdxToCol[r]] = -1;
+    basicIdxToCol[r] = s;
   }
-  return ITER_COUNT_EXCEEDED;
+  return SolverCode::ITER_COUNT_EXCEEDED;
 }
 
 } // namespace fcm

@@ -1,8 +1,8 @@
+file(GLOB_RECURSE sources ${CMAKE_CURRENT_SOURCE_DIR}/*.cpp)
+
 add_library(
   math
-  lcp.cpp
-  lp.cpp
-  qcp.cpp)
+  ${sources})
 
 target_include_directories(math PUBLIC ../../include)
 

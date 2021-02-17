@@ -5,7 +5,7 @@
 
 namespace fcm {
 
-SOLVER_CODES LP_Lemke(Eigen::VectorXf c, Eigen::MatrixXf A, Eigen::VectorXf b,
-                      Eigen::VectorXf &x, Eigen::VectorXf &y);
+SolverCode LP_Lemke(Eigen::VectorXf c, Eigen::MatrixXf A, Eigen::VectorXf b,
+                    Eigen::VectorXf &x, Eigen::VectorXf &y);
 
 }

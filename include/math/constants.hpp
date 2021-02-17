@@ -3,7 +3,7 @@
 namespace fcm {
 
 /* solver code */
-enum SOLVER_CODES {
+enum class SolverCode {
   SUCCESS = 0,
   FAILED = -1,
   INVALID_INPUT = -2,
@@ -15,7 +15,7 @@ enum SOLVER_CODES {
 };
 
 /* lcp solver options */
-constexpr inline int lemke_max_iters = 1 << 20;
-constexpr inline float lemke_tol = 5e-5;
+constexpr inline int lemkeMaxIters = 1 << 20;
+constexpr inline float lemkeTol = 5e-5;
 
 } // namespace fcm
