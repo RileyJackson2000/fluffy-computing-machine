@@ -8,4 +8,6 @@ jobs:
         with:
           submodules: 'recursive'
       - run: sudo apt install libx11-dev libxi-dev libgl1-mesa-dev libglu1-mesa-dev libxrandr-dev libxext-dev libxcursor-dev libxinerama-dev libxi-dev libglfw3-dev libglew-dev libglm-dev
+      - run: sed -i '/^.*ninstall.*$/d' extern/eigen/CMakeLists.txt
+      - run: bash scripts/eigen.sh
       - run: mkdir build && cd build && cmake .. && make && ./tests/tests

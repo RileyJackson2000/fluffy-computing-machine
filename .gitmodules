@@ -10,3 +10,6 @@
 [submodule "extern/glm"]
 	path = extern/glm
 	url = git@github.com:g-truc/glm.git
+[submodule "extern/eigen"]
+	path = extern/eigen
+	url = https://gitlab.com/libeigen/eigen.git

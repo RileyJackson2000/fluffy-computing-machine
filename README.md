@@ -20,6 +20,8 @@ $ cmake ..
 $ make
 ```
 
+We also need to manually disable the uninstall target in extern/eigen/CMakeLists.txt
+
 # Workflow
 Currently master is protected so any changes must be made on local branches, pass all checks, and have atleast one review before being able to be merged.
 

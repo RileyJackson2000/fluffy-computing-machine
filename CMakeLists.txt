@@ -17,7 +17,9 @@ else()
   message(STATUS "Doxygen not found, not building docs")
 endif()
 
-find_package(OpenGL REQUIRED)
+set(ALLOW_DUPLICATE_CUSTOM_TARGETS TRUE)
+# leaving this for later if cmake fixes the bug, rn this does nothing
+# instead we manually disable the uninstall target in eigen
 
 add_subdirectory(src)
 add_subdirectory(app)
@@ -27,4 +29,5 @@ add_subdirectory(extern/googletest)
 add_subdirectory(extern/glew-cmake)
 add_subdirectory(extern/glfw)
 add_subdirectory(extern/glm)
+add_subdirectory(extern/eigen)
 
