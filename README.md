@@ -10,6 +10,11 @@ Install dependencies:
 sudo apt-get install libglew-dev libglfw3-dev libglm-dev libx11-dev libxi-dev libgl1-mesa-dev libglu1-mesa-dev libxrandr-dev libxext-dev libxcursor-dev libxinerama-dev libxi-dev
 ```
 
+In order for the recording script to work, you need
+```console
+sudo apt install ffmpeg
+```
+
 Clone repo:
 
 ```console
