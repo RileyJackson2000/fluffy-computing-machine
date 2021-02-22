@@ -1,6 +1,7 @@
 #pragma once
 
 // add more here as needed?
+#include <glm/ext.hpp>
 #include <glm/ext/matrix_clip_space.hpp>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>

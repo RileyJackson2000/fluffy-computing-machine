@@ -1,29 +1,25 @@
+#include <memory>
 #include <physics/physics.hpp>
 #include <server/server.hpp>
+#include <utils/config.hpp>
 #include <utils/constants.hpp>
 
 namespace fcm {
 
-Server::Server(std::string sceneName, Config config)
-    : _config{config}, _scene{std::make_unique<Scene>(sceneName, &_meshCache)},
+Server::Server(std::string sceneName)
+    : _scene{std::make_unique<Scene>(sceneName)},
       _renderScene{std::make_unique<RenderScene>(
-          _scene.get(), RayCaster{&_meshCache},
-          Camera{float(config.windowWidth) / float(config.windowHeight)})},
-      _viewer{std::make_unique<Viewer>(config, &_renderObjectCache)} {}
+          _scene.get(), RayCaster{},
+          Camera{float(Config::windowWidth) / float(Config::windowHeight)})},
+      _viewer{std::make_unique<Viewer>(&_renderObjectCache)} {}
 
-MeshKey Server::getOrLoadMesh(const std::string &path) {
+std::shared_ptr<MeshData> Server::getOrLoadMesh(const std::string &path) {
   (void)path;
   throw "not implemented";
 }
 
-MeshKey Server::insertMesh(std::unique_ptr<MeshData> mesh) {
-  _meshCache.emplace_back(std::move(mesh));
-  return _meshCache.size() - 1;
-}
-
-RenderObjectKey Server::createRenderObject(MeshKey meshKey) {
-  _renderObjectCache.emplace_back(
-      std::make_unique<RenderObject>(_meshCache[meshKey].get()));
+RenderObjectKey Server::createRenderObject(std::shared_ptr<MeshData> mesh) {
+  _renderObjectCache.emplace_back(std::make_unique<RenderObject>(mesh));
   return _renderObjectCache.size() - 1;
 }
 
@@ -41,11 +37,11 @@ void Server::insertRigidBody(std::unique_ptr<Object> obj) {
 
 void Server::run(size_t numSteps) {
   // main loop
-  double dt = 1.0 / _config.maxTPS;
+  double dt = 1.0 / Config::maxTPS;
   double nextTickTarget = _viewer->getTime() + dt;
 
   int nFrames = 0, nTicks = 0;
-  int ticksTillUpdate = _config.maxTPS * 2; // print every 2 seconds
+  int ticksTillUpdate = Config::maxTPS * 2; // print every 2 seconds
   double totalUpdateTime = 0;
 
   double timeUpdating = 0, timeRendering = 0;
@@ -86,12 +82,8 @@ void Server::run(size_t numSteps) {
 
 // getter/setters below
 
-const MeshData &Server::meshByKey(MeshKey key) { return *_meshCache[key]; }
-
 const Scene &Server::scene() const { return *_scene; }
 
 const RenderScene &Server::renderScene() const { return *_renderScene; }
-
-const Config &Server::config() const { return _config; }
 
 } // namespace fcm

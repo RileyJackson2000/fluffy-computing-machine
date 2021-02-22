@@ -15,12 +15,12 @@
 namespace fcm {
 
 struct RenderObject {
-  MeshData *mesh;
+  std::shared_ptr<MeshData> mesh;
   VertexBuffer vb;
   IndexBuffer ib;
   VertexArray va;
 
-  explicit RenderObject(MeshData *meshData)
+  explicit RenderObject(std::shared_ptr<MeshData> meshData)
       : mesh{meshData}, vb{meshData->vertices.data(),
                            sizeof(Vertex) * meshData->vertices.size()},
         ib{meshData->indices.data(), meshData->indices.size()} {

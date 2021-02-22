@@ -18,17 +18,18 @@ enum class ObjectType { SPHERE = 0, MESH = 1 };
 
 struct Object {
 protected:
-  Object(ObjectType objectType, MeshKey meshKey);
+  Object(ObjectType objectType, std::shared_ptr<MeshData> mesh);
 
-  Object(ObjectType objectType, std::string name, MeshKey meshKey);
+  Object(ObjectType objectType, std::string name,
+         std::shared_ptr<MeshData> mesh);
 
   Object( // only statics
-      ObjectType objectType, std::string name, MeshKey meshKey,
+      ObjectType objectType, std::string name, std::shared_ptr<MeshData> mesh,
       glm::vec3 position, glm::quat orientation, glm::vec3 centroid,
       Material mat, float mass, float moment_of_inertia);
 
   Object( // statics + kinematics
-      ObjectType objectType, std::string name, MeshKey meshKey,
+      ObjectType objectType, std::string name, std::shared_ptr<MeshData> mesh,
       glm::vec3 position, glm::quat orientation, glm::vec3 centroid,
       glm::vec3 velocity, glm::vec3 spin, glm::vec3 force, glm::vec3 torque,
       Material mat, float mass, float moment_of_inertia);
@@ -40,7 +41,7 @@ public:
 
   std::string name;
 
-  MeshKey meshKey;
+  std::shared_ptr<MeshData> mesh;
   RenderObjectKey renderObjectKey;
   glm::vec3 scale = {1, 1, 1}; // amount to scalein each dir
 
@@ -70,14 +71,12 @@ public:
 struct Sphere : public Object {
   float radius;
 
-  Sphere(std::string name, MeshKey meshKey, float radius, glm::vec3 position,
-         Material mat);
+  Sphere(std::string name, std::shared_ptr<MeshData> mesh, float radius,
+         glm::vec3 position, Material mat);
 };
 
 struct Mesh : public Object {
-  Mesh(MeshKey meshKey);
-
-  Mesh(std::string name, MeshKey meshKey);
+  Mesh(std::string name, std::shared_ptr<MeshData> mesh);
 };
 
 } // namespace fcm

@@ -5,11 +5,10 @@
 #include <model/scene.hpp>
 #include <physics/physics.hpp>
 #include <render/render.hpp>
+#include <utils/config.hpp>
 #include <utils/constants.hpp>
 #include <utils/glew.hpp>
 #include <utils/glfw.hpp>
-
-#include <config.hpp>
 
 #include <chrono>
 #include <iostream>
@@ -24,16 +23,13 @@ float rfloat() {
 int main(void) {
   std::cout << "Hello there\n";
 
-  fcm::Config config;
-
   std::cout << "Initializing physics...\n";
   fcm::init_physics();
   std::cout << "Initializing renderer...\n";
   // should move opengl initialization here instead of the constructor of window
 
-  fcm::Server server{"Scene 1", config};
-  auto sphereKey =
-      server.insertMesh(fcm::genSphereMesh(1, 10, 10, config.faceNormals));
+  fcm::Server server{"Scene 1"};
+  auto sphereKey = fcm::genSphereMesh(1, 10, 10, fcm::Config::faceNormals);
   auto sphereModel = server.createRenderObject(sphereKey);
 
   for (int i = 0; i < 25; ++i) {

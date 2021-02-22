@@ -1,6 +1,6 @@
 #pragma once
 
-#include <config.hpp>
+#include <utils/config.hpp>
 
 #include <utils/glfw.hpp>
 #include <utils/types.hpp>
@@ -35,13 +35,12 @@ struct Window {
 };
 
 struct Viewer {
-  Config config;
   Window window;
   Shader shader; // shaders should be part of materials. We should also support
                  // more than one shader
   RenderObjectCache *renderObjectCache;
 
-  Viewer(Config, RenderObjectCache *);
+  Viewer(RenderObjectCache *);
   ~Viewer();
 
   void render(RenderScene &);
@@ -51,7 +50,7 @@ struct Viewer {
   float movementSpeed = 0.1;
   double lastFrameTime;
 
-  glm::vec2 lastMousePos{config.windowWidth / 2.f, config.windowHeight / 2.f};
+  glm::vec2 lastMousePos{Config::windowWidth / 2.f, Config::windowHeight / 2.f};
   float yaw = -90.f;
   float pitch = 0;
   float mouseSensitivity = 0.15;

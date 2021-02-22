@@ -18,13 +18,11 @@ class Scene {
 protected:
   std::string _name;
   std::vector<std::unique_ptr<Object>> _objects;
-  MeshCache *_meshCache;
 
   RayCaster rayCaster;
 
 public:
-  explicit Scene(std::string name, MeshCache *meshCache)
-      : _name{std::move(name)}, _meshCache{meshCache}, rayCaster{meshCache} {}
+  explicit Scene(std::string name) : _name{std::move(name)}, rayCaster{} {}
   // can't copy references
   Scene &operator=(const Scene &) = delete;
   Scene &operator=(Scene &&) = delete;

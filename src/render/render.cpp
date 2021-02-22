@@ -61,9 +61,8 @@ Window::Window(const std::string &title, uint32_t width, uint32_t height) {
   glfw::glfwSetInputMode(ptr.get(), GLFW_CURSOR, GLFW_CURSOR_NORMAL);
 }
 
-Viewer::Viewer(Config config, RenderObjectCache *renderObjectCache)
-    : config{config}, window{config.windowTitle, config.windowWidth,
-                             config.windowHeight},
+Viewer::Viewer(RenderObjectCache *renderObjectCache)
+    : window{Config::windowTitle, Config::windowWidth, Config::windowHeight},
       shader{std::string{"default"}}, renderObjectCache{renderObjectCache} {
   // Dark blue background
   glew::glClearColor(0.0f, 0.0f, 0.3f, 0.0f);
@@ -179,8 +178,8 @@ void Viewer::selectObject(RenderScene &scene) {
     glm::vec2 pos = window.getCursorPos();
     glm::mat4 invCam =
         glm::inverse(scene.camera.projectionMat() * scene.camera.viewMat());
-    float hw = config.windowWidth / 2.f;
-    float hh = config.windowHeight / 2.f;
+    float hw = Config::windowWidth / 2.f;
+    float hh = Config::windowHeight / 2.f;
     glm::vec4 near =
         glm::vec4((pos.x - hw) / hw, -1 * (pos.y - hh) / hh, -1, 1.0);
     glm::vec4 far =

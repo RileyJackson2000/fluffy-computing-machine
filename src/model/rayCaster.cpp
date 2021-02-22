@@ -10,8 +10,6 @@
 
 namespace fcm {
 
-RayCaster::RayCaster(MeshCache *meshCache) : _meshCache{meshCache} {}
-
 RayCastResult
 RayCaster::castRay(glm::vec3 pos, glm::vec3 dir,
                    const std::vector<std::unique_ptr<Object>> &objects) {
@@ -43,7 +41,7 @@ RayCastResult RayCaster::castRay(glm::vec3 pos, glm::vec3 dir,
 
   glm::mat4 modelMatrix = object->getTransform();
 
-  const MeshData &mesh = *(*_meshCache)[object->meshKey];
+  const MeshData &mesh = *object->mesh;
   for (size_t i = 0; i < mesh.indices.size(); i += 3) {
     glm::vec3 v0{modelMatrix *
                  glm::vec4(mesh.vertices[mesh.indices[i + 0]].pos, 1.f)};
