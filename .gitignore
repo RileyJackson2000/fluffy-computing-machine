@@ -10,6 +10,12 @@ bin/*
 # Ignore build directory
 build/*
 
+# Ignore tmp directory
+tmp/*
+
+# Ignore out directory (where recordings go)
+out/*
+
 # Vim stuff
 tags
 tags.*

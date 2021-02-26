@@ -6,7 +6,7 @@ project (
   LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD 17)
-add_compile_options(-Wall -Wextra -g -O3)
+add_compile_options(-Wall -Wextra -g -O3 -I/usr/include/freetype2 -I/usr/include/libpng16)
 
 include(CTest)
 
@@ -30,4 +30,4 @@ add_subdirectory(extern/glew-cmake)
 add_subdirectory(extern/glfw)
 add_subdirectory(extern/glm)
 add_subdirectory(extern/eigen)
-
+add_subdirectory(extern/pngwriter)

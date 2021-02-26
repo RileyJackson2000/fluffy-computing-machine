@@ -23,6 +23,8 @@ class Server {
   std::unique_ptr<RenderScene> _renderScene;
   std::unique_ptr<Viewer> _viewer;
 
+  void dumpToPNG(int uuid);
+
 public:
   Server(std::string sceneName, Config);
   MeshKey getOrLoadMesh(const std::string &path);
@@ -31,6 +33,9 @@ public:
   void insertDirLight(std::unique_ptr<DirLight>);
   void insertPointLight(std::unique_ptr<PointLight>);
   void insertRigidBody(std::unique_ptr<Object>);
+
+  // record the simulation for the following number of time steps
+  void record(size_t numSteps = 100);
 
   // run the simulation for the following number time steps
   void run(size_t numSteps = -1);

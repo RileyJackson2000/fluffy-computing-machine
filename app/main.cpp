@@ -21,7 +21,7 @@ float rfloat() {
   return static_cast<float>(rand()) / static_cast<float>(RAND_MAX);
 }
 
-int main(void) {
+int main() {
   std::cout << "Hello there\n";
 
   fcm::Config config;
@@ -70,7 +70,11 @@ int main(void) {
 
   server.insertPointLight(std::move(light));
 
-  server.run();
+  if (config.record) {
+    server.record(100);
+  } else {
+    server.run();
+  }
 
   std::cout << "Goodbye\n";
   return 0;
