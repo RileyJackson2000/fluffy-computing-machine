@@ -18,20 +18,18 @@ namespace fcm {
 // to change this
 struct Window {
   // TODO resizable window?
-  glfw::GLFWwindow_ptr ptr;
+  GLFWwindow_ptr ptr;
   Window(const std::string &title, uint32_t width, uint32_t height);
 
-  int getKey(int key) { return glfw::glfwGetKey(ptr.get(), key); }
-  int getMouseButton(int key) {
-    return glfw::glfwGetMouseButton(ptr.get(), key);
-  }
+  int getKey(int key) { return glfwGetKey(ptr.get(), key); }
+  int getMouseButton(int key) { return glfwGetMouseButton(ptr.get(), key); }
   glm::vec2 getCursorPos() {
     double x, y;
-    glfw::glfwGetCursorPos(ptr.get(), &x, &y);
+    glfwGetCursorPos(ptr.get(), &x, &y);
     return glm::vec2{x, y};
   }
-  void setShouldClose(bool b) { glfw::glfwSetWindowShouldClose(ptr.get(), b); }
-  bool shouldClose() { return glfw::glfwWindowShouldClose(ptr.get()); }
+  void setShouldClose(bool b) { glfwSetWindowShouldClose(ptr.get(), b); }
+  bool shouldClose() { return glfwWindowShouldClose(ptr.get()); }
 };
 
 struct Viewer {
@@ -62,8 +60,8 @@ struct Viewer {
   void selectObject(RenderScene &);
   bool closeWindow();
 
-  void pollEvents() { glfw::glfwPollEvents(); }
-  double getTime() { return glfw::glfwGetTime(); }
+  void pollEvents() { glfwPollEvents(); }
+  double getTime() { return glfwGetTime(); }
 
 private:
   // copy lights to the gpu

@@ -6,20 +6,18 @@
 
 namespace fcm {
 
-IndexBuffer::IndexBuffer(const glew::GLuint *data, size_t numIndices)
+IndexBuffer::IndexBuffer(const GLuint *data, size_t numIndices)
     : numIndices{numIndices} {
-  glew::glGenBuffers(1, &handle);
-  glew::glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, handle);
-  glew::glBufferData(GL_ELEMENT_ARRAY_BUFFER, numIndices * sizeof(glew::GLuint),
-                     data, GL_STATIC_DRAW);
+  glGenBuffers(1, &handle);
+  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, handle);
+  glBufferData(GL_ELEMENT_ARRAY_BUFFER, numIndices * sizeof(GLuint), data,
+               GL_STATIC_DRAW);
 }
-IndexBuffer::~IndexBuffer() { glew::glDeleteBuffers(1, &handle); }
+IndexBuffer::~IndexBuffer() { glDeleteBuffers(1, &handle); }
 
 void IndexBuffer::bind() const {
-  glew::glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, handle);
+  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, handle);
 }
-void IndexBuffer::unbind() const {
-  glew::glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-}
+void IndexBuffer::unbind() const { glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0); }
 
 } // namespace fcm

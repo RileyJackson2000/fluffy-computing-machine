@@ -1,3 +1,8 @@
+set(CMAKE_CXX_STANDARD 17)
+if (WORKFLOW)
+  add_compile_options(-Werror)
+endif()
+
 add_subdirectory(model)
 add_subdirectory(physics)
 add_subdirectory(render)

@@ -1,3 +1,8 @@
+set(CMAKE_CXX_STANDARD 17)
+if (WORKFLOW)
+  add_compile_options(-Werror)
+endif()
+
 include(GoogleTest)
 
 file(GLOB_RECURSE sources ${CMAKE_CURRENT_SOURCE_DIR}/*.cpp)

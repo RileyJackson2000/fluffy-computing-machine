@@ -35,7 +35,6 @@ Currently master is protected so any changes must be made on local branches, pas
 +-- app                            // application folder
 |   +-- main.cpp
 +-- cmake                          // cmake scripts, finding libraries, etc.
-+-- docs                           // documentation folder @TODO (maybe?)
 +-- extern                         // for submodules
 |   +-- googletest
 +-- include                        // internal libraries

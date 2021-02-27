@@ -23,7 +23,7 @@ struct Config {
   /* output options */
   // TODO I'm putting this here for now but we need a better system for per-run
   // config, it doesnt make sense to recompile to change the output file
-  bool record = true;
+  bool record = false;
   std::string outPath = "../out/output";
 };
 

@@ -25,8 +25,8 @@ struct RenderObject {
                            sizeof(Vertex) * meshData->vertices.size()},
         ib{meshData->indices.data(), meshData->indices.size()} {
     VertexBufferLayout layout;
-    layout.addElem<glew::GLfloat>(3, false); // pos
-    layout.addElem<glew::GLfloat>(3, false); // norm
+    layout.addElem<GLfloat>(3, false); // pos
+    layout.addElem<GLfloat>(3, false); // norm
 
     va.addVertexBuffer(vb, layout);
   }
