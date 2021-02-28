@@ -12,17 +12,19 @@ layout(location = 0) out vec4 colour;
 
 in vec3 v_pos;
 in vec3 v_norm;
+in vec2 v_uv;
 
 uniform vec3 uCamPos;
 
 // material properties
-uniform vec3 uAmbientColour = vec3(0.1, 0.0, 0.0);
-uniform vec3 uDiffuseColour = vec3(0.5, 0.0, 0.0);
+uniform vec3 uAmbientColour = vec3(0.1, 0.1, 0.1);
+uniform vec3 uDiffuseColour = vec3(0.5, 0.5, 0.5);
 uniform vec3 uSpecularColour = vec3(1.0, 1.0, 1.0);
 uniform float uShininess = 16.0;
 
 const float screenGamma = 2.2;
 
+// lights
 struct DirLight {
   vec3 dir; // direction pointing away from the light source
 
@@ -54,11 +56,16 @@ uniform int numPointLights;
 
 vec3 calcPointLight(PointLight light, vec3 viewDir);  
 
+// textures
+uniform sampler2D uTexture;
+vec3 texColour;
+
 void main()
 {
   vec3 viewDir = normalize(uCamPos - v_pos);
 
   vec3 outColour = vec3(0.0);
+  texColour = texture(uTexture, v_uv).xyz; // ignore alpha for now
 
   for (int i = 0; i < numDirLights; ++i)
   {
@@ -91,8 +98,8 @@ vec3 calcDirLight(DirLight light, vec3 viewDir)
 #endif
   spec = pow(specAngle, uShininess);
   // combine results
-  vec3 ambient  = light.ambientColour * uAmbientColour;
-  vec3 diffuse  = light.diffuseColour  * lambertian * uDiffuseColour;
+  vec3 ambient  = light.ambientColour * uAmbientColour * texColour;
+  vec3 diffuse  = light.diffuseColour  * lambertian * uDiffuseColour * texColour;
   vec3 specular = light.specularColour * spec * uSpecularColour;
   return (ambient + diffuse + specular);
 }
@@ -121,8 +128,8 @@ vec3 calcPointLight(PointLight light, vec3 viewDir)
   float attenuation = 1.0 / 
         (light.constant + light.linear * dist + light.quadratic * (dist * dist));    
   // combine results
-  vec3 ambient  = light.ambientColour * uAmbientColour;
-  vec3 diffuse  = light.diffuseColour  * lambertian * uDiffuseColour;
+  vec3 ambient  = light.ambientColour * uAmbientColour * texColour;
+  vec3 diffuse  = light.diffuseColour  * lambertian * uDiffuseColour * texColour;
   vec3 specular = light.specularColour * spec * uSpecularColour;
   ambient  *= attenuation;
   diffuse  *= attenuation;

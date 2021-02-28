@@ -12,10 +12,12 @@
 #include <render/input.hpp>
 #include <render/renderMesh.hpp>
 #include <render/shader.hpp>
+#include <render/texture.hpp>
 
 namespace fcm {
 
 using RenderMeshCache = std::vector<std::unique_ptr<RenderMesh>>;
+using TextureCache = std::vector<Texture>;
 
 // this is really scuffed - We need to load shaders after initializing window -
 // TODO fix this this shit causes a bunch of errors - we should figure out how
@@ -34,6 +36,7 @@ class Viewer {
   glm::mat4 _vp;
   Camera _camera;
   RenderMeshCache renderMeshCache;
+  TextureCache textureCache;
 
 public:
   Window window;
@@ -60,11 +63,12 @@ public:
   const Camera &camera() const;
   const glm::mat4 &cameraVP() const;
 
-  /* render mesh */
+  /* render assets */
   RenderMeshKey insertMesh(Mesh *);
+  TextureKey insertTexture(Sprite);
 
 private:
-  void _drawMesh(const RenderMeshKey & /*, texture info */) const;
+  void _drawMesh(const RenderMeshKey &, const TextureKey &) const;
 };
 
 } // namespace fcm

@@ -42,6 +42,7 @@ public:
 
   Mesh *mesh;
   RenderMeshKey renderMeshKey;
+  TextureKey textureKey{0};
   glm::vec3 scale = {1, 1, 1}; // amount to scalein each dir
 
   glm::vec3 position = {0, 0, 0};
@@ -59,9 +60,9 @@ public:
   float mass = 0;
   float moment_of_inertia = 0;
 
-  glm::vec3 ambientColour{0.1, 0.f, 0.1f};
-  glm::vec3 diffuseColour{0.5f, 0.0f, 0.5f};
-  glm::vec3 specularColour{1.0, 1.0, 1.0};
+  glm::vec3 ambientColour{1.0f, 1.0f, 1.0f};
+  glm::vec3 diffuseColour{1.0f, 1.0f, 1.0f};
+  glm::vec3 specularColour{1.0f, 1.0f, 1.0f};
   float shininess = 16.0;
 
   glm::mat4 getTransform() const;

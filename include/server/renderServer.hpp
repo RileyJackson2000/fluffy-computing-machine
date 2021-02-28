@@ -37,8 +37,9 @@ public:
   void getInput();
   bool shouldClose();
 
-  /* render mesh */
+  /* render assets */
   RenderMeshKey insertMesh(Mesh *);
+  TextureKey insertTexture(Sprite);
 
   // TODO remove and replace with std chrono
   double getTime() const { return glfwGetTime(); }

@@ -33,13 +33,11 @@ Object::Object( // statics + kinematics
       mat{mat}, mass{mass}, moment_of_inertia{moment_of_inertia} {}
 
 glm::mat4 Object::getTransform() const {
-  glm::mat4 t{1.f};
-  t = glm::scale(t, scale);
-  t = glm::translate(t, position);
-
+  glm::mat4 t = glm::translate(position);
+  glm::mat4 s = glm::scale(scale);
   glm::mat4 r = glm::toMat4(orientation);
 
-  return t * r;
+  return t * r * s;
 }
 
 Sphere::Sphere(std::string name, Mesh *mesh, float radius, glm::vec3 position,

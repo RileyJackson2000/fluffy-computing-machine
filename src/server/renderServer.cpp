@@ -46,6 +46,10 @@ RenderMeshKey RenderServer::insertMesh(Mesh *mesh) {
   return _viewer.insertMesh(mesh);
 }
 
+TextureKey RenderServer::insertTexture(Sprite sprite) {
+  return _viewer.insertTexture(std::move(sprite));
+}
+
 void RenderServer::updateCameraPos(double dt) {
   float speed;
   if (_input.keyPressed(GLFW_KEY_LEFT_SHIFT)) {

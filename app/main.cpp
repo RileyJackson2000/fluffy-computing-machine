@@ -35,33 +35,61 @@ int main() {
   server.bindRenderServer(&renderServer);
 
   fcm::Mesh *sphereMesh =
-      fcm::genSphereMesh(1, 10, 10, fcm::config.faceNormals);
-
+      fcm::genSphereMesh(1, 31, 31, fcm::config.faceNormals);
   auto sphereRenderMesh = renderServer.insertMesh(sphereMesh);
 
-  for (int i = 0; i < 25; ++i) {
-    float rad = 1 + std::rand() % 3 / 3. * 0.2;
-    glm::vec3 pos = {(i % 5) * 2.5 - 5, (i / 5) * 2.5 - 5, 0};
-    auto s = std::make_unique<fcm::Sphere>("sphere", sphereMesh, rad, pos,
-                                           fcm::STEEL);
-    s->velocity = {std::rand() % 13 - 6, std::rand() % 13 - 6, 0};
-    s->renderMeshKey = sphereRenderMesh;
-    s->mass = 3;
+  auto yelloTex = renderServer.insertTexture(fcm::Pixel(0xff7f00ff));
+  auto arrowTex =
+      renderServer.insertTexture(fcm::Sprite{"../assets/uparrow.png"});
 
-    server.insertRigidBody(std::move(s));
-  }
+  fcm::Mesh *cubeMesh = fcm::genCubeMesh(1, fcm::config.faceNormals);
+  auto cubeRenderMesh = renderServer.insertMesh(cubeMesh);
+
+  auto s = std::make_unique<fcm::Sphere>("sphere1", sphereMesh, 1,
+                                         glm::vec3{0, 0, 0}, fcm::STEEL);
+  s->renderMeshKey = sphereRenderMesh;
+  s->textureKey = yelloTex;
+  server.insertRigidBody(std::move(s));
+
+  s = std::make_unique<fcm::Sphere>("sphere2", sphereMesh, 1,
+                                    glm::vec3{1.5, 1.5, 0.5}, fcm::STEEL);
+  s->renderMeshKey = sphereRenderMesh;
+  // forget to set texture!! this makes a pink texture instead of seg faulting
+  // :) s->textureKey = yelloTex;
+  server.insertRigidBody(std::move(s));
+
+  auto c = std::make_unique<fcm::RigidMesh>("cube1", cubeMesh);
+  c->mass = 1;
+  c->position = {0, 4, 0};
+  c->scale = {2, 2, 2};
+  c->orientation = glm::angleAxis(3.1415f / 6, glm::vec3{0., 0, 1});
+  c->renderMeshKey = cubeRenderMesh;
+  c->textureKey = arrowTex;
+  server.insertRigidBody(std::move(c));
+
+  // for (int i = 0; i < 25; ++i) {
+  // float rad = 1 + std::rand() % 3 / 3. * 0.2;
+  // glm::vec3 pos = {(i % 5) * 2.5 - 5, (i / 5) * 2.5 - 5, 0};
+  // auto s = std::make_unique<fcm::Sphere>("sphere", sphereMesh, rad, pos,
+  // fcm::STEEL);
+  // s->velocity = {std::rand() % 13 - 6, std::rand() % 13 - 6, 0};
+  // s->renderMeshKey = sphereRenderMesh;
+  // s->mass = 3;
+
+  // server.insertRigidBody(std::move(s));
+  //}
 
   std::unique_ptr<fcm::DirLight> dirLight = std::make_unique<fcm::DirLight>();
   dirLight->dir = {0, -1, 0};
 
   dirLight->ambientColour = {0.1, 0.1, 0.1};
-  dirLight->diffuseColour = {0.2, 0.2, 0.2};
+  dirLight->diffuseColour = {1.0, 1.0, 1.0};
   dirLight->specularColour = {1.0, 1.0, 1.0};
 
   server.insertDirLight(std::move(dirLight));
 
   std::unique_ptr<fcm::PointLight> light = std::make_unique<fcm::PointLight>();
-  light->pos = {0, 0, 0};
+  light->pos = {3, 3, 0};
 
   light->constant = 1.0;
   light->linear = 0.007;

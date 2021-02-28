@@ -70,6 +70,9 @@ Viewer::Viewer()
   // glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );
   glEnable(GL_CULL_FACE);
   glEnable(GL_DEPTH_TEST);
+
+  // add default magenta "not found" texture
+  insertTexture(Pixel(0xFF00FFFF));
 }
 
 Viewer::~Viewer() { glfwTerminate(); }
@@ -92,7 +95,7 @@ void Viewer::renderRigidBodies(
     shader.setVec3("uSpecularColour", obj->specularColour);
     shader.setFloat("uShininess", obj->shininess);
 
-    _drawMesh(obj->renderMeshKey);
+    _drawMesh(obj->renderMeshKey, obj->textureKey);
   }
 }
 
@@ -165,11 +168,20 @@ RenderMeshKey Viewer::insertMesh(Mesh *mesh) {
   return renderMeshCache.size() - 1;
 }
 
-void Viewer::_drawMesh(const RenderMeshKey &renderMeshKey) const {
+TextureKey Viewer::insertTexture(Sprite sprite) {
+  textureCache.emplace_back(std::move(sprite));
+  textureCache.back().to_gpu();
+  return textureCache.size() - 1;
+}
+
+void Viewer::_drawMesh(const RenderMeshKey &renderMeshKey,
+                       const TextureKey &textureKey) const {
   const auto &mesh = *renderMeshCache[renderMeshKey];
   shader.bind();
   mesh.va.bind();
   mesh.ib.bind();
+  const auto &texture = textureCache[textureKey];
+  texture.bind();
 
   glDrawElements(GL_TRIANGLES, mesh.ib.numIndices, GL_UNSIGNED_INT, nullptr);
 }
