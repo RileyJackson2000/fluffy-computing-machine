@@ -14,24 +14,24 @@
 
 namespace fcm {
 
-enum class ObjectType { SPHERE = 0, MESH = 1 };
+enum class ObjectType { SPHERE = 0, RIGID_MESH = 1 };
 
 struct Object {
 protected:
-  Object(ObjectType objectType, MeshKey meshKey);
+  Object(ObjectType objectType, Mesh *mesh);
 
-  Object(ObjectType objectType, std::string name, MeshKey meshKey);
+  Object(ObjectType objectType, std::string name, Mesh *mesh);
 
   Object( // only statics
-      ObjectType objectType, std::string name, MeshKey meshKey,
-      glm::vec3 position, glm::quat orientation, glm::vec3 centroid,
-      Material mat, float mass, float moment_of_inertia);
+      ObjectType objectType, std::string name, Mesh *mesh, glm::vec3 position,
+      glm::quat orientation, glm::vec3 centroid, Material mat, float mass,
+      float moment_of_inertia);
 
   Object( // statics + kinematics
-      ObjectType objectType, std::string name, MeshKey meshKey,
-      glm::vec3 position, glm::quat orientation, glm::vec3 centroid,
-      glm::vec3 velocity, glm::vec3 spin, glm::vec3 force, glm::vec3 torque,
-      Material mat, float mass, float moment_of_inertia);
+      ObjectType objectType, std::string name, Mesh *mesh, glm::vec3 position,
+      glm::quat orientation, glm::vec3 centroid, glm::vec3 velocity,
+      glm::vec3 spin, glm::vec3 force, glm::vec3 torque, Material mat,
+      float mass, float moment_of_inertia);
 
 public:
   virtual ~Object() {}
@@ -40,8 +40,8 @@ public:
 
   std::string name;
 
-  MeshKey meshKey;
-  RenderObjectKey renderObjectKey;
+  Mesh *mesh;
+  RenderMeshKey renderMeshKey;
   glm::vec3 scale = {1, 1, 1}; // amount to scalein each dir
 
   glm::vec3 position = {0, 0, 0};
@@ -70,14 +70,14 @@ public:
 struct Sphere : public Object {
   float radius;
 
-  Sphere(std::string name, MeshKey meshKey, float radius, glm::vec3 position,
+  Sphere(std::string name, Mesh *mesh, float radius, glm::vec3 position,
          Material mat);
 };
 
-struct Mesh : public Object {
-  Mesh(MeshKey meshKey);
+struct RigidMesh : public Object {
+  RigidMesh(Mesh *mesh);
 
-  Mesh(std::string name, MeshKey meshKey);
+  RigidMesh(std::string name, Mesh *mesh);
 };
 
 } // namespace fcm

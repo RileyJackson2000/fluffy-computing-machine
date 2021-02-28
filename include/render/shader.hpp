@@ -15,8 +15,8 @@ struct Shader {
   Shader(const std::string &shaderName);
   ~Shader();
 
-  void bind();
-  void unbind();
+  void bind() const;
+  void unbind() const;
 
   // add setters here as necessary
   void setInt(const std::string &name, int v);

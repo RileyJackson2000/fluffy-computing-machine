@@ -84,8 +84,8 @@ template <typename T> void collidesWith(T &obj_1, Object &obj_2) {
   case ObjectType::SPHERE:
     collide(obj_1, static_cast<Sphere &>(obj_2));
     return;
-  case ObjectType::MESH:
-    collide(obj_1, static_cast<Mesh &>(obj_2));
+  case ObjectType::RIGID_MESH:
+    collide(obj_1, static_cast<RigidMesh &>(obj_2));
     return;
   default:
     return;
@@ -98,8 +98,8 @@ void collide(Object &obj_1, Object &obj_2) {
   case ObjectType::SPHERE:
     collidesWith(static_cast<Sphere &>(obj_1), obj_2);
     return;
-  case ObjectType::MESH:
-    collidesWith(static_cast<Mesh &>(obj_1), obj_2);
+  case ObjectType::RIGID_MESH:
+    collidesWith(static_cast<RigidMesh &>(obj_1), obj_2);
     return;
   default:
     return;

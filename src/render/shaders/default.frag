@@ -82,11 +82,14 @@ vec3 calcDirLight(DirLight light, vec3 viewDir)
   float lambertian = max(dot(v_norm, lightDir), 0.0);
   // specular shading
   float spec = 0.0;
-  if (lambertian > 0.0) {
-    vec3 halfDir = normalize(lightDir + viewDir);
-    float specAngle = max(dot(halfDir, v_norm), 0.0);
-    spec = pow(specAngle, uShininess);
-  }
+#ifdef PHONG
+  vec3 halfDir = normalize(lightDir + viewDir);
+  float specAngle = max(dot(halfDir, v_norm), 0.0);
+#else
+  vec3 halfDir = normalize(lightDir + viewDir);
+  float specAngle = max(dot(halfDir, v_norm), 0.0);
+#endif
+  spec = pow(specAngle, uShininess);
   // combine results
   vec3 ambient  = light.ambientColour * uAmbientColour;
   vec3 diffuse  = light.diffuseColour  * lambertian * uDiffuseColour;
@@ -106,11 +109,14 @@ vec3 calcPointLight(PointLight light, vec3 viewDir)
 
   float spec = 0.0;
   // specular shading
-  if (lambertian > 0.0) {
-    vec3 halfDir = normalize(lightDir + viewDir);
-    float specAngle = max(dot(halfDir, v_norm), 0.0);
-    spec = pow(specAngle, uShininess);
-  }
+#ifdef PHONG
+  vec3 reflectDir = reflect(-lightDir, v_norm);
+  float specAngle = max(dot(viewDir, reflectDir), 0.0);
+#else
+  vec3 halfDir = normalize(lightDir + viewDir);
+  float specAngle = max(dot(halfDir, v_norm), 0.0);
+#endif
+  spec = pow(specAngle, uShininess);
   // attenuation
   float attenuation = 1.0 / 
         (light.constant + light.linear * dist + light.quadratic * (dist * dist));    

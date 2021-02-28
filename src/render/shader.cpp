@@ -16,9 +16,9 @@ Shader::Shader(const std::string &shaderName) : name{shaderName} {
 }
 Shader::~Shader() { glDeleteProgram(handle); }
 
-void Shader::bind() { glUseProgram(handle); }
+void Shader::bind() const { glUseProgram(handle); }
 
-void Shader::unbind() { glUseProgram(0); }
+void Shader::unbind() const { glUseProgram(0); }
 
 void Shader::setInt(const std::string &name, int i) {
   glUniform1i(getUniformLocation(name), i);
@@ -123,7 +123,8 @@ GLHandle Shader::createShader(const std::string &shaderName) {
 }
 
 GLint Shader::getUniformLocation(const std::string &uniformName) {
-  if (uniformCache.find(uniformName) == uniformCache.end()) {
+  if (auto cacheLoc = uniformCache.find(uniformName);
+      cacheLoc == uniformCache.end()) {
     GLint uniformLocation = glGetUniformLocation(handle, uniformName.c_str());
     uniformCache[uniformName] = uniformLocation;
 
@@ -131,8 +132,11 @@ GLint Shader::getUniformLocation(const std::string &uniformName) {
       std::cerr << "WARNING: Couldn't find uniform (" << uniformName
                 << ") in shader (" << name << ")" << std::endl;
     }
+
+    return uniformLocation;
+  } else {
+    return cacheLoc->second;
   }
-  return uniformCache[uniformName];
 }
 
 } // namespace fcm

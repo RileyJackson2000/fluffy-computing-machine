@@ -5,7 +5,7 @@
 
 namespace fcm {
 
-void MeshData::faceNormals() {
+void Mesh::faceNormals() {
   std::vector<Vertex> tempVerts;
   tempVerts.reserve(indices.size());
 
@@ -38,8 +38,8 @@ void MeshData::faceNormals() {
   indices = tempInds;
 }
 
-std::unique_ptr<MeshData> genCubeMesh(float side, bool faceNormals) {
-  auto md = std::make_unique<MeshData>();
+Mesh *genCubeMesh(float side, bool faceNormals) {
+  auto md = std::make_unique<Mesh>();
   float verts[] = {
       // front
       -1.0, -1.0, 1.0, 1.0, -1.0, 1.0, 1.0, 1.0, 1.0, -1.0, 1.0, 1.0,
@@ -73,12 +73,14 @@ std::unique_ptr<MeshData> genCubeMesh(float side, bool faceNormals) {
   if (faceNormals)
     md->faceNormals();
 
-  return md;
+  meshCache.emplace_back(std::move(md));
+
+  return meshCache.back().get();
 }
 
-std::unique_ptr<MeshData> genSphereMesh(float radius, uint32_t sectorCount,
-                                        uint32_t stackCount, bool faceNormals) {
-  auto md = std::make_unique<MeshData>();
+Mesh *genSphereMesh(float radius, uint32_t sectorCount, uint32_t stackCount,
+                    bool faceNormals) {
+  auto md = std::make_unique<Mesh>();
 
   float x, y, z, xy; // vertex position
 
@@ -134,7 +136,13 @@ std::unique_ptr<MeshData> genSphereMesh(float radius, uint32_t sectorCount,
   if (faceNormals)
     md->faceNormals();
 
-  return md;
+  meshCache.emplace_back(std::move(md));
+
+  return meshCache.back().get();
+}
+
+Mesh *loadMesh(const std::string &) { /* NOT IMPLEMENTED */
+  return nullptr;
 }
 
 } // namespace fcm

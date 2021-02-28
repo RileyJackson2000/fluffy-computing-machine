@@ -10,8 +10,6 @@
 
 namespace fcm {
 
-RayCaster::RayCaster(MeshCache *meshCache) : _meshCache{meshCache} {}
-
 RayCastResult
 RayCaster::castRay(glm::vec3 pos, glm::vec3 dir,
                    const std::vector<std::unique_ptr<Object>> &objects) {
@@ -43,7 +41,7 @@ RayCastResult RayCaster::castRay(glm::vec3 pos, glm::vec3 dir,
 
   glm::mat4 modelMatrix = object->getTransform();
 
-  const MeshData &mesh = *(*_meshCache)[object->meshKey];
+  const auto &mesh = *object->mesh;
   for (size_t i = 0; i < mesh.indices.size(); i += 3) {
     glm::vec3 v0{modelMatrix *
                  glm::vec4(mesh.vertices[mesh.indices[i + 0]].pos, 1.f)};
@@ -78,7 +76,7 @@ bool RayCaster::rayTriangleIntersection(glm::vec3 pos, glm::vec3 dir,
   float a, f, u, v;
   h = glm::cross(dir, edge2);
   a = glm::dot(edge1, h);
-  if (a > -eps && a < eps)
+  if (a > -EPS && a < EPS)
     return false; // This ray is parallel to this triangle.
   f = 1.0 / a;
   s = pos - v0;
@@ -92,7 +90,7 @@ bool RayCaster::rayTriangleIntersection(glm::vec3 pos, glm::vec3 dir,
   // At this stage we can compute t to find out where the intersection point is
   // on the line.
   float t = f * glm::dot(edge2, q);
-  if (t > eps && t < 1 / eps) // ray intersection
+  if (t > EPS && t < 1 / EPS) // ray intersection
   {
     dist = t;
     hitLoc = pos + pos * t;
