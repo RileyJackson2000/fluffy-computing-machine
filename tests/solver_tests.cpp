@@ -1,3 +1,5 @@
+#ifdef COMPILE_EIGEN
+
 #include "math/constants.hpp"
 #include "math/lp.hpp"
 #include "math/qcp.hpp"
@@ -147,3 +149,5 @@ TEST(SolverSuite, QCPInfeasible) {
   Eigen::VectorXf x, y;
   EXPECT_EQ(fcm::QCP_Lemke(c, Q, A, b, x, y), fcm::SolverCode::INFEASIBLE);
 }
+
+#endif // COMPILE_EIGEN
