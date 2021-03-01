@@ -1,7 +1,5 @@
 #pragma once
 
+#include "../../extern/glew-cmake/include/GL/glew.h"
 #include <utils/glm.hpp>
-namespace glew {
-#include <GL/glew.h>
 typedef GLuint GLHandle;
-} // namespace glew

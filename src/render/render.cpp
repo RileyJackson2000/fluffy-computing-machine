@@ -19,46 +19,46 @@ namespace fcm {
 
 Window::Window(const std::string &title, uint32_t width, uint32_t height) {
   // Initialise GLFW
-  if (!glfw::glfwInit()) {
+  if (!glfwInit()) {
     throw std::runtime_error("Failed to initialize GLFW.");
   }
 
   // anti aliasing
-  glfw::glfwWindowHint(GLFW_SAMPLES, 4);
+  glfwWindowHint(GLFW_SAMPLES, 4);
   // version
-  glfw::glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-  glfw::glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+  glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+  glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
   // some mac os stuff
-  glfw::glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
+  glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
   // no old opengl
-  glfw::glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+  glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-  glfw::glfwWindowHint(GLFW_DOUBLEBUFFER, GL_FALSE);
+  glfwWindowHint(GLFW_DOUBLEBUFFER, GL_FALSE);
 
-  glfw::glfwSetErrorCallback(error_callback);
+  glfwSetErrorCallback(error_callback);
 
-  ptr = glfw::GLFWwindow_ptr{
-      glfw::glfwCreateWindow(width, height, title.c_str(), NULL, NULL)};
+  ptr = GLFWwindow_ptr{
+      glfwCreateWindow(width, height, title.c_str(), NULL, NULL)};
 
   if (ptr.get() == nullptr) {
-    glfw::glfwTerminate();
+    glfwTerminate();
     throw std::runtime_error(
         "Failed to open GLFW window. See error logs for more info.");
   }
 
-  glfw::glfwMakeContextCurrent(ptr.get());
+  glfwMakeContextCurrent(ptr.get());
 
   // initialize glew
-  if (glew::glewInit() != GLEW_OK) {
-    glfw::glfwTerminate();
+  if (glewInit() != GLEW_OK) {
+    glfwTerminate();
     throw std::runtime_error("Failed to initialize GLEW.");
   }
 
-  glew::glewExperimental = true; // ? is this needed
+  glewExperimental = true; // ? is this needed
 
-  std::cout << "OpenGL Version: " << glew::glGetString(GL_VERSION) << std::endl;
+  std::cout << "OpenGL Version: " << glGetString(GL_VERSION) << std::endl;
 
-  glfw::glfwSetInputMode(ptr.get(), GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+  glfwSetInputMode(ptr.get(), GLFW_CURSOR, GLFW_CURSOR_NORMAL);
 }
 
 Viewer::Viewer(Config config, RenderObjectCache *renderObjectCache)
@@ -66,16 +66,16 @@ Viewer::Viewer(Config config, RenderObjectCache *renderObjectCache)
                              config.windowHeight},
       shader{std::string{"default"}}, renderObjectCache{renderObjectCache} {
   // Dark blue background
-  glew::glClearColor(0.0f, 0.0f, 0.3f, 0.0f);
+  glClearColor(0.0f, 0.0f, 0.3f, 0.0f);
 
-  // glew::glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );
-  glew::glEnable(GL_CULL_FACE);
-  glew::glEnable(GL_DEPTH_TEST);
+  // glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );
+  glEnable(GL_CULL_FACE);
+  glEnable(GL_DEPTH_TEST);
 
   lastFrameTime = getTime();
 }
 
-Viewer::~Viewer() { glfw::glfwTerminate(); }
+Viewer::~Viewer() { glfwTerminate(); }
 
 void Viewer::render(RenderScene &scene) {
   // controller
@@ -87,7 +87,7 @@ void Viewer::render(RenderScene &scene) {
   updateCameraDir(scene);
   selectObject(scene);
 
-  glew::glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
   _bindLights(scene);
 
@@ -108,7 +108,7 @@ void Viewer::render(RenderScene &scene) {
     draw(obj->renderObjectKey);
   }
 
-  glew::glFlush();
+  glFlush();
 }
 
 void Viewer::draw(RenderObjectKey renderObjectKey) {
@@ -117,8 +117,7 @@ void Viewer::draw(RenderObjectKey renderObjectKey) {
   model.va.bind();
   model.ib.bind();
 
-  glew::glDrawElements(GL_TRIANGLES, model.ib.numIndices, GL_UNSIGNED_INT,
-                       nullptr);
+  glDrawElements(GL_TRIANGLES, model.ib.numIndices, GL_UNSIGNED_INT, nullptr);
 }
 
 void Viewer::updateCameraPos(double dt, RenderScene &scene) {

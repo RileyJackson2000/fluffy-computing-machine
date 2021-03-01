@@ -10,7 +10,7 @@ namespace fcm {
 
 struct Shader {
   std::string name;
-  glew::GLHandle handle;
+  GLHandle handle;
 
   Shader(const std::string &shaderName);
   ~Shader();
@@ -27,13 +27,13 @@ struct Shader {
   void setMat4(const std::string &name, glm::mat4 m);
 
 private:
-  std::unordered_map<std::string, glew::GLint> uniformCache;
+  std::unordered_map<std::string, GLint> uniformCache;
 
-  glew::GLHandle compileShader(const glew::GLenum &shaderType,
-                               const std::string &shaderSource);
+  GLHandle compileShader(const GLenum &shaderType,
+                         const std::string &shaderSource);
   std::string loadTextFile(const std::string &filepath);
-  glew::GLHandle createShader(const std::string &shaderName);
-  glew::GLint getUniformLocation(const std::string &uniformName);
+  GLHandle createShader(const std::string &shaderName);
+  GLint getUniformLocation(const std::string &uniformName);
 };
 
 } // namespace fcm

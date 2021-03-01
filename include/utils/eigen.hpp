@@ -1,3 +1,3 @@
 #pragma once
 
-#include <Eigen/Eigen>
+#include "../../extern/eigen/Eigen/Eigen"

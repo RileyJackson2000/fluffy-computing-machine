@@ -7,7 +7,7 @@
 namespace fcm {
 
 struct VertexBuffer {
-  glew::GLHandle handle;
+  GLHandle handle;
 
   VertexBuffer(const void *data, size_t size);
   // non-copyable, non-movable

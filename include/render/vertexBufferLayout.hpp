@@ -9,11 +9,11 @@ namespace fcm {
 
 template <class T> struct dependent_false : std::false_type {};
 
-template <typename T> constexpr glew::GLenum getTypeEnum() {
-  if constexpr (std::is_same<T, glew::GLuint>::value ||
+template <typename T> constexpr GLenum getTypeEnum() {
+  if constexpr (std::is_same<T, GLuint>::value ||
                 std::is_same<T, unsigned int>::value)
     return GL_UNSIGNED_INT;
-  else if constexpr (std::is_same<T, glew::GLfloat>::value ||
+  else if constexpr (std::is_same<T, GLfloat>::value ||
                      std::is_same<T, float>::value)
     return GL_FLOAT;
   else
@@ -22,9 +22,9 @@ template <typename T> constexpr glew::GLenum getTypeEnum() {
 }
 
 struct VertexBufferLayoutElem {
-  glew::GLenum type;
+  GLenum type;
   size_t count;
-  glew::GLint normalized;
+  GLint normalized;
 
   size_t offset;
 };

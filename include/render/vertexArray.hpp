@@ -8,7 +8,7 @@
 namespace fcm {
 
 struct VertexArray {
-  glew::GLHandle handle;
+  GLHandle handle;
 
   VertexArray();
   // non-copyable, non-movable

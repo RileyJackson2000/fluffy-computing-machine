@@ -7,10 +7,10 @@
 namespace fcm {
 
 struct IndexBuffer {
-  glew::GLHandle handle;
+  GLHandle handle;
   const size_t numIndices;
 
-  IndexBuffer(const glew::GLuint *data, size_t numIndices);
+  IndexBuffer(const GLuint *data, size_t numIndices);
   // non-copyable, non-movable
   // this prevents annoying opengl issues with the handle
   // see GLMesh.hpp for more details

@@ -42,19 +42,18 @@ void Server::insertRigidBody(std::unique_ptr<Object> obj) {
 
 void Server::record(size_t numSteps) {
   double dt = 1.0 / _config.maxTPS;
-  std::vector<glew::GLfloat> pixels(3 * _config.windowWidth *
-                                    _config.windowHeight);
+  std::vector<GLfloat> pixels(3 * _config.windowWidth * _config.windowHeight);
 
   for (size_t step = 0; step < numSteps; ++step) {
     _viewer->render(*_renderScene);
     {
-      glew::glReadPixels(0, 0, _config.windowWidth, _config.windowWidth, GL_RGB,
-                         GL_FLOAT, &pixels[0]);
+      glReadPixels(0, 0, _config.windowWidth, _config.windowWidth, GL_RGB,
+                   GL_FLOAT, &pixels[0]);
       pngwriter png(_config.windowWidth, _config.windowHeight, 0,
                     (_config.outPath + std::to_string(step) + ".png").c_str());
       for (size_t y = 0; y < _config.windowHeight; ++y) {
         for (size_t x = 0; x < _config.windowWidth; ++x) {
-          glew::GLfloat *rgb(&pixels[0] + 3 * (y * _config.windowWidth + x));
+          GLfloat *rgb(&pixels[0] + 3 * (y * _config.windowWidth + x));
           png.plot(x, y, rgb[0], rgb[1], rgb[2]);
         }
       }

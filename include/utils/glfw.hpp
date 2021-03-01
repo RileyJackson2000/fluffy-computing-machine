@@ -8,9 +8,7 @@
 #include <memory>
 #include <utils/glew.hpp>
 
-namespace glfw {
-// hack
-#include <GLFW/glfw3.h>
+#include "../extern/glfw/include/GLFW/glfw3.h"
 
 namespace helper {
 struct DestroyGLFWWin {
@@ -20,5 +18,3 @@ struct DestroyGLFWWin {
 
 // smart pointers for glfw structs
 typedef std::unique_ptr<GLFWwindow, helper::DestroyGLFWWin> GLFWwindow_ptr;
-
-} // namespace glfw
