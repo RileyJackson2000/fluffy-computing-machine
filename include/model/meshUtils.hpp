@@ -8,17 +8,17 @@
 
 namespace fcm {
 
-void transformMeshPoints(MeshData &mesh, glm::mat4 transform);
+void transformMeshPoints(Mesh &mesh, glm::mat4 transform);
 
-float computeVolume(const MeshData &mesh);
-float computeDensity(const MeshData &mesh, float mass) {
+float computeVolume(const Mesh &mesh);
+float computeDensity(const Mesh &mesh, float mass) {
   return mass / computeVolume(mesh);
 }
-float computeMass(const MeshData &mesh, float density) {
+float computeMass(const Mesh &mesh, float density) {
   return density * computeVolume(mesh);
 }
 
-std::tuple<float, glm::vec3, glm::mat3> computeMassProps(const MeshData &mesh,
+std::tuple<float, glm::vec3, glm::mat3> computeMassProps(const Mesh &mesh,
                                                          float density);
 
 } // namespace fcm

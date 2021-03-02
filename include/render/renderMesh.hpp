@@ -14,16 +14,14 @@
 
 namespace fcm {
 
-struct RenderObject {
-  MeshData *mesh;
+struct RenderMesh {
   VertexBuffer vb;
   IndexBuffer ib;
   VertexArray va;
 
-  explicit RenderObject(MeshData *meshData)
-      : mesh{meshData}, vb{meshData->vertices.data(),
-                           sizeof(Vertex) * meshData->vertices.size()},
-        ib{meshData->indices.data(), meshData->indices.size()} {
+  explicit RenderMesh(Mesh *mesh)
+      : vb{mesh->vertices.data(), sizeof(Vertex) * mesh->vertices.size()},
+        ib{mesh->indices.data(), mesh->indices.size()} {
     VertexBufferLayout layout;
     layout.addElem<GLfloat>(3, false); // pos
     layout.addElem<GLfloat>(3, false); // norm
@@ -35,10 +33,10 @@ struct RenderObject {
   // and this resource is released in the destructor
   // maintaining this resource through copies and moves is extra annoying and
   // not worth the hassle. Instead, always maintain pointers to Model
-  RenderObject(const RenderObject &) = delete;
-  RenderObject(RenderObject &&) = delete;
-  RenderObject &operator=(RenderObject other) = delete;
-  ~RenderObject() {}
+  RenderMesh(const RenderMesh &) = delete;
+  RenderMesh(RenderMesh &&) = delete;
+  RenderMesh &operator=(RenderMesh other) = delete;
+  ~RenderMesh() {}
 };
 
 } // namespace fcm

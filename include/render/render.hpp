@@ -1,17 +1,21 @@
 #pragma once
 
-#include <config.hpp>
-
+#include <utils/config.hpp>
 #include <utils/glfw.hpp>
 #include <utils/types.hpp>
 
 #include <model/camera.hpp>
+#include <model/light.hpp>
 #include <model/rayCaster.hpp>
-#include <model/renderScene.hpp>
+#include <model/scene.hpp>
 
+#include <render/input.hpp>
+#include <render/renderMesh.hpp>
 #include <render/shader.hpp>
 
 namespace fcm {
+
+using RenderMeshCache = std::vector<std::unique_ptr<RenderMesh>>;
 
 // this is really scuffed - We need to load shaders after initializing window -
 // TODO fix this this shit causes a bunch of errors - we should figure out how
@@ -21,51 +25,46 @@ struct Window {
   GLFWwindow_ptr ptr;
   Window(const std::string &title, uint32_t width, uint32_t height);
 
-  int getKey(int key) { return glfwGetKey(ptr.get(), key); }
-  int getMouseButton(int key) { return glfwGetMouseButton(ptr.get(), key); }
-  glm::vec2 getCursorPos() {
-    double x, y;
-    glfwGetCursorPos(ptr.get(), &x, &y);
-    return glm::vec2{x, y};
-  }
-  void setShouldClose(bool b) { glfwSetWindowShouldClose(ptr.get(), b); }
-  bool shouldClose() { return glfwWindowShouldClose(ptr.get()); }
+  void setShouldClose(bool b) const { glfwSetWindowShouldClose(ptr.get(), b); }
+  bool shouldClose() const { return glfwWindowShouldClose(ptr.get()); }
 };
 
-struct Viewer {
-  Config config;
+/* OpenGL-specific implementation of a viewer */
+class Viewer {
+  glm::mat4 _vp;
+  Camera _camera;
+  RenderMeshCache renderMeshCache;
+
+public:
   Window window;
+  Input input;
   Shader shader; // shaders should be part of materials. We should also support
                  // more than one shader
-  RenderObjectCache *renderObjectCache;
 
-  Viewer(Config, RenderObjectCache *);
+  Viewer();
   ~Viewer();
 
-  void render(RenderScene &);
-  void draw(RenderObjectKey renderObjectKey);
+  /* render */
+  void renderBeginFrame();
+  void renderRigidBodies(const std::vector<std::unique_ptr<Object>> &);
+  void renderDirLights(const std::vector<std::unique_ptr<DirLight>> &);
+  void renderPointLights(const std::vector<std::unique_ptr<PointLight>> &);
+  void renderEndFrame();
 
-  // controller - TODO: move this to separete class
-  float movementSpeed = 0.1;
-  double lastFrameTime;
+  /* camera */
+  // these functions communicate with the gpu, so don't call them too frequently
+  void cameraAddPos(const glm::vec3 &deltaPos);
+  void cameraSetPos(const glm::vec3 &newPos);
+  void cameraSetDir(const glm::vec3 &newDir);
 
-  glm::vec2 lastMousePos{config.windowWidth / 2.f, config.windowHeight / 2.f};
-  float yaw = -90.f;
-  float pitch = 0;
-  float mouseSensitivity = 0.15;
-  bool rbuttonDown = false;
+  const Camera &camera() const;
+  const glm::mat4 &cameraVP() const;
 
-  void updateCameraPos(double dt, RenderScene &);
-  void updateCameraDir(RenderScene &);
-  void selectObject(RenderScene &);
-  bool closeWindow();
-
-  void pollEvents() { glfwPollEvents(); }
-  double getTime() { return glfwGetTime(); }
+  /* render mesh */
+  RenderMeshKey insertMesh(Mesh *);
 
 private:
-  // copy lights to the gpu
-  void _bindLights(const RenderScene &scene);
+  void _drawMesh(const RenderMeshKey & /*, texture info */) const;
 };
 
 } // namespace fcm

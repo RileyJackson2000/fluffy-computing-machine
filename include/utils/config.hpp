@@ -6,7 +6,7 @@
 namespace fcm {
 
 // controller config
-struct Config {
+inline struct Config {
 
   uint64_t maxTPS = 60;
   uint64_t maxFPS = -1; // no max fps by default (also not implemented yet)
@@ -16,8 +16,8 @@ struct Config {
   bool faceNormals = true;
 
   /* window options */
-  uint32_t windowWidth = 2048;
-  uint32_t windowHeight = 2048;
+  uint32_t windowWidth = 960;
+  uint32_t windowHeight = 640;
   std::string windowTitle = "PhysX DLC Features";
 
   /* output options */
@@ -25,6 +25,6 @@ struct Config {
   // config, it doesnt make sense to recompile to change the output file
   bool record = false;
   std::string outPath = "../out/output";
-};
+} config;
 
 } // namespace fcm

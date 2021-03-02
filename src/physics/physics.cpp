@@ -18,7 +18,7 @@ void iterate_angular(Object *obj, float dt) {
   obj->spin += angular_acceleration * dt;
   const float spin_angle = glm::length(obj->spin) * dt;
   const glm::vec3 spin_axis = glm::normalize(obj->spin);
-  if (spin_angle > eps) {
+  if (spin_angle > EPS) {
     obj->orientation = glm::rotate(obj->orientation, spin_angle, spin_axis);
   }
 }

@@ -2,7 +2,6 @@
 #include <render/render.hpp>
 
 #include <iostream>
-#include <render/renderObject.hpp>
 #include <utils/constants.hpp>
 #include <utils/glew.hpp>
 
@@ -61,42 +60,30 @@ Window::Window(const std::string &title, uint32_t width, uint32_t height) {
   glfwSetInputMode(ptr.get(), GLFW_CURSOR, GLFW_CURSOR_NORMAL);
 }
 
-Viewer::Viewer(Config config, RenderObjectCache *renderObjectCache)
-    : config{config}, window{config.windowTitle, config.windowWidth,
-                             config.windowHeight},
-      shader{std::string{"default"}}, renderObjectCache{renderObjectCache} {
+Viewer::Viewer()
+    : _camera{float(config.windowWidth) / float(config.windowHeight)},
+      window{config.windowTitle, config.windowWidth, config.windowHeight},
+      input{window.ptr.get()}, shader{std::string{"default"}} {
   // Dark blue background
   glClearColor(0.0f, 0.0f, 0.3f, 0.0f);
 
   // glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );
   glEnable(GL_CULL_FACE);
   glEnable(GL_DEPTH_TEST);
-
-  lastFrameTime = getTime();
 }
 
 Viewer::~Viewer() { glfwTerminate(); }
 
-void Viewer::render(RenderScene &scene) {
-  // controller
-  pollEvents();
-  double currentTime = getTime();
-  double dt = currentTime - lastFrameTime; // TODO should be passed in?
-  lastFrameTime = currentTime;
-  updateCameraPos(dt, scene);
-  updateCameraDir(scene);
-  selectObject(scene);
+/* RENDER */
 
+void Viewer::renderBeginFrame() {
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+}
 
-  _bindLights(scene);
-
-  shader.setVec3("uCamPos", scene.camera.pos);
-
-  glm::mat4 vp = scene.camera.projectionMat() * scene.camera.viewMat();
-
-  for (auto &&obj : scene.objects()) {
-    shader.setMat4("uMVP", vp * obj->getTransform());
+void Viewer::renderRigidBodies(
+    const std::vector<std::unique_ptr<Object>> &objs) {
+  for (auto &&obj : objs) {
+    shader.setMat4("uMVP", _vp * obj->getTransform());
     shader.setMat4("uM", obj->getTransform());
     shader.setMat3("uMti", glm::inverse(glm::transpose(obj->getTransform())));
 
@@ -105,110 +92,14 @@ void Viewer::render(RenderScene &scene) {
     shader.setVec3("uSpecularColour", obj->specularColour);
     shader.setFloat("uShininess", obj->shininess);
 
-    draw(obj->renderObjectKey);
-  }
-
-  glFlush();
-}
-
-void Viewer::draw(RenderObjectKey renderObjectKey) {
-  const auto &model = *((*renderObjectCache)[renderObjectKey]);
-  shader.bind();
-  model.va.bind();
-  model.ib.bind();
-
-  glDrawElements(GL_TRIANGLES, model.ib.numIndices, GL_UNSIGNED_INT, nullptr);
-}
-
-void Viewer::updateCameraPos(double dt, RenderScene &scene) {
-  float speed;
-  if (window.getKey(GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)
-    speed = movementSpeed * 0.33;
-  else
-    speed = movementSpeed;
-
-  float multiplier = speed * (dt * 1000.f);
-  if (window.getKey(GLFW_KEY_W) == GLFW_PRESS)
-    scene.camera.pos += multiplier * scene.camera.dir;
-  if (window.getKey(GLFW_KEY_S) == GLFW_PRESS)
-    scene.camera.pos -= multiplier * scene.camera.dir;
-  if (window.getKey(GLFW_KEY_A) == GLFW_PRESS)
-    scene.camera.pos -=
-        multiplier *
-        glm::normalize(glm::cross(scene.camera.dir, scene.camera.up));
-  if (window.getKey(GLFW_KEY_D) == GLFW_PRESS)
-    scene.camera.pos +=
-        multiplier *
-        glm::normalize(glm::cross(scene.camera.dir, scene.camera.up));
-}
-
-void Viewer::updateCameraDir(RenderScene &scene) {
-  int state = window.getMouseButton(GLFW_MOUSE_BUTTON_RIGHT);
-  if (state == GLFW_PRESS) {
-    glm::vec2 pos = window.getCursorPos();
-    if (!rbuttonDown) {
-      lastMousePos = pos;
-    }
-    rbuttonDown = true;
-    float xoffset = pos.x - lastMousePos.x;
-    float yoffset = lastMousePos.y - pos.y;
-    lastMousePos = pos;
-
-    xoffset *= mouseSensitivity;
-    yoffset *= mouseSensitivity;
-
-    yaw += xoffset;
-    pitch += yoffset;
-
-    glm::clamp(pitch, -89.f, 89.f);
-    scene.camera.dir.x =
-        glm::cos(glm::radians(yaw)) * glm::cos(glm::radians(pitch));
-    scene.camera.dir.y = glm::sin(glm::radians(pitch));
-    scene.camera.dir.z =
-        glm::sin(glm::radians(yaw)) * glm::cos(glm::radians(pitch));
-    scene.camera.dir = glm::normalize(scene.camera.dir);
-  } else if (state == GLFW_RELEASE) {
-    rbuttonDown = false;
+    _drawMesh(obj->renderMeshKey);
   }
 }
 
-void Viewer::selectObject(RenderScene &scene) {
-  RayCastResult result;
-  if (window.getMouseButton(GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS) {
-    glm::vec2 pos = window.getCursorPos();
-    glm::mat4 invCam =
-        glm::inverse(scene.camera.projectionMat() * scene.camera.viewMat());
-    float hw = config.windowWidth / 2.f;
-    float hh = config.windowHeight / 2.f;
-    glm::vec4 near =
-        glm::vec4((pos.x - hw) / hw, -1 * (pos.y - hh) / hh, -1, 1.0);
-    glm::vec4 far =
-        glm::vec4((pos.x - hw) / hw, -1 * (pos.y - hh) / hh, 1, 1.0);
-    glm::vec4 nearResult = invCam * near;
-    glm::vec4 farResult = invCam * far;
-    nearResult /= nearResult.w;
-    farResult /= farResult.w;
-    glm::vec3 dir = glm::normalize(glm::vec3(farResult - nearResult));
-
-    result = scene.rayCaster.castRay(scene.camera.pos, dir, scene.objects());
-    if (result.hit) {
-      result.object->ambientColour = glm::vec3{0.f, 0.1f, 0.f};
-      result.object->diffuseColour = glm::vec3{0.f, 0.5f, 0.f};
-    }
-  }
-}
-
-// todo - have a controller for pressed keys
-bool Viewer::closeWindow() {
-  if (window.getKey(GLFW_KEY_ESCAPE) == GLFW_PRESS)
-    window.setShouldClose(true);
-  return window.shouldClose();
-}
-
-void Viewer::_bindLights(const RenderScene &scene) {
-  // dir lights
-  for (size_t i = 0; i < scene.dirLights().size(); ++i) {
-    const auto &light = scene.dirLights()[i];
+void Viewer::renderDirLights(
+    const std::vector<std::unique_ptr<DirLight>> &lights) {
+  for (size_t i = 0; i < lights.size(); ++i) {
+    const auto &light = lights[i];
     std::string uDirLights = "uDirLights[" + std::to_string(i) + "].";
 
     shader.setVec3(uDirLights + "dir", light->dir);
@@ -217,11 +108,14 @@ void Viewer::_bindLights(const RenderScene &scene) {
     shader.setVec3(uDirLights + "diffuseColour", light->diffuseColour);
     shader.setVec3(uDirLights + "specularColour", light->specularColour);
   }
-  shader.setInt("numDirLights", scene.dirLights().size());
 
-  // point lights
-  for (size_t i = 0; i < scene.pointLights().size(); ++i) {
-    const auto &light = scene.pointLights()[i];
+  shader.setInt("numDirLights", lights.size());
+}
+
+void Viewer::renderPointLights(
+    const std::vector<std::unique_ptr<PointLight>> &lights) {
+  for (size_t i = 0; i < lights.size(); ++i) {
+    const auto &light = lights[i];
     std::string uPointLights = "uPointLights[" + std::to_string(i) + "].";
 
     shader.setVec3(uPointLights + "pos", light->pos);
@@ -234,7 +128,50 @@ void Viewer::_bindLights(const RenderScene &scene) {
     shader.setVec3(uPointLights + "diffuseColour", light->diffuseColour);
     shader.setVec3(uPointLights + "specularColour", light->specularColour);
   }
-  shader.setInt("numPointLights", scene.pointLights().size());
+
+  shader.setInt("numPointLights", lights.size());
+}
+
+void Viewer::renderEndFrame() { glFlush(); }
+
+/* CAMERA */
+
+void Viewer::cameraAddPos(const glm::vec3 &deltaPos) {
+  _camera.pos += deltaPos;
+
+  shader.setVec3("uCamPos", _camera.pos);
+  _vp = _camera.projectionMat() * _camera.viewMat();
+}
+
+void Viewer::cameraSetPos(const glm::vec3 &newPos) {
+  _camera.pos = newPos;
+
+  shader.setVec3("uCamPos", _camera.pos);
+  _vp = _camera.projectionMat() * _camera.viewMat();
+}
+
+void Viewer::cameraSetDir(const glm::vec3 &newDir) {
+  _camera.dir = newDir;
+
+  _vp = _camera.projectionMat() * _camera.viewMat();
+}
+
+const Camera &Viewer::camera() const { return _camera; }
+
+const glm::mat4 &Viewer::cameraVP() const { return _vp; }
+
+RenderMeshKey Viewer::insertMesh(Mesh *mesh) {
+  renderMeshCache.emplace_back(std::make_unique<RenderMesh>(mesh));
+  return renderMeshCache.size() - 1;
+}
+
+void Viewer::_drawMesh(const RenderMeshKey &renderMeshKey) const {
+  const auto &mesh = *renderMeshCache[renderMeshKey];
+  shader.bind();
+  mesh.va.bind();
+  mesh.ib.bind();
+
+  glDrawElements(GL_TRIANGLES, mesh.ib.numIndices, GL_UNSIGNED_INT, nullptr);
 }
 
 } // namespace fcm

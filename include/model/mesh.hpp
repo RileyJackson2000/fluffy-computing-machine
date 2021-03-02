@@ -7,21 +7,28 @@
 
 namespace fcm {
 
+struct Mesh;
+
+using MeshCache = std::vector<std::unique_ptr<Mesh>>;
+
 struct Vertex {
   glm::vec3 pos;
   glm::vec3 norm;
 };
 
-struct MeshData {
+struct Mesh {
   std::vector<Vertex> vertices;
   std::vector<uint32_t> indices;
 
   void faceNormals();
 };
 
-std::unique_ptr<MeshData> genCubeMesh(float side, bool faceNormals = true);
-std::unique_ptr<MeshData> genSphereMesh(float radius, uint32_t sectorCount,
-                                        uint32_t stackCount,
-                                        bool faceNormals = true);
+inline std::vector<std::unique_ptr<Mesh>> meshCache;
+
+/* generate a mesh, store it in meshCache, and return a pointer to it */
+Mesh *genCubeMesh(float side, bool faceNormals = true);
+Mesh *genSphereMesh(float radius, uint32_t sectorCount, uint32_t stackCount,
+                    bool faceNormals = true);
+Mesh *loadMesh(const std::string &path);
 
 } // namespace fcm

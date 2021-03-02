@@ -18,10 +18,9 @@ TEST(PhysicsSuite, SphereMassPropTest) {
   float radius = 2.f;
   auto sphere = fcm::genSphereMesh(radius, 200, 200);
   glm::vec3 sphereCOM{10.f, -20.f, 0.f};
-  fcm::transformMeshPoints(*sphere.get(),
-                           glm::translate(glm::mat4{1.f}, sphereCOM));
+  fcm::transformMeshPoints(*sphere, glm::translate(glm::mat4{1.f}, sphereCOM));
 
-  auto massProps = fcm::computeMassProps(*sphere.get(), density);
+  auto massProps = fcm::computeMassProps(*sphere, density);
 
   float expectedMass = density * (4.f * M_PI * radius * radius * radius / 3.f);
   glm::vec3 expectedCOM = sphereCOM;
@@ -52,10 +51,9 @@ TEST(PhysicsSuite, CubeMassPropTest) {
   float halfSide = 5;
   auto cube = fcm::genCubeMesh(halfSide);
   glm::vec3 cubeCOM{0.f, -1.f, 2};
-  fcm::transformMeshPoints(*cube.get(),
-                           glm::translate(glm::mat4{1.f}, cubeCOM));
+  fcm::transformMeshPoints(*cube, glm::translate(glm::mat4{1.f}, cubeCOM));
 
-  auto massProps = fcm::computeMassProps(*cube.get(), density);
+  auto massProps = fcm::computeMassProps(*cube, density);
 
   float side = 2.f * halfSide;
 
@@ -63,7 +61,7 @@ TEST(PhysicsSuite, CubeMassPropTest) {
   glm::vec3 expectedCOM = cubeCOM;
   glm::mat3 expectedInertia{expectedMass * side * side / 6.f};
 
-  EXPECT_NEAR(std::get<0>(massProps), expectedMass, fcm::eps);
+  EXPECT_NEAR(std::get<0>(massProps), expectedMass, fcm::EPS);
 
   float eps = glm::length(expectedCOM) / 500.f;
   for (uint32_t i = 0; i < 3; ++i) {

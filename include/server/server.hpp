@@ -1,14 +1,14 @@
 #pragma once
 
+#include <utils/config.hpp>
+
 #include <model/light.hpp>
 #include <model/mesh.hpp>
-#include <model/renderScene.hpp>
 #include <model/scene.hpp>
 
 #include <render/render.hpp>
-#include <render/renderObject.hpp>
 
-#include <config.hpp>
+#include <server/renderServer.hpp>
 
 #include <memory>
 #include <vector>
@@ -16,20 +16,21 @@
 namespace fcm {
 
 class Server {
-  Config _config;
-  std::vector<std::unique_ptr<MeshData>> _meshCache;
-  std::vector<std::unique_ptr<RenderObject>> _renderObjectCache;
   std::unique_ptr<Scene> _scene;
-  std::unique_ptr<RenderScene> _renderScene;
-  std::unique_ptr<Viewer> _viewer;
+
+  // this should probably be moved. Ideally we have a global static collection
+  // of all the servers
+  // the idea is, if _renderServer is nullptr, then we automatically are able
+  // to run the simulation headlessly
+  RenderServer *_renderServer;
 
   void dumpToPNG(int uuid);
 
 public:
-  Server(std::string sceneName, Config);
-  MeshKey getOrLoadMesh(const std::string &path);
-  MeshKey insertMesh(std::unique_ptr<MeshData>);
-  RenderObjectKey createRenderObject(MeshKey);
+  Server(std::string sceneName);
+
+  void bindRenderServer(RenderServer *);
+
   void insertDirLight(std::unique_ptr<DirLight>);
   void insertPointLight(std::unique_ptr<PointLight>);
   void insertRigidBody(std::unique_ptr<Object>);
@@ -40,10 +41,7 @@ public:
   // run the simulation for the following number time steps
   void run(size_t numSteps = -1);
 
-  const MeshData &meshByKey(MeshKey key);
   const Scene &scene() const;
-  const RenderScene &renderScene() const;
-  const Config &config() const;
 };
 
 } // namespace fcm

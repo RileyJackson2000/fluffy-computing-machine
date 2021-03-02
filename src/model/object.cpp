@@ -6,27 +6,27 @@
 
 namespace fcm {
 
-Object::Object(ObjectType objectType, MeshKey meshKey)
-    : objectType{objectType}, meshKey{meshKey} {}
+Object::Object(ObjectType objectType, Mesh *mesh)
+    : objectType{objectType}, mesh{mesh} {}
 
-Object::Object(ObjectType objectType, std::string name, MeshKey meshKey)
-    : objectType{objectType}, name{std::move(name)}, meshKey{meshKey} {}
+Object::Object(ObjectType objectType, std::string name, Mesh *mesh)
+    : objectType{objectType}, name{std::move(name)}, mesh{mesh} {}
 
 Object::Object( // only statics
-    ObjectType objectType, std::string name, MeshKey meshKey,
-    glm::vec3 position, glm::quat orientation, glm::vec3 centroid, Material mat,
-    float mass, float moment_of_inertia)
-    : objectType{objectType}, name{std::move(name)}, meshKey{meshKey},
+    ObjectType objectType, std::string name, Mesh *mesh, glm::vec3 position,
+    glm::quat orientation, glm::vec3 centroid, Material mat, float mass,
+    float moment_of_inertia)
+    : objectType{objectType}, name{std::move(name)}, mesh{mesh},
       position{std::move(position)}, orientation{std::move(orientation)},
       centroid{std::move(centroid)}, mat{mat}, mass{mass},
       moment_of_inertia{moment_of_inertia} {}
 
 Object::Object( // statics + kinematics
-    ObjectType objectType, std::string name, MeshKey meshKey,
-    glm::vec3 position, glm::quat orientation, glm::vec3 centroid,
-    glm::vec3 velocity, glm::vec3 spin, glm::vec3 force, glm::vec3 torque,
-    Material mat, float mass, float moment_of_inertia)
-    : objectType{objectType}, name{std::move(name)}, meshKey{meshKey},
+    ObjectType objectType, std::string name, Mesh *mesh, glm::vec3 position,
+    glm::quat orientation, glm::vec3 centroid, glm::vec3 velocity,
+    glm::vec3 spin, glm::vec3 force, glm::vec3 torque, Material mat, float mass,
+    float moment_of_inertia)
+    : objectType{objectType}, name{std::move(name)}, mesh{mesh},
       position{std::move(position)}, orientation{std::move(orientation)},
       centroid{std::move(centroid)}, velocity{std::move(velocity)},
       spin{std::move(spin)}, force{std::move(force)}, torque{std::move(torque)},
@@ -42,11 +42,11 @@ glm::mat4 Object::getTransform() const {
   return t * r;
 }
 
-Sphere::Sphere(std::string name, MeshKey meshKey, float radius,
-               glm::vec3 position, Material mat)
+Sphere::Sphere(std::string name, Mesh *mesh, float radius, glm::vec3 position,
+               Material mat)
     : Object{ObjectType::SPHERE,
              std::move(name),
-             meshKey,
+             mesh,
              position,
              {1, 0, 0, 0},
              position,
@@ -58,9 +58,9 @@ Sphere::Sphere(std::string name, MeshKey meshKey, float radius,
   scale = {radius, radius, radius};
 }
 
-Mesh::Mesh(MeshKey meshKey) : Object{ObjectType::MESH, meshKey} {}
+RigidMesh::RigidMesh(Mesh *mesh) : Object{ObjectType::RIGID_MESH, mesh} {}
 
-Mesh::Mesh(std::string name, MeshKey meshKey)
-    : Object{ObjectType::MESH, std::move(name), meshKey} {}
+RigidMesh::RigidMesh(std::string name, Mesh *mesh)
+    : Object{ObjectType::RIGID_MESH, std::move(name), mesh} {}
 
 } // namespace fcm

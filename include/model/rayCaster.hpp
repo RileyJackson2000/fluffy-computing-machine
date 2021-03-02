@@ -23,14 +23,12 @@ struct RayCastResult {
 };
 
 struct RayCaster {
-  RayCaster(MeshCache *);
   RayCastResult castRay(glm::vec3 pos, glm::vec3 dir,
                         const std::vector<std::unique_ptr<Object>> &objects);
   RayCastResult castRay(glm::vec3 pos, glm::vec3 dir,
                         const std::unique_ptr<Object> &object);
 
 private:
-  MeshCache *_meshCache;
   bool rayTriangleIntersection(glm::vec3 pos, glm::vec3 dir, glm::vec3 v0,
                                glm::vec3 v1, glm::vec3 v2, float &dist,
                                glm::vec3 &hitLoc);

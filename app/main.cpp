@@ -1,6 +1,7 @@
 #include <server/server.hpp>
 
 #include <model/light.hpp>
+#include <model/mesh.hpp>
 #include <model/object.hpp>
 #include <model/scene.hpp>
 #include <physics/physics.hpp>
@@ -9,7 +10,7 @@
 #include <utils/glew.hpp>
 #include <utils/glfw.hpp>
 
-#include <config.hpp>
+#include <utils/config.hpp>
 
 #include <chrono>
 #include <iostream>
@@ -24,25 +25,27 @@ float rfloat() {
 int main() {
   std::cout << "Hello there\n";
 
-  fcm::Config config;
-
   std::cout << "Initializing physics...\n";
   fcm::init_physics();
   std::cout << "Initializing renderer...\n";
   // should move opengl initialization here instead of the constructor of window
 
-  fcm::Server server{"Scene 1", config};
-  auto sphereKey =
-      server.insertMesh(fcm::genSphereMesh(1, 10, 10, config.faceNormals));
-  auto sphereModel = server.createRenderObject(sphereKey);
+  fcm::Server server{"Scene 1"};
+  fcm::RenderServer renderServer;
+  server.bindRenderServer(&renderServer);
+
+  fcm::Mesh *sphereMesh =
+      fcm::genSphereMesh(1, 10, 10, fcm::config.faceNormals);
+
+  auto sphereRenderMesh = renderServer.insertMesh(sphereMesh);
 
   for (int i = 0; i < 25; ++i) {
     float rad = 1 + std::rand() % 3 / 3. * 0.2;
     glm::vec3 pos = {(i % 5) * 2.5 - 5, (i / 5) * 2.5 - 5, 0};
-    auto s = std::make_unique<fcm::Sphere>("sphere", sphereKey, rad, pos,
+    auto s = std::make_unique<fcm::Sphere>("sphere", sphereMesh, rad, pos,
                                            fcm::STEEL);
     s->velocity = {std::rand() % 13 - 6, std::rand() % 13 - 6, 0};
-    s->renderObjectKey = sphereModel;
+    s->renderMeshKey = sphereRenderMesh;
     s->mass = 3;
 
     server.insertRigidBody(std::move(s));
@@ -70,7 +73,7 @@ int main() {
 
   server.insertPointLight(std::move(light));
 
-  if (config.record) {
+  if (fcm::config.record) {
     server.record(100);
   } else {
     server.run();

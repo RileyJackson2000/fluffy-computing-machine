@@ -6,13 +6,13 @@
 
 namespace fcm {
 
-void transformMeshPoints(MeshData &mesh, glm::mat4 transform) {
+void transformMeshPoints(Mesh &mesh, glm::mat4 transform) {
   for (Vertex &v : mesh.vertices) {
     v.pos = glm::vec3(transform * glm::vec4(v.pos, 1.f));
   }
 }
 
-float computeVolume(const MeshData &mesh) {
+float computeVolume(const Mesh &mesh) {
   float totalVolume = 0.f;
   for (size_t i = 0; i < mesh.indices.size(); i += 3) {
     // implicit tet with vertices (0,0,0), v1, v2, v3
@@ -28,7 +28,7 @@ float computeVolume(const MeshData &mesh) {
   return totalVolume / 6.f;
 }
 
-std::tuple<float, glm::vec3, glm::mat3> computeMassProps(const MeshData &mesh,
+std::tuple<float, glm::vec3, glm::mat3> computeMassProps(const Mesh &mesh,
                                                          float density) {
   // assume density=1, we will scale everything before returning
   // we start with the covariance of a canonical tet {w0, w1, w2, w3}
