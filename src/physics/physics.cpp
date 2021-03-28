@@ -11,14 +11,15 @@ namespace fcm {
 void init_physics(void) { init_materials(); }
 
 void iterate_linear(Object *obj, float dt) {
-#if DEBUG_MODE == 1
-  static bool warned = false;
-  if (!warned && obj->mass == 0) {
-    std::cerr << "[DEBUG] WARNING! An object(s) has 0 mass, which may cause it"
-                 "to behave unexpectedly\n";
-    warned = true;
+  if constexpr (DEBUG_MODE >= 1) {
+    static bool warned = false;
+    if (!warned && obj->mass == 0) {
+      std::cerr
+          << "[DEBUG] WARNING! An object(s) has 0 mass, which may cause it"
+             "to behave unexpectedly\n";
+      warned = true;
+    }
   }
-#endif // DEBUG_MODE == 1
   obj->velocity += obj->force / obj->mass * dt;
   obj->position += obj->velocity * dt;
 }

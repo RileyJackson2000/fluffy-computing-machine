@@ -29,4 +29,6 @@ public:
 // (however right now alpha channel is ignored)
 Sprite Pixel(unsigned int colour);
 
+Sprite NullSprite(int width, int height, int numChannels);
+
 } // namespace fcm

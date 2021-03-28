@@ -1,5 +1,17 @@
 #version 330 core
 
+#ifndef MAX_NUM_DIR_LIGHTS
+#define MAX_NUM_DIR_LIGHTS 2
+#endif
+
+#ifndef MAX_NUM_POINT_LIGHTS
+#define MAX_NUM_POINT_LIGHTS 5
+#endif
+
+#ifndef MAX_NUM_SHADOWS
+#define MAX_NUM_SHADOWS 4
+#endif
+
 layout (location = 0) in vec3 position;
 layout (location = 1) in vec3 normal;
 layout (location = 2) in vec2 uv;

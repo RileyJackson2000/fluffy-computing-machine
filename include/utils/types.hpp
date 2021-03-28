@@ -7,5 +7,6 @@ namespace fcm {
 
 using RenderMeshKey = size_t;
 using TextureKey = size_t;
+using ShaderKey = size_t;
 
 } // namespace fcm

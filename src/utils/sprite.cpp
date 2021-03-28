@@ -40,4 +40,8 @@ Sprite Pixel(unsigned int colour) {
   return Sprite{stbi_image_arr{data}, 1, 1, 3};
 }
 
+Sprite NullSprite(int width, int height, int numChannels) {
+  return Sprite{stbi_image_arr{}, width, height, numChannels};
+}
+
 } // namespace fcm
