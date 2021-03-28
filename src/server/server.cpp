@@ -1,7 +1,7 @@
 #include <physics/physics.hpp>
 #include <server/server.hpp>
 #include <utils/constants.hpp>
-#include <utils/pngwriter.hpp>
+#include <utils/stb_image.hpp>
 
 namespace fcm {
 
@@ -26,26 +26,23 @@ void Server::insertRigidBody(std::unique_ptr<Object> obj) {
 
 void Server::record(size_t numSteps) {
   if (_renderServer == nullptr) {
-    std::cerr << "fatal error: no rendering server found\n";
+    std::cerr << "Error: no rendering server found\n";
     return;
   }
   double dt = 1.0 / config.maxTPS;
-  std::vector<GLfloat> pixels(3 * config.windowWidth * config.windowHeight);
+  std::vector<GLubyte> pixels(3 * config.windowWidth * config.windowHeight);
 
   for (size_t step = 0; step < numSteps; ++step) {
     _renderServer->render(*_scene);
-    {
-      glReadPixels(0, 0, config.windowWidth, config.windowWidth, GL_RGB,
-                   GL_FLOAT, &pixels[0]);
-      pngwriter png(config.windowWidth, config.windowHeight, 0,
-                    (config.outPath + std::to_string(step) + ".png").c_str());
-      for (size_t y = 0; y < config.windowHeight; ++y) {
-        for (size_t x = 0; x < config.windowWidth; ++x) {
-          GLfloat *rgb(&pixels[0] + 3 * (y * config.windowWidth + x));
-          png.plot(x, y, rgb[0], rgb[1], rgb[2]);
-        }
-      }
-      png.close();
+    glReadPixels(0, 0, config.windowWidth, config.windowWidth, GL_RGB,
+                 GL_UNSIGNED_BYTE, &pixels[0]);
+    std::string file_path = config.outPath + std::to_string(step) + ".png";
+    int no_err = stbi_write_png(file_path.c_str(), config.windowWidth,
+                                config.windowHeight, STBI_COLOUR_RGB,
+                                &pixels[0], config.windowWidth * 3);
+    if (!no_err) {
+      std::cerr << "Error: unknown error when writing to " << file_path << "\n";
+      return;
     }
     fcm::update(_scene.get(), dt);
   }

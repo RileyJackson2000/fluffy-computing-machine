@@ -10,11 +10,6 @@ Install dependencies:
 sudo apt-get install libglew-dev libglfw3-dev libglm-dev libx11-dev libxi-dev libgl1-mesa-dev libglu1-mesa-dev libxrandr-dev libxext-dev libxcursor-dev libxinerama-dev libxi-dev
 ```
 
-You'll also need the following dependencies for the current recording setup
-```console
-sudo apt-get install libpng-dev libfreetype-dev libfreetype6 libfreetype6-dev
-```
-
 In order for the recording script to work, you need
 ```console
 sudo apt install ffmpeg
