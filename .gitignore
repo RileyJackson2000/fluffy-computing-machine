@@ -15,6 +15,7 @@ tmp/*
 
 # Ignore out directory (where recordings go)
 out/*
+!out/.gitkeep
 
 # Vim stuff
 tags

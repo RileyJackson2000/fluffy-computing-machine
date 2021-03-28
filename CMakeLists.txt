@@ -5,7 +5,7 @@ project (
   VERSION 1.0
   LANGUAGES CXX)
 
-add_compile_options(-Wall -Wextra -g -O3 -flto -mtune=native -march=native -I/usr/include/freetype2 -I/usr/include/libpng16)
+add_compile_options(-Wall -Wextra -g -O3 -flto -mtune=native -march=native)
 
 set(WORKFLOW FALSE CACHE BOOL "No compiling with user code warnings")
 
