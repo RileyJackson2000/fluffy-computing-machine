@@ -20,9 +20,7 @@ void RenderServer::render(Scene &scene) {
   updateCameraPos(dt);
   updateCameraDir(dt);
 
-  _viewer.renderRigidBodies(scene.objects());
-  _viewer.renderDirLights(scene.dirLights());
-  _viewer.renderPointLights(scene.pointLights());
+  _viewer.renderScene(scene);
 
   _viewer.renderEndFrame();
 }
@@ -37,9 +35,9 @@ void RenderServer::pollInput() {
 
 bool RenderServer::shouldClose() {
   if (_input.keyPressed(GLFW_KEY_ESCAPE)) {
-    _viewer.window.setShouldClose(true);
+    _viewer.window().setShouldClose(true);
   }
-  return _viewer.window.shouldClose();
+  return _viewer.window().shouldClose();
 }
 
 RenderMeshKey RenderServer::insertMesh(Mesh *mesh) {

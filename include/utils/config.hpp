@@ -3,15 +3,13 @@
 #include <cstdint>
 #include <string>
 
+namespace fcm {
+
 // if DEBUG_MODE is set to 1, then certain runtime checks and logs are enabled
 // to try and prematurely catch bugs
 // set to 0 for production to maximize performance at the cost of allowing some
 // systems to fail silently
-#define DEBUG_MODE 1
-
-namespace fcm {
-
-inline constexpr int debug_mode = DEBUG_MODE;
+inline constexpr int DEBUG_MODE = 1;
 
 // controller config
 inline struct Config {
@@ -26,6 +24,9 @@ inline struct Config {
   uint32_t windowWidth = 960;
   uint32_t windowHeight = 640;
   std::string windowTitle = "PhysX DLC Features";
+
+  /* render options */
+  uint32_t shadowResolution = 1024;
 
   /* output options */
   // TODO I'm putting this here for now but we need a better system for per-run

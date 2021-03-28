@@ -5,8 +5,8 @@ namespace fcm {
 Camera::Camera(float aspect) : aspect{aspect} {
   fov = 60.f;
 
-  pos = glm::vec3{0.f, 0.f, 30.f};
-  dir = glm::vec3{0.f, 0.f, -1.f};
+  pos = glm::vec3{-10.f, 4.f, 10.f};
+  dir = glm::vec3{10.f, -4.f, -10.f} / 15.f;
   up = glm::vec3{0.f, 1.f, 0.f};
 }
 

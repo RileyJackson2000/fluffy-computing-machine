@@ -12,6 +12,7 @@
 #include <render/input.hpp>
 #include <render/renderMesh.hpp>
 #include <render/shader.hpp>
+#include <render/shadowMap.hpp>
 #include <render/texture.hpp>
 
 namespace fcm {
@@ -19,9 +20,23 @@ namespace fcm {
 using RenderMeshCache = std::vector<std::unique_ptr<RenderMesh>>;
 using TextureCache = std::vector<Texture>;
 
-// this is really scuffed - We need to load shaders after initializing window -
-// TODO fix this this shit causes a bunch of errors - we should figure out how
-// to change this
+// due to opengl limitations, we can only have 16 textures active
+// for a single fragment, and they must be mapped manually
+// do that mapping here
+enum TextureUnit {
+  // use this for everyday, opaque textures
+  DEFAULT = 0,
+  // reserved for shadows (this limits the max num of lights with shadows)
+  SHADOW_0 = 1,
+  SHADOW_1 = 2,
+  SHADOW_2 = 3,
+  SHADOW_3 = 4,
+  // add more if necessary
+};
+
+// make sure to update the fragment shader if you change this value
+inline constexpr int MAX_NUM_SHADOWS = 4;
+
 struct Window {
   // TODO resizable window?
   GLFWwindow_ptr ptr;
@@ -33,25 +48,54 @@ struct Window {
 
 /* OpenGL-specific implementation of a viewer */
 class Viewer {
+  Window _window;
   glm::mat4 _vp;
   Camera _camera;
   RenderMeshCache renderMeshCache;
   TextureCache textureCache;
+  ShaderCache shaderCache;
+
+  // shaders used by viewer
+  ShaderKey defaultShaderKey;
+  ShaderKey depthShaderKey;
+
+  // state used by shadow renderer
+  std::vector<ShadowMap> shadowMaps;
+  size_t curShadowMap;
 
 public:
-  Window window;
   Input input;
-  Shader shader; // shaders should be part of materials. We should also support
-                 // more than one shader
 
   Viewer();
   ~Viewer();
 
   /* render */
+  // always call this to begin a render cycle
   void renderBeginFrame();
-  void renderRigidBodies(const std::vector<std::unique_ptr<Object>> &);
+  // call this if you want to render everything
+  void renderScene(const Scene &);
+  // otherwise call these to render specific entities (order is very important)
+
+  // render shadows. Note that there are a limited number k of shadow map
+  // texture units (defined above). That means, in a certain frame, only
+  // the first k lights will have their shadows drawn, and the remaining
+  // lights won't have shadows
+  // (if you want to choose which lights have their shadows drawn...
+  // then its not implemented yet)
+  void renderDirShadows(const std::vector<std::unique_ptr<Object>> &,
+                        const std::vector<std::unique_ptr<DirLight>> &);
+  void renderPointShadows(const std::vector<std::unique_ptr<Object>> &,
+                          const std::vector<std::unique_ptr<PointLight>> &);
+
+  // render lights. A bit of a misnomer, these functions don't render
+  // anything until renderRigidBodies is called, they just copy the light
+  // information to the gpu
   void renderDirLights(const std::vector<std::unique_ptr<DirLight>> &);
   void renderPointLights(const std::vector<std::unique_ptr<PointLight>> &);
+
+  // render meshes.
+  void renderRigidBodies(const std::vector<std::unique_ptr<Object>> &);
+  // always call this to end the render cycle
   void renderEndFrame();
 
   /* camera */
@@ -65,10 +109,15 @@ public:
 
   /* render assets */
   RenderMeshKey insertMesh(Mesh *);
-  TextureKey insertTexture(Sprite);
+  TextureKey insertTexture(Sprite, TextureUnit tu = DEFAULT);
+  TextureKey insertTexture(Texture);
+  ShaderKey insertShader(const std::string &shaderName);
+
+  /* getters */
+  const Window &window() const;
 
 private:
-  void _drawMesh(const RenderMeshKey &, const TextureKey &) const;
+  void _drawMesh(const RenderMeshKey &) const;
 };
 
 } // namespace fcm

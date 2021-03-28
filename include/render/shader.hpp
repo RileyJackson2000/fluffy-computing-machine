@@ -1,7 +1,9 @@
 #pragma once
 
+#include <memory>
 #include <string>
 #include <unordered_map>
+#include <vector>
 
 #include <utils/glew.hpp>
 #include <utils/glm.hpp>
@@ -27,6 +29,8 @@ struct Shader {
   void setMat4(const std::string &name, glm::mat4 m);
 
 private:
+  // TODO benchmark if std::map is faster
+  // (it should be for small caches.. and we call this function very often)
   std::unordered_map<std::string, GLint> uniformCache;
 
   GLHandle compileShader(const GLenum &shaderType,
@@ -35,5 +39,7 @@ private:
   GLHandle createShader(const std::string &shaderName);
   GLint getUniformLocation(const std::string &uniformName);
 };
+
+using ShaderCache = std::vector<std::unique_ptr<Shader>>;
 
 } // namespace fcm

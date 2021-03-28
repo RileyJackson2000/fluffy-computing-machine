@@ -43,6 +43,7 @@ public:
   Mesh *mesh;
   RenderMeshKey renderMeshKey;
   TextureKey textureKey{0};
+  ShaderKey shaderKey{0};
   glm::vec3 scale = {1, 1, 1}; // amount to scalein each dir
 
   glm::vec3 position = {0, 0, 0};
