@@ -1,3 +1,5 @@
+#include <utils/stb_image.hpp>
+
 // save state
 #pragma GCC diagnostic push
 
@@ -10,3 +12,9 @@
 
 // turn warnings back on
 #pragma GCC diagnostic pop
+
+stbi_image_arr stbi_new_image_arr(int width, int height, int numChannels) {
+  auto data =
+      static_cast<unsigned char *>(STBI_MALLOC(width * height * numChannels));
+  return stbi_image_arr{data};
+}

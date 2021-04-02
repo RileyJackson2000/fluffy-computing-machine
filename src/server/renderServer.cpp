@@ -42,12 +42,12 @@ bool RenderServer::shouldClose() {
   return _viewer.window.shouldClose();
 }
 
-RenderMeshKey RenderServer::insertMesh(Mesh *mesh) {
-  return _viewer.insertMesh(mesh);
+RenderMeshKey RenderServer::createRenderMesh(Mesh *mesh) {
+  return _viewer.createRenderMesh(mesh);
 }
 
-TextureKey RenderServer::insertTexture(Sprite sprite) {
-  return _viewer.insertTexture(std::move(sprite));
+TextureKey RenderServer::createTexture(Image image) {
+  return _viewer.createTexture(std::move(image));
 }
 
 void RenderServer::updateCameraPos(double dt) {

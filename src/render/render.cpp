@@ -72,7 +72,7 @@ Viewer::Viewer()
   glEnable(GL_DEPTH_TEST);
 
   // add default magenta "not found" texture
-  insertTexture(Pixel(0xFF00FFFF));
+  createTexture(Pixel(fromRGB(0xFF00FF)));
 }
 
 Viewer::~Viewer() { glfwTerminate(); }
@@ -163,13 +163,13 @@ const Camera &Viewer::camera() const { return _camera; }
 
 const glm::mat4 &Viewer::cameraVP() const { return _vp; }
 
-RenderMeshKey Viewer::insertMesh(Mesh *mesh) {
+RenderMeshKey Viewer::createRenderMesh(Mesh *mesh) {
   renderMeshCache.emplace_back(std::make_unique<RenderMesh>(mesh));
   return renderMeshCache.size() - 1;
 }
 
-TextureKey Viewer::insertTexture(Sprite sprite) {
-  textureCache.emplace_back(std::move(sprite));
+TextureKey Viewer::createTexture(Image image) {
+  textureCache.emplace_back(std::move(image));
   textureCache.back().to_gpu();
   return textureCache.size() - 1;
 }

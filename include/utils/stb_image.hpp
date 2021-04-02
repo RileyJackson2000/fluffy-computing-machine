@@ -17,3 +17,5 @@ struct DestroySTBImage {
 
 using stbi_image_arr =
     std::unique_ptr<unsigned char[], helper::DestroySTBImage>;
+
+stbi_image_arr stbi_new_image_arr(int width, int height, int numChannels);

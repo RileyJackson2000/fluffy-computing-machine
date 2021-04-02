@@ -5,18 +5,18 @@
 
 namespace fcm {
 
-Texture::Texture(Sprite sprite) : _sprite{std::move(sprite)} {
+Texture::Texture(Image image) : _image{std::move(image)} {
   glGenTextures(1, &_handle);
 }
 
-Texture::Texture(std::string_view path) : Texture{Sprite{path}} {}
+Texture::Texture(const std::string &path) : Texture{Image{path}} {}
 
 void Texture::bind() const noexcept { glBindTexture(GL_TEXTURE_2D, _handle); }
 
 void Texture::to_gpu() noexcept {
   if constexpr (debug_mode > 0) {
-    if (_sprite.data() == nullptr) {
-      std::cerr << "Sprite data is null?\n";
+    if (_image.data() == nullptr) {
+      std::cerr << "Image data is null?\n";
       return;
     }
   }
@@ -35,18 +35,18 @@ void Texture::to_gpu() noexcept {
   glTexImage2D(GL_TEXTURE_2D,
                0,      // mipmap level
                GL_RGB, // opengl format
-               _sprite.width(), _sprite.height(),
+               _image.width(), _image.height(),
                0,                // legacy arg
                GL_RGB,           // data format
                GL_UNSIGNED_BYTE, // data type
-               _sprite.data());
+               _image.data());
   glGenerateMipmap(GL_TEXTURE_2D);
 
   // free ram (not necessary but good practice)
-  _sprite.destroy();
+  _image.destroy();
 }
 
-const Sprite &Texture::sprite() const noexcept { return _sprite; }
+const Image &Texture::image() const noexcept { return _image; }
 
 GLHandle Texture::handle() const noexcept { return _handle; }
 

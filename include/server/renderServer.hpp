@@ -38,8 +38,8 @@ public:
   bool shouldClose();
 
   /* render assets */
-  RenderMeshKey insertMesh(Mesh *);
-  TextureKey insertTexture(Sprite);
+  RenderMeshKey createRenderMesh(Mesh *);
+  TextureKey createTexture(Image);
 
   // TODO remove and replace with std chrono
   double getTime() const { return glfwGetTime(); }

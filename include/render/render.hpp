@@ -64,8 +64,8 @@ public:
   const glm::mat4 &cameraVP() const;
 
   /* render assets */
-  RenderMeshKey insertMesh(Mesh *);
-  TextureKey insertTexture(Sprite);
+  RenderMeshKey createRenderMesh(Mesh *);
+  TextureKey createTexture(Image);
 
 private:
   void _drawMesh(const RenderMeshKey &, const TextureKey &) const;

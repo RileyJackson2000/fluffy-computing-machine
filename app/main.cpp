@@ -36,14 +36,15 @@ int main() {
 
   fcm::Mesh *sphereMesh =
       fcm::genSphereMesh(1, 31, 31, fcm::config.faceNormals);
-  auto sphereRenderMesh = renderServer.insertMesh(sphereMesh);
+  auto sphereRenderMesh = renderServer.createRenderMesh(sphereMesh);
 
-  auto yelloTex = renderServer.insertTexture(fcm::Pixel(0xff7f00ff));
+  auto yelloTex =
+      renderServer.createTexture(fcm::Pixel(fcm::fromRGB(0xff7f00)));
   auto arrowTex =
-      renderServer.insertTexture(fcm::Sprite{"../assets/uparrow.png"});
+      renderServer.createTexture(fcm::Image{"../assets/uparrow.png"});
 
   fcm::Mesh *cubeMesh = fcm::genCubeMesh(1, fcm::config.faceNormals);
-  auto cubeRenderMesh = renderServer.insertMesh(cubeMesh);
+  auto cubeRenderMesh = renderServer.createRenderMesh(cubeMesh);
 
   auto s = std::make_unique<fcm::Sphere>("sphere1", sphereMesh, 1,
                                          glm::vec3{0, 0, 0}, fcm::STEEL);
