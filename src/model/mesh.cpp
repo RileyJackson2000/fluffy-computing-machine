@@ -5,22 +5,25 @@
 
 namespace fcm {
 
-void Mesh::faceNormals() {
+void genFaceNormals(Mesh &mesh) {
   std::vector<Vertex> tempVerts;
-  tempVerts.reserve(indices.size());
+  tempVerts.reserve(mesh.indices.size());
 
   std::vector<uint32_t> tempInds;
-  tempInds.reserve(indices.size());
+  tempInds.reserve(mesh.indices.size());
 
-  for (uint32_t i = 0; i < indices.size(); i += 3) {
-    glm::vec3 a = vertices[indices[i + 0]].pos;
-    glm::vec3 b = vertices[indices[i + 1]].pos;
-    glm::vec3 c = vertices[indices[i + 2]].pos;
+  for (uint32_t i = 0; i < mesh.indices.size(); i += 3) {
+    Vertex v0 = mesh.vertices[mesh.indices[i + 0]];
+    Vertex v1 = mesh.vertices[mesh.indices[i + 1]];
+    Vertex v2 = mesh.vertices[mesh.indices[i + 2]];
+    glm::vec3 a = v0.pos;
+    glm::vec3 b = v1.pos;
+    glm::vec3 c = v2.pos;
     glm::vec3 surfaceNorm = glm::normalize(glm::cross(b - a, c - a));
 
-    Vertex a_new = {a, surfaceNorm};
-    Vertex b_new = {b, surfaceNorm};
-    Vertex c_new = {c, surfaceNorm};
+    Vertex a_new = {a, surfaceNorm, v0.uv};
+    Vertex b_new = {b, surfaceNorm, v1.uv};
+    Vertex c_new = {c, surfaceNorm, v2.uv};
 
     tempVerts.push_back(a_new);
     tempVerts.push_back(b_new);
@@ -31,14 +34,11 @@ void Mesh::faceNormals() {
     tempInds.push_back(i + 2);
   }
 
-  vertices.clear();
-  indices.clear();
-
-  vertices = tempVerts;
-  indices = tempInds;
+  mesh.vertices = tempVerts;
+  mesh.indices = tempInds;
 }
 
-Mesh *genCubeMesh(float side, bool faceNormals) {
+Mesh *genCubeMesh(float sideLength, bool faceNormals, bool textures) {
   auto md = std::make_unique<Mesh>();
   float verts[] = {
       // front
@@ -61,8 +61,9 @@ Mesh *genCubeMesh(float side, bool faceNormals) {
 
   for (uint32_t i = 0; i < 8 * 3; i += 3) {
     Vertex v;
-    v.pos = side * glm::vec3{verts[i + 0], verts[i + 1], verts[i + 2]};
+    v.pos = sideLength * glm::vec3{verts[i + 0], verts[i + 1], verts[i + 2]};
     v.norm = glm::normalize(v.pos);
+    v.uv = {0, 0};
     md->vertices.push_back(v);
   }
 
@@ -70,8 +71,43 @@ Mesh *genCubeMesh(float side, bool faceNormals) {
     md->indices.push_back(tris[i]);
   }
 
-  if (faceNormals)
-    md->faceNormals();
+  if (faceNormals) {
+    genFaceNormals(*md);
+  }
+
+  if (textures) {
+    float uvs[] = {// bottom right triangle
+                   00.0, 0.0, 1.0, 0.0, 1.0, 1.0,
+                   // top left triangle
+                   1.0, 1.0, 0.0, 1.0, 0.0, 0.0};
+    std::vector<Vertex> tempVerts;
+    tempVerts.reserve(md->indices.size());
+
+    std::vector<uint32_t> tempInds;
+    tempInds.reserve(md->indices.size());
+
+    int uv_idx = 0;
+    for (uint32_t i = 0; i < md->indices.size(); i += 3) {
+      Vertex v0 = md->vertices[md->indices[i + 0]];
+      Vertex v1 = md->vertices[md->indices[i + 1]];
+      Vertex v2 = md->vertices[md->indices[i + 2]];
+
+      v0.uv = {uvs[uv_idx + 0], uvs[uv_idx + 1]};
+      v1.uv = {uvs[uv_idx + 2], uvs[uv_idx + 3]};
+      v2.uv = {uvs[uv_idx + 4], uvs[uv_idx + 5]};
+      uv_idx = 6 - uv_idx; // alternate between 0 and 6
+
+      tempVerts.push_back(v0);
+      tempVerts.push_back(v1);
+      tempVerts.push_back(v2);
+
+      tempInds.push_back(i + 0);
+      tempInds.push_back(i + 1);
+      tempInds.push_back(i + 2);
+    }
+    md->vertices = tempVerts;
+    md->indices = tempInds;
+  }
 
   meshCache.emplace_back(std::move(md));
 
@@ -105,6 +141,7 @@ Mesh *genSphereMesh(float radius, uint32_t sectorCount, uint32_t stackCount,
       y = xy * std::sin(sectorAngle); // r * cos(u) * sin(v)
       v.pos = glm::vec3{x, y, z};
       v.norm = glm::normalize(v.pos);
+      v.uv = {0, 0};
 
       md->vertices.push_back(v);
     }
@@ -133,8 +170,9 @@ Mesh *genSphereMesh(float radius, uint32_t sectorCount, uint32_t stackCount,
     }
   }
 
-  if (faceNormals)
-    md->faceNormals();
+  if (faceNormals) {
+    genFaceNormals(*md);
+  }
 
   meshCache.emplace_back(std::move(md));
 

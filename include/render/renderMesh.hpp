@@ -25,6 +25,7 @@ struct RenderMesh {
     VertexBufferLayout layout;
     layout.addElem<GLfloat>(3, false); // pos
     layout.addElem<GLfloat>(3, false); // norm
+    layout.addElem<GLfloat>(2, false); // uv
 
     va.addVertexBuffer(vb, layout);
   }
@@ -32,7 +33,7 @@ struct RenderMesh {
   // the reasoning is, vb, ib, va own resources on the gpu through the glhandle,
   // and this resource is released in the destructor
   // maintaining this resource through copies and moves is extra annoying and
-  // not worth the hassle. Instead, always maintain pointers to Model
+  // not worth the hassle. Instead, always maintain pointers to RenderMesh
   RenderMesh(const RenderMesh &) = delete;
   RenderMesh(RenderMesh &&) = delete;
   RenderMesh &operator=(RenderMesh other) = delete;

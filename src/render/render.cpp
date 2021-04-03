@@ -70,6 +70,9 @@ Viewer::Viewer()
   // glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );
   glEnable(GL_CULL_FACE);
   glEnable(GL_DEPTH_TEST);
+
+  // add default magenta "not found" texture
+  createTexture(Pixel(fromRGB(0xFF00FF)));
 }
 
 Viewer::~Viewer() { glfwTerminate(); }
@@ -92,7 +95,7 @@ void Viewer::renderRigidBodies(
     shader.setVec3("uSpecularColour", obj->specularColour);
     shader.setFloat("uShininess", obj->shininess);
 
-    _drawMesh(obj->renderMeshKey);
+    _drawMesh(obj->renderMeshKey, obj->textureKey);
   }
 }
 
@@ -160,16 +163,25 @@ const Camera &Viewer::camera() const { return _camera; }
 
 const glm::mat4 &Viewer::cameraVP() const { return _vp; }
 
-RenderMeshKey Viewer::insertMesh(Mesh *mesh) {
+RenderMeshKey Viewer::createRenderMesh(Mesh *mesh) {
   renderMeshCache.emplace_back(std::make_unique<RenderMesh>(mesh));
   return renderMeshCache.size() - 1;
 }
 
-void Viewer::_drawMesh(const RenderMeshKey &renderMeshKey) const {
+TextureKey Viewer::createTexture(Image image) {
+  textureCache.emplace_back(std::move(image));
+  textureCache.back().to_gpu();
+  return textureCache.size() - 1;
+}
+
+void Viewer::_drawMesh(const RenderMeshKey &renderMeshKey,
+                       const TextureKey &textureKey) const {
   const auto &mesh = *renderMeshCache[renderMeshKey];
   shader.bind();
   mesh.va.bind();
   mesh.ib.bind();
+  const auto &texture = textureCache[textureKey];
+  texture.bind();
 
   glDrawElements(GL_TRIANGLES, mesh.ib.numIndices, GL_UNSIGNED_INT, nullptr);
 }

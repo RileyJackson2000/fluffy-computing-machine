@@ -66,17 +66,17 @@ void collide(Sphere &s1, Sphere &s2) {
   s2.torque += torque_2;
 }
 
-void collide(Mesh &m1, Mesh &m2) {
+void collide(RigidMesh &m1, RigidMesh &m2) {
   (void)m1;
   (void)m2;
 }
 
-void collide(Sphere &s, Mesh &m) {
+void collide(Sphere &s, RigidMesh &m) {
   (void)s;
   (void)m;
 }
 
-inline void collide(Mesh &m, Sphere &s) { collide(s, m); }
+inline void collide(RigidMesh &m, Sphere &s) { collide(s, m); }
 
 namespace {
 template <typename T> void collidesWith(T &obj_1, Object &obj_2) {
